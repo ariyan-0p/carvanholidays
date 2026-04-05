@@ -1,0 +1,305 @@
+/* ===========================
+   HERO SECTION
+   =========================== */
+
+.hero {
+  position: relative;
+  height: 100vh;
+  min-height: 600px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+/* Background images */
+.hero__bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  transform: scale(1.04);
+  animation: none;
+}
+
+.hero__bg--active {
+  opacity: 1;
+  animation: heroZoom 6s ease-out forwards;
+}
+
+@keyframes heroZoom {
+  from { transform: scale(1.04); }
+  to   { transform: scale(1); }
+}
+
+/* Overlay: dark gradient from left */
+.hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    rgba(8, 67, 74, 0.82) 0%,
+    rgba(8, 67, 74, 0.55) 50%,
+    rgba(8, 67, 74, 0.15) 100%
+  );
+  z-index: 1;
+}
+
+/* Content wrapper */
+.hero__content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--sp-8);
+  padding-top: 72px; /* navbar height */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-12);
+}
+
+/* Transition states */
+.hero__content--enter .hero__text {
+  animation: fadeSlideUp 0.5s ease forwards;
+}
+.hero__content--exit .hero__text {
+  animation: fadeSlideDown 0.35s ease forwards;
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeSlideDown {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-20px); }
+}
+
+/* === Text side === */
+.hero__text {
+  flex: 0 0 auto;
+  max-width: 520px;
+  color: var(--white);
+}
+
+.hero__label {
+  display: inline-block;
+  padding: 5px 14px;
+  background: rgba(168, 245, 124, 0.2);
+  border: 1px solid var(--green-accent);
+  border-radius: var(--r-full);
+  color: var(--green-accent);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: var(--sp-4);
+}
+
+.hero__title {
+  font-size: clamp(56px, 7vw, 96px);
+  font-weight: 900;
+  color: var(--white);
+  line-height: 1;
+  letter-spacing: -2px;
+  margin-bottom: var(--sp-3);
+}
+
+.hero__subtitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--green-accent);
+  margin-bottom: var(--sp-4);
+  letter-spacing: 0.5px;
+}
+
+.hero__desc {
+  font-size: 15px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.7;
+  max-width: 420px;
+  margin-bottom: var(--sp-6);
+}
+
+.hero__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-8);
+}
+
+.hero__duration,
+.hero__price {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+}
+
+.hero__duration {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(255,255,255,0.12);
+  border-radius: var(--r-full);
+  backdrop-filter: blur(4px);
+}
+
+.hero__price {
+  color: var(--green-accent);
+  font-size: 15px;
+}
+
+.hero__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 32px;
+  background: var(--teal);
+  border: 2px solid var(--green-accent);
+  border-radius: var(--r-full);
+  color: var(--white);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  transition: background 0.25s ease, color 0.25s ease, transform 0.2s ease;
+}
+
+.hero__btn:hover {
+  background: var(--green-accent);
+  color: var(--teal);
+  transform: translateY(-2px);
+}
+
+/* === Floating cards === */
+.hero__cards {
+  flex: 0 0 auto;
+  position: relative;
+  width: 340px;
+  height: 420px;
+}
+
+.hero__card {
+  position: absolute;
+  background-size: cover;
+  background-position: center;
+  border-radius: var(--r-lg);
+  border: 3px solid rgba(255,255,255,0.3);
+  box-shadow: var(--shadow-lg);
+  transition: transform 0.4s ease;
+}
+
+/* Card 0 — left, behind */
+.hero__card--0 {
+  width: 180px;
+  height: 240px;
+  left: 0;
+  top: 60px;
+  transform: rotate(-8deg) translateX(10px);
+  z-index: 1;
+  opacity: 0.85;
+}
+
+/* Card 1 — center, front */
+.hero__card--1 {
+  width: 210px;
+  height: 280px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(0deg);
+  z-index: 3;
+  border-color: var(--green-accent);
+}
+
+/* Card 2 — right, behind */
+.hero__card--2 {
+  width: 170px;
+  height: 220px;
+  right: 0;
+  top: 70px;
+  transform: rotate(8deg) translateX(-10px);
+  z-index: 2;
+  opacity: 0.85;
+}
+
+.hero__cards:hover .hero__card--0 { transform: rotate(-12deg) translateX(-10px); }
+.hero__cards:hover .hero__card--2 { transform: rotate(12deg) translateX(10px); }
+
+/* === Dot navigation === */
+.hero__dots {
+  position: absolute;
+  left: var(--sp-8);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hero__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--r-full);
+  background: rgba(255,255,255,0.4);
+  border: none;
+  cursor: pointer;
+  transition: background 0.25s ease, transform 0.25s ease;
+  padding: 0;
+}
+
+.hero__dot--active {
+  background: var(--green-accent);
+  transform: scale(1.4);
+}
+
+.hero__dot:hover:not(.hero__dot--active) {
+  background: rgba(255,255,255,0.7);
+}
+
+/* === Scroll hint === */
+.hero__scroll-hint {
+  position: absolute;
+  bottom: var(--sp-8);
+  right: var(--sp-8);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255,255,255,0.5);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.hero__scroll-line {
+  width: 1px;
+  height: 48px;
+  background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.5));
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 1; }
+}
+
+/* === Responsive === */
+@media (max-width: 1024px) {
+  .hero__cards { display: none; }
+  .hero__content { justify-content: flex-start; }
+  .hero__text { max-width: 100%; }
+}
+
+@media (max-width: 768px) {
+  .hero__content { padding: 0 var(--sp-5); padding-top: 64px; }
+  .hero__title { letter-spacing: -1px; }
+  .hero__dots { left: var(--sp-5); }
+  .hero__scroll-hint { display: none; }
+}
