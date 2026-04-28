@@ -1,10 +1,12 @@
 import { useState, useEffect, useCallback } from 'react'
+import { Link } from 'react-router-dom'
 import './Hero.css'
 
 const slides = [
   {
     id: 0,
     label: 'Holiday Package',
+    slug: 'bali-island-of-the-gods',
     destination: 'BALI',
     subtitle: 'Island of the Gods',
     description:
@@ -21,6 +23,7 @@ const slides = [
   {
     id: 1,
     label: 'Luxury Escape',
+    slug: 'maldives-luxury-escape',
     destination: 'MALDIVES',
     subtitle: 'Paradise on Earth',
     description:
@@ -37,6 +40,7 @@ const slides = [
   {
     id: 2,
     label: 'Heritage Tour',
+    slug: 'golden-triangle',
     destination: 'RAJASTHAN',
     subtitle: 'Land of Kings',
     description:
@@ -101,12 +105,15 @@ export default function Hero() {
             <span className="hero__duration">{slide.duration}</span>
             <span className="hero__price">Starting {slide.price}</span>
           </div>
-          <a href="#book" className="hero__btn">
-            Explore
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path d="M5 12H19M13 6L19 12L13 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </a>
+          <div className="hero__cta-row">
+            <Link to={`/packages/${slide.slug}`} className="hero__btn">
+              Explore
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M5 12H19M13 6L19 12L13 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </Link>
+            <Link to="/packages" className="hero__btn-ghost">View all packages</Link>
+          </div>
         </div>
 
         {/* Right: floating image cards */}

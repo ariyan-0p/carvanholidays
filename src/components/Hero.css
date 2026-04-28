@@ -54,7 +54,7 @@
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 var(--sp-8);
-  padding-top: 72px; /* navbar height */
+  padding-top: 84px; /* navbar height */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -173,6 +173,30 @@
   background: var(--green-accent);
   color: var(--teal);
   transform: translateY(-2px);
+}
+
+.hero__cta-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.hero__btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  padding: 14px 24px;
+  border-radius: var(--r-full);
+  color: rgba(255,255,255,0.85);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  border: 1.5px solid rgba(255,255,255,0.25);
+  transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+.hero__btn-ghost:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.55);
+  color: var(--white);
 }
 
 /* === Floating cards === */
@@ -298,7 +322,7 @@
 }
 
 @media (max-width: 768px) {
-  .hero__content { padding: 0 var(--sp-5); padding-top: 64px; }
+  .hero__content { padding: 0 var(--sp-5); padding-top: 72px; }
   .hero__title { letter-spacing: -1px; }
   .hero__dots { left: var(--sp-5); }
   .hero__scroll-hint { display: none; }

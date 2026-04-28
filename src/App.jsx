@@ -1,25 +1,30 @@
+import { Routes, Route } from 'react-router-dom'
 import Navbar from './components/Navbar'
-import Hero from './components/Hero'
-import SearchBar from './components/SearchBar'
-import FeaturedDestinations from './components/FeaturedDestinations'
-import Packages from './components/Packages'
-import WhyUs from './components/WhyUs'
-import Offers from './components/Offers'
-import Testimonials from './components/Testimonials'
 import Footer from './components/Footer'
+import ScrollToTop from './components/ScrollToTop'
+import Home from './pages/Home'
+import PackagesPage from './pages/PackagesPage'
+import PackageDetail from './pages/PackageDetail'
+import About from './pages/About'
+import Contact from './pages/Contact'
+import Booking from './pages/Booking'
+import NotFound from './pages/NotFound'
 import './App.css'
 
 function App() {
   return (
     <div className="app">
+      <ScrollToTop />
       <Navbar />
-      <Hero />
-      <SearchBar />
-      <FeaturedDestinations />
-      <Packages />
-      <WhyUs />
-      <Offers />
-      <Testimonials />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/packages" element={<PackagesPage />} />
+        <Route path="/packages/:slug" element={<PackageDetail />} />
+        <Route path="/book/:slug" element={<Booking />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
       <Footer />
     </div>
   )

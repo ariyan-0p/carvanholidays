@@ -1,11 +1,36 @@
+import { Link } from 'react-router-dom'
 import logo from '../assets/logotransparent.PNG'
 import './Footer.css'
 
 const footerLinks = {
-  Company: ['About Us', 'Our Story', 'Careers', 'Press', 'Blog'],
-  Destinations: ['Bali', 'Maldives', 'Dubai', 'Thailand', 'Europe', 'Goa', 'Kerala'],
-  Services: ['Holiday Packages', 'Flights', 'Hotels', 'Visa Assistance', 'Travel Insurance'],
-  Support: ['Contact Us', 'FAQ', 'Track Booking', 'Cancellation Policy', 'Terms & Privacy'],
+  Company: [
+    { label: 'About Us', to: '/about' },
+    { label: 'Our Story', to: '/about' },
+    { label: 'Careers', to: '#' },
+    { label: 'Blog', to: '#' },
+  ],
+  Destinations: [
+    { label: 'Bali', to: '/packages?q=bali' },
+    { label: 'Maldives', to: '/packages?q=maldives' },
+    { label: 'Dubai', to: '/packages?q=dubai' },
+    { label: 'Europe', to: '/packages?q=europe' },
+    { label: 'Goa', to: '/packages?q=goa' },
+    { label: 'Kerala', to: '/packages?q=kerala' },
+  ],
+  Services: [
+    { label: 'Holiday Packages', to: '/packages' },
+    { label: 'Beach Holidays', to: '/packages?category=beach' },
+    { label: 'Heritage Tours', to: '/packages?category=heritage' },
+    { label: 'Luxury Escapes', to: '/packages?category=luxury' },
+    { label: 'Honeymoon', to: '/packages?category=honeymoon' },
+  ],
+  Support: [
+    { label: 'Contact Us', to: '/contact' },
+    { label: 'FAQ', to: '#' },
+    { label: 'Track Booking', to: '#' },
+    { label: 'Cancellation Policy', to: '#' },
+    { label: 'Terms & Privacy', to: '#' },
+  ],
 }
 
 const socials = [
@@ -103,8 +128,12 @@ export default function Footer() {
               <h4 className="footer__col-heading">{heading}</h4>
               <ul className="footer__col-links">
                 {links.map(link => (
-                  <li key={link}>
-                    <a href="#" className="footer__link">{link}</a>
+                  <li key={link.label}>
+                    {link.to.startsWith('/') ? (
+                      <Link to={link.to} className="footer__link">{link.label}</Link>
+                    ) : (
+                      <a href={link.to} className="footer__link">{link.label}</a>
+                    )}
                   </li>
                 ))}
               </ul>

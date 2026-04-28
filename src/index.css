@@ -107,3 +107,47 @@ img {
 }
 
 ul { list-style: none; }
+
+/* === Shared section utilities === */
+.section-tag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--green-strong);
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  margin-bottom: var(--sp-2);
+}
+.section-title {
+  font-size: clamp(28px, 3.5vw, 40px);
+  font-weight: 800;
+  color: var(--teal);
+  margin-bottom: var(--sp-2);
+  letter-spacing: -0.5px;
+}
+.section-subtitle {
+  font-size: 15px;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+.view-all-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 22px;
+  border: 2px solid var(--teal);
+  border-radius: var(--r-full);
+  color: var(--teal);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease;
+  white-space: nowrap;
+}
+.view-all-btn:hover {
+  background: var(--teal);
+  color: var(--white);
+}

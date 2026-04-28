@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
+import { Link, NavLink } from 'react-router-dom'
 import logo from '../assets/logotransparent.PNG'
 import './Navbar.css'
 
 const navLinks = [
-  { label: 'About', href: '#about' },
-  { label: 'Destinations', href: '#destinations' },
-  { label: 'Offers', href: '#offers' },
+  { label: 'Home', to: '/' },
+  { label: 'Packages', to: '/packages' },
+  { label: 'About', to: '/about' },
+  { label: 'Contact', to: '/contact' },
 ]
 
 export default function Navbar() {
@@ -21,29 +23,29 @@ export default function Navbar() {
   return (
     <nav className={`navbar ${scrolled ? 'navbar--scrolled' : ''}`}>
       <div className="navbar__inner">
-        {/* Logo */}
-        <a href="/" className="navbar__logo">
+        <Link to="/" className="navbar__logo" onClick={() => setMenuOpen(false)}>
           <img src={logo} alt="Carvaan Holidays" />
-        </a>
+        </Link>
 
-        {/* Desktop nav links */}
         <ul className={`navbar__links ${menuOpen ? 'navbar__links--open' : ''}`}>
           {navLinks.map(link => (
             <li key={link.label}>
-              <a href={link.href} className="navbar__link">
+              <NavLink
+                to={link.to}
+                end={link.to === '/'}
+                className={({ isActive }) =>
+                  `navbar__link ${isActive ? 'navbar__link--active' : ''}`
+                }
+                onClick={() => setMenuOpen(false)}
+              >
                 {link.label}
-                <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
-                  <path d="M1 1L6 6L11 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                </svg>
-              </a>
+              </NavLink>
             </li>
           ))}
         </ul>
 
-        {/* Book Now CTA */}
-        <a href="#book" className="navbar__cta">Book Now</a>
+        <Link to="/packages" className="navbar__cta">Book Now</Link>
 
-        {/* Hamburger */}
         <button
           className={`navbar__hamburger ${menuOpen ? 'navbar__hamburger--open' : ''}`}
           onClick={() => setMenuOpen(o => !o)}

@@ -2,7 +2,13 @@
   "permissions": {
     "allow": [
       "WebFetch(domain:www.behance.net)",
-      "Bash(timeout /t 4)"
+      "Bash(timeout /t 4)",
+      "Bash(npm run *)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(npm install *)",
+      "Bash(curl -s http://localhost:5000/api/health)",
+      "Bash(curl -s http://localhost:5000/api/packages)",
+      "Bash(curl -s \"http://localhost:5000/api/packages\")"
     ]
   }
 }

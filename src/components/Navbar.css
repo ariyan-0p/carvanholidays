@@ -20,7 +20,7 @@
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 var(--sp-8);
-  height: 72px;
+  height: 84px;
   display: flex;
   align-items: center;
   gap: var(--sp-8);
@@ -34,7 +34,7 @@
 }
 
 .navbar__logo img {
-  height: 52px;
+  height: 68px;
   width: auto;
   object-fit: contain;
 }
@@ -73,6 +73,11 @@
 .navbar__link:hover svg {
   transform: rotate(180deg);
   opacity: 1;
+}
+
+.navbar__link--active {
+  color: var(--green-accent);
+  background: rgba(168, 245, 124, 0.12);
 }
 
 /* CTA Button */
@@ -122,13 +127,17 @@
 @media (max-width: 768px) {
   .navbar__inner {
     padding: 0 var(--sp-5);
-    height: 64px;
+    height: 72px;
+  }
+
+  .navbar__logo img {
+    height: 56px;
   }
 
   .navbar__links {
     display: none;
     position: absolute;
-    top: 64px;
+    top: 72px;
     left: 0;
     right: 0;
     background: var(--teal);
