@@ -1,22 +1,24 @@
 import { Router } from 'express'
 import Package from '../models/Package.js'
+import { requireAdmin } from '../middleware/auth.js'
 import { dbReady, memFindPackages, memFindPackage } from '../store.js'
 
 const router = Router()
 
-// GET /api/packages?category=beach&featured=true&q=bali&limit=20
+// GET /api/packages?category=beach&featured=true&q=bali&city=jaipur&limit=20
 router.get('/', async (req, res, next) => {
   try {
-    const { category, featured, q, limit } = req.query
+    const { category, featured, q, city, limit } = req.query
     if (!dbReady()) {
-      return res.json(memFindPackages({ category, featured, q, limit }))
+      return res.json(memFindPackages({ category, featured, q, city, limit }))
     }
     const filter = { active: true }
     if (category) filter.category = category
     if (featured === 'true') filter.featured = true
+    if (city) filter.city = String(city).toLowerCase()
     if (q) {
       const re = new RegExp(q, 'i')
-      filter.$or = [{ title: re }, { destination: re }, { country: re }, { summary: re }]
+      filter.$or = [{ title: re }, { destination: re }, { country: re }, { city: re }, { summary: re }]
     }
     const query = Package.find(filter).sort({ featured: -1, createdAt: -1 })
     if (limit) query.limit(Number(limit))
@@ -42,7 +44,7 @@ router.get('/:slug', async (req, res, next) => {
   }
 })
 
-router.post('/', async (req, res, next) => {
+router.post('/', requireAdmin, async (req, res, next) => {
   try {
     if (!dbReady()) return res.status(503).json({ error: 'DB not connected — admin writes disabled' })
     const created = await Package.create(req.body)
@@ -52,7 +54,7 @@ router.post('/', async (req, res, next) => {
   }
 })
 
-router.put('/:slug', async (req, res, next) => {
+router.put('/:slug', requireAdmin, async (req, res, next) => {
   try {
     if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
     const updated = await Package.findOneAndUpdate({ slug: req.params.slug }, req.body, { new: true })
@@ -63,7 +65,7 @@ router.put('/:slug', async (req, res, next) => {
   }
 })
 
-router.delete('/:slug', async (req, res, next) => {
+router.delete('/:slug', requireAdmin, async (req, res, next) => {
   try {
     if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
     const updated = await Package.findOneAndUpdate({ slug: req.params.slug }, { active: false }, { new: true })

@@ -13,10 +13,14 @@ const memory = {
 export const dbReady = () => mongoose.connection.readyState === 1
 
 // ---------- Packages ----------
-export const memFindPackages = ({ category, featured, q, limit } = {}) => {
+export const memFindPackages = ({ category, featured, q, city, limit } = {}) => {
   let items = memory.packages.filter(p => p.active !== false)
   if (category) items = items.filter(p => p.category === category)
   if (featured === 'true' || featured === true) items = items.filter(p => p.featured)
+  if (city) {
+    const c = String(city).toLowerCase()
+    items = items.filter(p => p.city === c)
+  }
   if (q) {
     const re = new RegExp(q, 'i')
     items = items.filter(p =>

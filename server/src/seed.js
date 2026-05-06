@@ -26,5 +26,7 @@ async function runSeed() {
   process.exit(0)
 }
 
-const isMain = import.meta.url === `file://${process.argv[1].replace(/\\/g, '/')}`
+import { fileURLToPath } from 'url'
+import { resolve } from 'path'
+const isMain = resolve(fileURLToPath(import.meta.url)) === resolve(process.argv[1] || '')
 if (isMain) runSeed().catch((e) => { console.error(e); process.exit(1) })
