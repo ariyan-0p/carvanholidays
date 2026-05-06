@@ -1,0 +1,146 @@
+/* ===========================
+   AS FEATURED IN — marquee
+   =========================== */
+.featured-in {
+  padding: var(--sp-12) 0;
+  background: var(--white);
+  border-top: 1px solid var(--light-bg);
+  border-bottom: 1px solid var(--light-bg);
+  overflow: hidden;
+}
+
+.featured-in__container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.featured-in__heading {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-8);
+  padding: 0 var(--sp-8);
+}
+.featured-in__line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.featured-in__label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* Marquee track */
+.featured-in__marquee {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+}
+
+.featured-in__track {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-12);
+  width: max-content;
+  animation: featured-scroll 60s linear infinite;
+}
+.featured-in__marquee:hover .featured-in__track { animation-play-state: paused; }
+
+@keyframes featured-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); } /* duplicates make this seamless */
+}
+
+/* Each logo placeholder */
+.featured-in__logo {
+  flex-shrink: 0;
+  font-size: 22px;
+  color: var(--text-muted);
+  opacity: 0.65;
+  transition: opacity 0.25s ease, color 0.25s ease, filter 0.25s ease;
+  filter: grayscale(1);
+  white-space: nowrap;
+  user-select: none;
+  line-height: 1;
+}
+.featured-in__logo:hover {
+  opacity: 1;
+  color: var(--teal);
+  filter: grayscale(0);
+}
+
+/* Variants — visually differentiate the placeholders so it looks like a real wall */
+.featured-in__logo--allcaps {
+  font-family: 'Georgia', serif;
+  font-weight: 800;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  font-size: 18px;
+}
+.featured-in__logo--serif {
+  font-family: 'Georgia', serif;
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: -0.5px;
+}
+.featured-in__logo--italic {
+  font-family: 'Georgia', serif;
+  font-weight: 600;
+  font-style: italic;
+  font-size: 26px;
+  letter-spacing: -0.5px;
+}
+.featured-in__logo--script {
+  font-family: 'Brush Script MT', cursive;
+  font-weight: 400;
+  font-size: 32px;
+}
+.featured-in__logo--sans {
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 21px;
+  letter-spacing: -0.3px;
+}
+.featured-in__logo--condensed {
+  font-family: 'Arial Narrow', 'Helvetica', sans-serif;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-size: 19px;
+}
+.featured-in__logo--mono {
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 19px;
+  letter-spacing: 1px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .featured-in { padding: var(--sp-10) 0; }
+  .featured-in__heading { padding: 0 var(--sp-5); margin-bottom: var(--sp-6); }
+  .featured-in__track { gap: var(--sp-10); animation-duration: 45s; }
+  .featured-in__logo { font-size: 18px; }
+  .featured-in__logo--script { font-size: 26px; }
+  .featured-in__logo--serif, .featured-in__logo--italic { font-size: 20px; }
+}
+@media (max-width: 540px) {
+  .featured-in { padding: var(--sp-8) 0; }
+  .featured-in__track { gap: var(--sp-8); animation-duration: 35s; }
+  .featured-in__logo { font-size: 16px; }
+  .featured-in__logo--script { font-size: 22px; }
+}
+
+/* Reduced motion: no scrolling */
+@media (prefers-reduced-motion: reduce) {
+  .featured-in__track { animation: none; flex-wrap: wrap; justify-content: center; padding: 0 var(--sp-5); }
+  .featured-in__marquee { -webkit-mask-image: none; mask-image: none; }
+}

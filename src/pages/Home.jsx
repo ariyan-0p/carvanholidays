@@ -1,5 +1,6 @@
 import Hero from '../components/Hero'
 import TrustStrip from '../components/TrustStrip'
+import AsFeaturedIn from '../components/AsFeaturedIn'
 import SearchBar from '../components/SearchBar'
 import FeaturedDestinations from '../components/FeaturedDestinations'
 import Packages from '../components/Packages'
@@ -13,6 +14,7 @@ export default function Home() {
     <>
       <Hero />
       <TrustStrip />
+      <AsFeaturedIn />
       <SearchBar />
       <FeaturedDestinations />
       <Packages />
