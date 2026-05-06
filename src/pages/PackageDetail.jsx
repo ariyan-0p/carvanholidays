@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { fetchPackage } from '../api/client'
+import { fetchPackage, fetchCity } from '../api/client'
 import './pages.css'
 
 export default function PackageDetail() {
@@ -9,12 +9,25 @@ export default function PackageDetail() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [activeImg, setActiveImg] = useState(0)
+  const [related, setRelated] = useState([])
 
   useEffect(() => {
     setLoading(true)
     setError(null)
+    setRelated([])
     fetchPackage(slug)
-      .then(data => { setPkg(data); setActiveImg(0) })
+      .then(data => {
+        setPkg(data)
+        setActiveImg(0)
+        if (data?.city) {
+          fetchCity(data.city)
+            .then(cityData => {
+              const others = (cityData.packages || []).filter(p => p.slug !== data.slug).slice(0, 3)
+              setRelated(others)
+            })
+            .catch(() => setRelated([]))
+        }
+      })
       .catch(e => setError(e.response?.status === 404 ? 'Package not found.' : e.message))
       .finally(() => setLoading(false))
   }, [slug])
@@ -121,6 +134,66 @@ export default function PackageDetail() {
           </div>
         </aside>
       </div>
+
+      {related.length > 0 && (
+        <section className="related">
+          <div className="related__container">
+            <div className="related__head">
+              <div>
+                <span className="related__tag">More options</span>
+                <h2 className="related__title">
+                  More from {pkg.destination?.split(',')[0] || pkg.city}
+                </h2>
+              </div>
+              <Link to={`/cities/${pkg.city}`} className="related__view-all">
+                See all
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </Link>
+            </div>
+            <div className="related__grid">
+              {related.map(rp => (
+                <Link to={`/packages/${rp.slug}`} key={rp.slug} className="pkg">
+                  <div className="pkg__media">
+                    <img src={rp.image} alt={rp.title} className="pkg__img" loading="lazy" />
+                    <div className="pkg__shade" />
+                    {rp.duration && (
+                      <span className="pkg__duration">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                          <circle cx="12" cy="12" r="9"/>
+                          <path d="M12 7v5l3 2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                        {rp.duration}
+                      </span>
+                    )}
+                    <div className="pkg__overlay">
+                      <h3 className="pkg__title">{rp.title}</h3>
+                    </div>
+                  </div>
+                  <div className="pkg__body">
+                    <div className="pkg__footer">
+                      <div className="pkg__price-block">
+                        <span className="pkg__price-label">From</span>
+                        <span className="pkg__price">
+                          ₹{Number(rp.price || 0).toLocaleString('en-IN')}
+                          <span className="pkg__per">/ person</span>
+                        </span>
+                      </div>
+                      <span className="pkg__cta">
+                        View
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                          <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   )
 }
