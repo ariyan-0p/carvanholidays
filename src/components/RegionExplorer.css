@@ -1,0 +1,238 @@
+/* ===========================
+   REGION EXPLORER (homepage)
+   =========================== */
+.region {
+  padding: var(--sp-20) var(--sp-8);
+  background:
+    radial-gradient(900px 500px at 110% 110%, rgba(168, 245, 124, 0.08), transparent 60%),
+    var(--white);
+}
+.region__container { max-width: 1280px; margin: 0 auto; }
+
+.region__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--sp-6);
+  margin-bottom: var(--sp-10);
+}
+.region__tag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--green-strong);
+  background: rgba(18, 184, 74, 0.1);
+  padding: 6px 14px;
+  border-radius: var(--r-full);
+  margin-bottom: var(--sp-3);
+}
+.region__title {
+  font-size: clamp(28px, 3.4vw, 42px);
+  line-height: 1.15;
+  font-weight: 800;
+  color: var(--teal);
+  margin: 0 0 var(--sp-2);
+  letter-spacing: -0.02em;
+}
+.region__subtitle {
+  font-size: 16px;
+  color: var(--text-muted);
+  margin: 0;
+  max-width: 580px;
+  line-height: 1.5;
+}
+
+/* Toggle */
+.region__toggle {
+  display: inline-flex;
+  background: var(--light-bg);
+  border-radius: var(--r-full);
+  padding: 5px;
+  box-shadow: inset 0 1px 3px rgba(8, 67, 74, 0.08);
+}
+.region__toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  background: transparent;
+  color: var(--text-body);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  border-radius: var(--r-full);
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+}
+.region__toggle-btn:hover { color: var(--teal); }
+.region__toggle-btn.is-active {
+  background: var(--teal);
+  color: var(--white);
+  box-shadow: 0 4px 12px rgba(8, 67, 74, 0.18);
+}
+.region__toggle-flag { font-size: 16px; line-height: 1; }
+.region__toggle-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: var(--r-full);
+  background: rgba(255, 255, 255, 0.18);
+  color: inherit;
+  font-size: 11px;
+  font-weight: 800;
+}
+.region__toggle-btn:not(.is-active) .region__toggle-count {
+  background: var(--white);
+  color: var(--teal);
+}
+
+/* Sub headings */
+.region__sub {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-top: var(--sp-8);
+  margin-bottom: var(--sp-5);
+  padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--light-bg);
+}
+.region__sub-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--teal);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.region__sub-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--teal);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: gap 0.2s ease;
+}
+.region__sub-link:hover { gap: 8px; }
+
+/* Cities row */
+.region__cities {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--sp-3);
+}
+.region-city {
+  position: relative;
+  display: block;
+  aspect-ratio: 3 / 4;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  background: var(--teal);
+  box-shadow: 0 4px 14px rgba(8, 67, 74, 0.08);
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.region-city:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 36px rgba(8, 67, 74, 0.18);
+}
+.region-city img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.region-city:hover img { transform: scale(1.08); }
+.region-city__shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top,
+              rgba(0, 20, 25, 0.92) 0%,
+              rgba(0, 20, 25, 0.85) 30%,
+              rgba(8, 67, 74, 0.4) 55%,
+              transparent 80%);
+}
+.region-city__overlay {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: var(--sp-3);
+  color: var(--white);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.region-city__country {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--green-accent);
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+}
+.region-city__name {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+.region-city__count {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+  margin-top: 1px;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* Packages row */
+.region__pkgs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-5);
+}
+.pkg--compact .pkg__body { padding: var(--sp-4); gap: var(--sp-3); }
+.pkg--compact .pkg__title { font-size: 17px; }
+
+/* Skeleton */
+.region-skel {
+  background: linear-gradient(90deg, #eef5f5 25%, #e1eded 50%, #eef5f5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite;
+  border-radius: var(--r-md);
+}
+.region-skel--city { aspect-ratio: 3 / 4; }
+.region-skel--pkg { aspect-ratio: 4 / 5; border-radius: var(--r-lg); }
+
+.region__empty {
+  text-align: center;
+  padding: var(--sp-10) var(--sp-5);
+  color: var(--text-muted);
+  background: var(--off-white);
+  border-radius: var(--r-md);
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .region__cities { grid-template-columns: repeat(4, 1fr); }
+  .region__pkgs { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 900px) {
+  .region { padding: var(--sp-12) var(--sp-5); }
+  .region__header { flex-direction: column; align-items: flex-start; }
+  .region__cities { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 540px) {
+  .region__cities { grid-template-columns: repeat(2, 1fr); }
+  .region__pkgs { grid-template-columns: 1fr; }
+  .region__toggle-btn { padding: 9px 14px; font-size: 13px; }
+}

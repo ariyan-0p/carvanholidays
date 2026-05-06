@@ -349,3 +349,98 @@
   .city-tile__name { font-size: 18px; }
   .city-tile__overlay { padding: var(--sp-3); }
 }
+
+/* ===========================
+   CUSTOM TOUR HERO BUTTON
+   =========================== */
+.cities-hero__cta {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-8);
+  flex-wrap: wrap;
+}
+.cities-hero__custom-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 24px;
+  background: var(--green-accent);
+  color: var(--teal);
+  border: none;
+  border-radius: var(--r-full);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(168, 245, 124, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.25s ease, background 0.2s ease;
+}
+.cities-hero__custom-btn:hover {
+  background: var(--white);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(255, 255, 255, 0.25);
+}
+.cities-hero__cta-note {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
+  font-style: italic;
+}
+
+/* ===========================
+   CUSTOM TOUR INLINE CTA
+   =========================== */
+.cities-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-5);
+  padding: var(--sp-6) var(--sp-8);
+  margin-bottom: var(--sp-8);
+  background:
+    radial-gradient(800px 300px at 100% 0%, rgba(168, 245, 124, 0.18), transparent 60%),
+    linear-gradient(135deg, var(--teal) 0%, #0a5560 100%);
+  border-radius: var(--r-lg);
+  color: var(--white);
+  flex-wrap: wrap;
+  box-shadow: 0 12px 32px rgba(8, 67, 74, 0.18);
+}
+.cities-cta__content { flex: 1; min-width: 240px; }
+.cities-cta h3 {
+  font-size: 22px;
+  font-weight: 800;
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+}
+.cities-cta p {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.5;
+}
+.cities-cta__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 13px 24px;
+  background: var(--green-accent);
+  color: var(--teal);
+  border: none;
+  border-radius: var(--r-full);
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.25s ease, transform 0.2s ease, gap 0.25s ease;
+}
+.cities-cta__btn:hover {
+  background: var(--white);
+  transform: translateY(-2px);
+  gap: 10px;
+}
+
+@media (max-width: 600px) {
+  .cities-cta { padding: var(--sp-5); }
+  .cities-cta h3 { font-size: 18px; }
+  .cities-cta__btn { width: 100%; justify-content: center; }
+}

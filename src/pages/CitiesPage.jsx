@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { fetchCities } from '../api/client'
+import CustomTourModal from '../components/CustomTourModal'
 import './CitiesPage.css'
 
 const FALLBACK_IMG =
@@ -12,6 +13,7 @@ export default function CitiesPage() {
   const [error, setError] = useState(null)
   const [q, setQ] = useState('')
   const [country, setCountry] = useState('all')
+  const [customOpen, setCustomOpen] = useState(false)
 
   useEffect(() => {
     fetchCities()
@@ -43,6 +45,19 @@ export default function CitiesPage() {
           <p className="cities-hero__subtitle">
             From hill stations to island getaways — explore our curated packages by city.
           </p>
+          <div className="cities-hero__cta">
+            <button
+              type="button"
+              className="cities-hero__custom-btn"
+              onClick={() => setCustomOpen(true)}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 5v14M5 12h14"/>
+              </svg>
+              Plan a Custom Tour
+            </button>
+            <span className="cities-hero__cta-note">Don't see your dream destination? We'll build it for you.</span>
+          </div>
           <div className="cities-hero__stats">
             <div><strong>{cities.length}</strong><span>Cities</span></div>
             <div><strong>{cities.reduce((s, c) => s + (c.count || 0), 0)}</strong><span>Packages</span></div>
@@ -100,6 +115,22 @@ export default function CitiesPage() {
           </div>
         )}
 
+        {/* Custom tour banner */}
+        {!loading && (
+          <div className="cities-cta">
+            <div className="cities-cta__content">
+              <h3>Looking for something different?</h3>
+              <p>Our travel designers craft custom itineraries for any destination, budget, and group size.</p>
+            </div>
+            <button type="button" className="cities-cta__btn" onClick={() => setCustomOpen(true)}>
+              Plan Custom Tour
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M13 6l6 6-6 6"/>
+              </svg>
+            </button>
+          </div>
+        )}
+
         {/* Grid */}
         {!loading && filtered.length > 0 && (
           <div className="cities-grid">
@@ -131,6 +162,8 @@ export default function CitiesPage() {
           </div>
         )}
       </div>
+
+      <CustomTourModal open={customOpen} onClose={() => setCustomOpen(false)} />
     </div>
   )
 }

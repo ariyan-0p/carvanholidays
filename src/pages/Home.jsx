@@ -3,7 +3,7 @@ import TrustStrip from '../components/TrustStrip'
 import SearchBar from '../components/SearchBar'
 import FeaturedDestinations from '../components/FeaturedDestinations'
 import Packages from '../components/Packages'
-import FeaturedCities from '../components/FeaturedCities'
+import RegionExplorer from '../components/RegionExplorer'
 import WhyUs from '../components/WhyUs'
 import Offers from '../components/Offers'
 import Testimonials from '../components/Testimonials'
@@ -16,7 +16,7 @@ export default function Home() {
       <SearchBar />
       <FeaturedDestinations />
       <Packages />
-      <FeaturedCities />
+      <RegionExplorer />
       <WhyUs />
       <Offers />
       <Testimonials />
