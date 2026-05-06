@@ -15,13 +15,13 @@ export default function Home() {
       <Hero />
       <TrustStrip />
       <SearchBar />
+      <AsFeaturedIn />
       <FeaturedDestinations />
       <Packages />
       <RegionExplorer />
       <WhyUs />
       <Offers />
       <Testimonials />
-      <AsFeaturedIn />
     </>
   )
 }
