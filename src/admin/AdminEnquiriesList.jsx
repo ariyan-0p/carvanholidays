@@ -116,21 +116,21 @@ export default function AdminEnquiriesList() {
               {items.map(it => (
                 <Fragment key={it._id}>
                   <tr className={`enq__row enq__row--${it.status}`}>
-                    <td className="enq__cell-date">{fmt(it.createdAt)}</td>
-                    <td className="enq__cell-name">
+                    <td data-label="Received" className="enq__cell-date">{fmt(it.createdAt)}</td>
+                    <td data-label="Name" className="enq__cell-name">
                       <strong>{it.name}</strong>
                     </td>
-                    <td className="enq__cell-contact">
+                    <td data-label="Contact" className="enq__cell-contact">
                       <a href={`mailto:${it.email}`}>{it.email}</a>
                       <a href={`tel:${it.phone}`}>{it.phone}</a>
                     </td>
-                    <td><span className="enq__type">{it.type || 'Holidays'}</span></td>
-                    <td className="enq__cell-trip">
+                    <td data-label="Type"><span className="enq__type">{it.type || 'Holidays'}</span></td>
+                    <td data-label="Trip" className="enq__cell-trip">
                       <strong>{it.destination || '—'}</strong>
                       {it.from && <small>from {it.from}</small>}
                       <small>{fmtDate(it.travelDate)} · {it.travellers || '—'}</small>
                     </td>
-                    <td>
+                    <td data-label="Status">
                       <select
                         value={it.status}
                         onChange={e => setStatusFor(it._id, e.target.value)}

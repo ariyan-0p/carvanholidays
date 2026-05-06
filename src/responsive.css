@@ -1,0 +1,210 @@
+/* ============================================================
+   GLOBAL RESPONSIVE OVERRIDES
+   Loaded last so these win over component-level media queries.
+   ============================================================ */
+
+/* Prevent any horizontal overflow on the document */
+html, body { max-width: 100%; overflow-x: hidden; }
+img, video { max-width: 100%; height: auto; }
+
+/* === Tablet & below (≤ 1024px) === */
+@media (max-width: 1024px) {
+  .navbar__inner { gap: var(--sp-4); }
+  .pkgs__grid { gap: var(--sp-5); }
+}
+
+/* === Phone & below (≤ 768px) === */
+@media (max-width: 768px) {
+  /* ---- HERO ---- */
+  .hero { min-height: 540px; height: auto; padding: 110px 0 60px; }
+  .hero__title {
+    font-size: clamp(36px, 9vw, 52px) !important;
+    letter-spacing: -1px !important;
+    line-height: 1.05 !important;
+  }
+  .hero__subtitle { font-size: 16px !important; }
+  .hero__desc { font-size: 14px !important; max-width: 100% !important; }
+  .hero__cta-row { gap: 10px !important; }
+  .hero__btn, .hero__btn-ghost { padding: 12px 22px !important; font-size: 14px !important; }
+  .hero__meta { flex-wrap: wrap; gap: 10px !important; }
+  .hero__dots { display: none !important; }
+
+  /* ---- SECTION SPACING ---- */
+  .pkgs, .region, .fcities, .why, .offers, .testimonials, .trust-strip,
+  .featured-destinations { padding-left: var(--sp-5); padding-right: var(--sp-5); }
+  .pkgs, .region, .fcities { padding-top: var(--sp-12); padding-bottom: var(--sp-12); }
+
+  /* ---- TYPOGRAPHY ---- */
+  .pkgs__title, .fcities__title, .region__title,
+  .section-title { font-size: clamp(24px, 6vw, 30px) !important; }
+  .pkgs__subtitle, .fcities__subtitle, .region__subtitle,
+  .section-subtitle { font-size: 14px !important; }
+
+  /* ---- CARDS / GRIDS ---- */
+  .pkgs__grid { grid-template-columns: 1fr !important; gap: var(--sp-5); }
+  .pkg__title { font-size: 17px !important; }
+  .pkg__price { font-size: 19px !important; }
+  .pkg__media { aspect-ratio: 16 / 11; }
+
+  /* ---- REGION TOGGLE ---- */
+  .region__header { gap: var(--sp-4) !important; }
+  .region__toggle { width: 100%; justify-content: center; }
+  .region__toggle-btn { flex: 1; justify-content: center; padding: 10px 12px !important; font-size: 13px !important; }
+  .region__cities { grid-template-columns: 1fr 1fr !important; gap: var(--sp-3) !important; }
+  .region__pkgs { grid-template-columns: 1fr !important; }
+  .region-city__name { font-size: 15px !important; }
+
+  /* ---- CITIES PAGE ---- */
+  .cities-hero { padding: 100px var(--sp-5) var(--sp-10) !important; }
+  .cities-hero__title { font-size: clamp(28px, 8vw, 40px) !important; }
+  .cities-hero__stats { gap: var(--sp-5) !important; }
+  .cities-hero__stats strong { font-size: 24px !important; }
+  .cities-hero__cta { flex-direction: column; align-items: stretch; gap: var(--sp-3) !important; }
+  .cities-hero__custom-btn { justify-content: center; width: 100%; }
+  .cities-hero__cta-note { font-size: 12px !important; text-align: center; }
+  .cities-page__body { padding: var(--sp-8) var(--sp-5) !important; }
+  .cities-grid { grid-template-columns: 1fr 1fr !important; gap: var(--sp-3) !important; }
+  .city-tile__name { font-size: 18px !important; }
+  .city-tile__overlay { padding: var(--sp-3) !important; }
+  .city-tile__pkgs { font-size: 9px !important; padding: 4px 8px !important; }
+
+  /* ---- CITY DETAIL PAGE ---- */
+  .city-detail__hero { min-height: 280px !important; padding: var(--sp-10) var(--sp-5) !important; }
+  .city-detail__title { font-size: clamp(28px, 8vw, 44px) !important; }
+  .city-detail__sub { font-size: 14px !important; }
+  .city-detail__body { padding: var(--sp-8) var(--sp-5) !important; }
+  .city-detail__grid { grid-template-columns: 1fr !important; gap: var(--sp-5) !important; }
+
+  /* ---- PACKAGE DETAIL PAGE ---- */
+  .detail__hero { padding: var(--sp-5) !important; min-height: 320px !important; height: 50vh !important; }
+  .detail__title { font-size: clamp(26px, 7vw, 40px) !important; line-height: 1.1 !important; }
+  .detail__loc { font-size: 13px !important; }
+  .detail__thumb { width: 70px; height: 50px; }
+  .detail__body { padding: var(--sp-6) var(--sp-5) var(--sp-10) !important; gap: var(--sp-6) !important; }
+  .detail__h2 { font-size: 19px !important; }
+  .detail__section { margin-bottom: var(--sp-8) !important; }
+  .itinerary__day { grid-template-columns: 1fr !important; padding: var(--sp-4) !important; gap: 8px !important; }
+  .book-box { padding: var(--sp-5) !important; }
+  .book-box__price { font-size: 26px !important; }
+
+  /* ---- SEARCH BAR ---- */
+  .search { padding: var(--sp-3) !important; margin-top: -30px !important; }
+  .search__tabs { padding: 0 var(--sp-3); }
+  .search__tab { padding: var(--sp-3) var(--sp-3); font-size: 12px !important; }
+  .search__steps { font-size: 10px !important; padding: var(--sp-3) var(--sp-4) 0 !important; }
+  .search__fields { padding: var(--sp-4) !important; }
+  .search__btn { padding: 12px 22px !important; font-size: 14px !important; }
+  .search__summary { font-size: 12px !important; }
+  .search__popular { padding: var(--sp-3) var(--sp-4) !important; }
+
+  /* ---- FOOTER ---- */
+  .footer__inner { grid-template-columns: 1fr !important; gap: var(--sp-6) !important; padding: var(--sp-8) var(--sp-5) !important; }
+  .footer__brand { text-align: center; }
+  .footer__contact, .footer__socials { justify-content: center; }
+  .footer__contact { align-items: center; }
+  .footer__col { text-align: center; }
+  .footer__bottom-inner { font-size: 12px !important; }
+  .footer__credit { padding: 12px var(--sp-5) 0 !important; }
+
+  /* ---- ABOUT / CONTACT ---- */
+  .about__stats { grid-template-columns: 1fr 1fr !important; padding: var(--sp-5) !important; gap: var(--sp-4) !important; }
+  .about__stats strong { font-size: 26px !important; }
+  .about__values-grid { grid-template-columns: 1fr !important; }
+  .contact__grid { grid-template-columns: 1fr !important; gap: var(--sp-6) !important; }
+
+  /* ---- RELATED ---- */
+  .related { padding: var(--sp-10) var(--sp-5) !important; }
+  .related__head { flex-direction: column; align-items: flex-start; }
+  .related__title { font-size: 22px !important; }
+
+  /* ---- ADMIN ---- */
+  .admin { display: block !important; }
+  .admin__side {
+    flex-direction: row !important;
+    overflow-x: auto;
+    padding: var(--sp-3) !important;
+    gap: var(--sp-2);
+    align-items: center;
+  }
+  .admin__brand { flex-shrink: 0; }
+  .admin__nav { flex-direction: row !important; gap: 4px; flex: 1; overflow-x: auto; }
+  .admin__nav-link { white-space: nowrap; padding: 8px 12px !important; font-size: 13px !important; }
+  .admin__user { flex-shrink: 0; }
+  .admin__main { padding: var(--sp-4) !important; }
+  .admin__header { flex-wrap: wrap; gap: var(--sp-3); }
+  .admin__header h1 { font-size: 22px !important; }
+  .admin__form-grid { grid-template-columns: 1fr !important; }
+
+  /* Enquiries: stack table cells as cards */
+  .enq__toolbar { flex-direction: column; align-items: stretch; }
+  .enq__search input { min-width: 0 !important; }
+  .enq__table thead { display: none; }
+  .enq__table, .enq__table tbody, .enq__table tr, .enq__table td { display: block; width: 100%; }
+  .enq__row {
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    margin-bottom: var(--sp-4);
+    background: var(--white);
+    padding: var(--sp-4);
+  }
+  .enq__row:hover { background: var(--white); }
+  .enq__row td {
+    border: none !important;
+    padding: 6px 0 !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--sp-3);
+  }
+  .enq__row td::before {
+    content: attr(data-label);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+  .enq__cell-name strong { font-size: 16px; }
+  .enq__cell-contact { align-items: flex-end; text-align: right; }
+  .enq__cell-trip { align-items: flex-end; text-align: right; min-width: 0 !important; }
+  .enq__actions { width: 100%; padding-top: var(--sp-3) !important; border-top: 1px solid var(--light-bg) !important; }
+  .enq__actions::before { display: none !important; }
+  .enq__actions { justify-content: flex-end; }
+  .enq__detail { grid-template-columns: 1fr !important; }
+  .enq__detail-row td { display: block !important; padding: var(--sp-3) 0 !important; }
+  .enq__detail-row td::before { display: none !important; }
+}
+
+/* === Small phones (≤ 480px) === */
+@media (max-width: 480px) {
+  /* Tighter type & padding */
+  .hero__label { font-size: 11px !important; padding: 4px 10px !important; }
+  .hero__title { font-size: 34px !important; }
+  .hero__subtitle { font-size: 14px !important; }
+  .hero__desc { font-size: 13px !important; }
+
+  .pkgs, .region, .fcities { padding-top: var(--sp-10); padding-bottom: var(--sp-10); }
+
+  .cities-grid { grid-template-columns: 1fr !important; }
+  .city-tile__name { font-size: 22px !important; }
+  .city-tile__overlay { padding: var(--sp-4) !important; }
+
+  .region__cities { grid-template-columns: 1fr 1fr !important; }
+  .region-city__name { font-size: 14px !important; }
+
+  .cities-hero__title { font-size: 28px !important; }
+  .cities-hero__subtitle { font-size: 14px !important; }
+
+  /* Custom Tour modal */
+  .ct-modal__panel { max-height: 96vh !important; }
+  .ct-modal__form { padding: var(--sp-5) !important; }
+  .ct-modal__header h2 { font-size: 20px !important; }
+}
+
+/* === Touch targets — make buttons & links comfortable to tap === */
+@media (hover: none) and (pointer: coarse) {
+  a, button, [role="button"] { min-height: 40px; }
+  .pkg__cta, .search__tag, .cities-chip, .region__toggle-btn,
+  .footer__link, .navbar__link, .admin__btn { min-height: 40px; align-items: center; }
+}
