@@ -22,6 +22,9 @@ export default function AdminLayout() {
           <NavLink to="/admin/packages/new" className={({isActive}) => `admin__nav-link ${isActive ? 'is-active' : ''}`}>
             New Package
           </NavLink>
+          <NavLink to="/admin/enquiries" className={({isActive}) => `admin__nav-link ${isActive ? 'is-active' : ''}`}>
+            Enquiries
+          </NavLink>
         </nav>
         <div className="admin__user">
           <div className="admin__user-email">{auth?.email}</div>

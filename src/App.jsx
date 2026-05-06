@@ -16,6 +16,7 @@ import AdminLogin from './admin/AdminLogin'
 import AdminLayout from './admin/AdminLayout'
 import AdminPackagesList from './admin/AdminPackagesList'
 import AdminPackageForm from './admin/AdminPackageForm'
+import AdminEnquiriesList from './admin/AdminEnquiriesList'
 import './App.css'
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
             <Route path="packages" element={<AdminPackagesList />} />
             <Route path="packages/new" element={<AdminPackageForm />} />
             <Route path="packages/:slug/edit" element={<AdminPackageForm />} />
+            <Route path="enquiries" element={<AdminEnquiriesList />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />

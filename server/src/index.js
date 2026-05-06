@@ -9,6 +9,7 @@ import bookingsRouter from './routes/bookings.js'
 import contactRouter from './routes/contact.js'
 import citiesRouter from './routes/cities.js'
 import adminRouter from './routes/admin.js'
+import enquiriesRouter from './routes/enquiries.js'
 import { seedIfEmpty } from './seed.js'
 
 const app = express()
@@ -30,6 +31,7 @@ app.use('/api/packages', packagesRouter)
 app.use('/api/bookings', bookingsRouter)
 app.use('/api/contact', contactRouter)
 app.use('/api/cities', citiesRouter)
+app.use('/api/enquiries', enquiriesRouter)
 app.use('/api/admin', adminRouter)
 
 app.use((err, _req, res, _next) => {

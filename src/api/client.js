@@ -38,6 +38,9 @@ export const createBooking = (payload) =>
 export const sendContact = (payload) =>
   api.post('/contact', payload).then(r => r.data)
 
+export const submitEnquiry = (payload) =>
+  api.post('/enquiries', payload).then(r => r.data)
+
 // ---------- Admin ----------
 export const adminLogin = (email, password) =>
   api.post('/admin/login', { email, password }).then(r => r.data)
@@ -55,6 +58,15 @@ export const adminUpdatePackage = (slug, data) =>
 
 export const adminDeletePackage = (slug, hard = false) =>
   api.delete(`/admin/packages/${slug}`, { params: hard ? { hard: 'true' } : {} }).then(r => r.data)
+
+export const adminListEnquiries = (params = {}) =>
+  api.get('/admin/enquiries', { params }).then(r => r.data)
+
+export const adminUpdateEnquiry = (id, data) =>
+  api.patch(`/admin/enquiries/${id}`, data).then(r => r.data)
+
+export const adminDeleteEnquiry = (id) =>
+  api.delete(`/admin/enquiries/${id}`).then(r => r.data)
 
 export const adminUploadImages = (files) => {
   const fd = new FormData()

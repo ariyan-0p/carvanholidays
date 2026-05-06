@@ -133,3 +133,169 @@
   .admin__itin-row { grid-template-columns: 70px 1fr auto; }
   .admin__itin-row textarea { grid-column: 1 / -1; }
 }
+
+/* ===========================
+   ENQUIRIES PAGE
+   =========================== */
+.admin__page-sub { margin: 4px 0 0; color: #6b7d83; font-size: 13px; }
+.admin__btn--sm { padding: 5px 10px; font-size: 12px; }
+
+.enq__toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 16px 0;
+}
+.enq__filters { display: flex; gap: 6px; flex-wrap: wrap; }
+.enq__filter {
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1.5px solid #d6e1e3;
+  background: #fff;
+  color: #3a5a60;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background .2s, border-color .2s, color .2s;
+}
+.enq__filter:hover { border-color: #08434A; color: #08434A; }
+.enq__filter.is-active { background: #08434A; border-color: #08434A; color: #fff; }
+.enq__filter-count {
+  background: rgba(255,255,255,0.25);
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 11px;
+}
+
+.enq__search { display: flex; gap: 8px; }
+.enq__search input {
+  padding: 8px 12px;
+  border: 1.5px solid #d6e1e3;
+  border-radius: 8px;
+  font-size: 13px;
+  min-width: 260px;
+  outline: none;
+}
+.enq__search input:focus { border-color: #08434A; }
+
+.enq__table-wrap {
+  overflow-x: auto;
+  background: #fff;
+  border: 1px solid #e2ecee;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(8,67,74,0.04);
+}
+.enq__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.enq__table thead th {
+  text-align: left;
+  padding: 12px 14px;
+  background: #f4fafa;
+  color: #3a5a60;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  border-bottom: 1px solid #e2ecee;
+}
+.enq__table td {
+  padding: 14px;
+  border-bottom: 1px solid #f1f6f7;
+  vertical-align: top;
+}
+.enq__row:hover { background: #fafdfd; }
+.enq__row--new { background: linear-gradient(to right, rgba(168,245,124,0.12), transparent 80px); }
+.enq__row--closed { opacity: 0.65; }
+
+.enq__cell-date { white-space: nowrap; color: #6b7d83; font-size: 12px; }
+.enq__cell-name strong { color: #08434A; font-size: 14px; }
+
+.enq__cell-contact { display: flex; flex-direction: column; gap: 3px; }
+.enq__cell-contact a {
+  color: #3a5a60;
+  text-decoration: none;
+  font-size: 12px;
+}
+.enq__cell-contact a:hover { color: #08434A; text-decoration: underline; }
+
+.enq__type {
+  display: inline-block;
+  padding: 3px 9px;
+  background: #edf6f6;
+  color: #08434A;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.enq__cell-trip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 180px;
+}
+.enq__cell-trip strong { color: #08434A; font-size: 13px; }
+.enq__cell-trip small { color: #6b7d83; font-size: 11px; }
+
+.enq__status {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1.5px solid #d6e1e3;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  background: #fff;
+}
+.enq__status--new { color: #12B84A; border-color: #12B84A; background: rgba(18,184,74,0.06); }
+.enq__status--contacted { color: #f59e0b; border-color: #f59e0b; background: rgba(245,158,11,0.06); }
+.enq__status--closed { color: #6b7d83; }
+
+.enq__actions { display: flex; gap: 6px; white-space: nowrap; }
+
+.enq__detail-row td { background: #f4fafa; padding: 16px 14px; }
+.enq__detail {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  font-size: 13px;
+}
+.enq__detail > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.enq__detail span {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6b7d83;
+  font-weight: 700;
+}
+.enq__detail strong { color: #08434A; font-size: 13px; }
+.enq__detail-msg { grid-column: 1 / -1; }
+.enq__detail-msg p {
+  margin: 0;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid #e2ecee;
+  border-radius: 8px;
+  color: #3a5a60;
+  line-height: 1.5;
+}
+
+@media (max-width: 800px) {
+  .enq__toolbar { flex-direction: column; align-items: stretch; }
+  .enq__search input { min-width: 0; flex: 1; }
+  .enq__detail { grid-template-columns: 1fr 1fr; }
+}

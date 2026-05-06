@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { submitEnquiry } from '../api/client'
 import './SearchBar.css'
 
 const tabs = ['Holidays', 'Flights', 'Hotels', 'Visa']
@@ -8,21 +9,101 @@ const holidayDestinations = [
   'Goa', 'Kerala', 'Rajasthan', 'Ladakh', 'Andaman',
 ]
 
+const todayISO = () => new Date().toISOString().slice(0, 10)
+
 export default function SearchBar() {
   const [activeTab, setActiveTab] = useState('Holidays')
-  const [from, setFrom] = useState('')
-  const [to, setTo] = useState('')
-  const [date, setDate] = useState('')
-  const [travelers, setTravelers] = useState('2 Adults')
+  const [trip, setTrip] = useState({
+    from: '', destination: '', travelDate: '', travellers: '2 Adults',
+  })
+  const [contact, setContact] = useState({ name: '', email: '', phone: '', message: '' })
+  const [step, setStep] = useState(1)        // 1 = trip, 2 = contact
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState(null)
+  const [submitted, setSubmitted] = useState(false)
+
+  const setT = (k, v) => setTrip(t => ({ ...t, [k]: v }))
+  const setC = (k, v) => setContact(c => ({ ...c, [k]: v }))
+
+  const goToContact = (e) => {
+    e?.preventDefault()
+    setError(null)
+    if (!trip.destination.trim()) {
+      setError('Please tell us where you want to go.')
+      return
+    }
+    setStep(2)
+  }
+
+  const submit = async (e) => {
+    e.preventDefault()
+    setError(null)
+    if (!contact.name.trim() || !contact.email.trim() || !contact.phone.trim()) {
+      setError('Name, email and phone are required.')
+      return
+    }
+    setBusy(true)
+    try {
+      await submitEnquiry({
+        type: activeTab,
+        from: trip.from,
+        destination: trip.destination,
+        travelDate: trip.travelDate || undefined,
+        travellers: trip.travellers,
+        name: contact.name,
+        email: contact.email,
+        phone: contact.phone,
+        message: contact.message,
+        source: 'homepage-search',
+      })
+      setSubmitted(true)
+    } catch (err) {
+      setError(err?.response?.data?.error || 'Could not submit. Please try again.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const reset = () => {
+    setSubmitted(false)
+    setStep(1)
+    setTrip({ from: '', destination: '', travelDate: '', travellers: '2 Adults' })
+    setContact({ name: '', email: '', phone: '', message: '' })
+    setError(null)
+  }
+
+  if (submitted) {
+    return (
+      <section className="search" id="book">
+        <div className="search__card search__success">
+          <div className="search__success-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 13l4 4L19 7"/>
+            </svg>
+          </div>
+          <h3>Enquiry received!</h3>
+          <p>
+            Thanks <strong>{contact.name.split(' ')[0]}</strong> — our team will reach out to you on <strong>{contact.phone}</strong> within 2 business hours with a tailored quote.
+          </p>
+          <button className="search__btn search__btn--ghost" onClick={reset}>
+            Send another enquiry
+          </button>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section className="search" id="book">
-      <div className="search__card">
+      <form className="search__card" onSubmit={step === 1 ? goToContact : submit}>
         {/* Tabs */}
-        <div className="search__tabs">
+        <div className="search__tabs" role="tablist">
           {tabs.map(tab => (
             <button
+              type="button"
               key={tab}
+              role="tab"
+              aria-selected={activeTab === tab}
               className={`search__tab ${activeTab === tab ? 'search__tab--active' : ''}`}
               onClick={() => setActiveTab(tab)}
             >
@@ -32,84 +113,186 @@ export default function SearchBar() {
           ))}
         </div>
 
-        {/* Fields */}
-        <div className="search__fields">
-          <div className="search__field">
-            <label className="search__field-label">Travelling From</label>
-            <input
-              className="search__input"
-              type="text"
-              placeholder="Your city"
-              value={from}
-              onChange={e => setFrom(e.target.value)}
-            />
+        {/* Step indicator */}
+        <div className="search__steps" aria-hidden="true">
+          <div className={`search__step ${step >= 1 ? 'is-active' : ''}`}>
+            <span>1</span> Trip details
           </div>
-
-          <div className="search__divider">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M5 12H19M13 6L19 12L13 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+          <div className="search__step-bar" />
+          <div className={`search__step ${step >= 2 ? 'is-active' : ''}`}>
+            <span>2</span> Your contact
           </div>
-
-          <div className="search__field">
-            <label className="search__field-label">Destination</label>
-            <input
-              className="search__input"
-              type="text"
-              placeholder="Where do you want to go?"
-              list="destinations"
-              value={to}
-              onChange={e => setTo(e.target.value)}
-            />
-            <datalist id="destinations">
-              {holidayDestinations.map(d => <option key={d} value={d} />)}
-            </datalist>
-          </div>
-
-          <div className="search__field">
-            <label className="search__field-label">Travel Date</label>
-            <input
-              className="search__input"
-              type="date"
-              value={date}
-              onChange={e => setDate(e.target.value)}
-            />
-          </div>
-
-          <div className="search__field">
-            <label className="search__field-label">Travellers</label>
-            <select
-              className="search__input search__select"
-              value={travelers}
-              onChange={e => setTravelers(e.target.value)}
-            >
-              <option>1 Adult</option>
-              <option>2 Adults</option>
-              <option>2 Adults, 1 Child</option>
-              <option>2 Adults, 2 Children</option>
-              <option>Group (5+)</option>
-            </select>
-          </div>
-
-          <button className="search__btn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2.5"/>
-              <path d="M20 20L16.65 16.65" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-            </svg>
-            Search
-          </button>
         </div>
 
-        {/* Popular searches */}
-        <div className="search__popular">
-          <span className="search__popular-label">Popular:</span>
-          {['Bali', 'Maldives', 'Goa', 'Thailand', 'Europe'].map(dest => (
-            <button key={dest} className="search__tag" onClick={() => setTo(dest)}>
-              {dest}
-            </button>
-          ))}
-        </div>
-      </div>
+        {step === 1 && (
+          <>
+            <div className="search__fields">
+              <div className="search__field">
+                <label className="search__field-label">Travelling From</label>
+                <input
+                  className="search__input"
+                  type="text"
+                  placeholder="Your city"
+                  value={trip.from}
+                  onChange={e => setT('from', e.target.value)}
+                />
+              </div>
+
+              <div className="search__divider" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 12H19M13 6L19 12L13 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+
+              <div className="search__field">
+                <label className="search__field-label">Destination *</label>
+                <input
+                  className="search__input"
+                  type="text"
+                  placeholder="Where do you want to go?"
+                  list="destinations"
+                  value={trip.destination}
+                  onChange={e => setT('destination', e.target.value)}
+                  required
+                />
+                <datalist id="destinations">
+                  {holidayDestinations.map(d => <option key={d} value={d} />)}
+                </datalist>
+              </div>
+
+              <div className="search__field">
+                <label className="search__field-label">Travel Date</label>
+                <input
+                  className="search__input"
+                  type="date"
+                  min={todayISO()}
+                  value={trip.travelDate}
+                  onChange={e => setT('travelDate', e.target.value)}
+                />
+              </div>
+
+              <div className="search__field">
+                <label className="search__field-label">Travellers</label>
+                <select
+                  className="search__input search__select"
+                  value={trip.travellers}
+                  onChange={e => setT('travellers', e.target.value)}
+                >
+                  <option>1 Adult</option>
+                  <option>2 Adults</option>
+                  <option>2 Adults, 1 Child</option>
+                  <option>2 Adults, 2 Children</option>
+                  <option>Family (4+)</option>
+                  <option>Group (5+)</option>
+                </select>
+              </div>
+
+              <button type="submit" className="search__btn">
+                Continue
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M13 6l6 6-6 6"/>
+                </svg>
+              </button>
+            </div>
+
+            {/* Popular searches */}
+            <div className="search__popular">
+              <span className="search__popular-label">Popular:</span>
+              {['Bali', 'Maldives', 'Goa', 'Thailand', 'Europe'].map(dest => (
+                <button type="button" key={dest} className="search__tag" onClick={() => setT('destination', dest)}>
+                  {dest}
+                </button>
+              ))}
+            </div>
+
+            {error && <div className="search__error">{error}</div>}
+          </>
+        )}
+
+        {step === 2 && (
+          <>
+            <div className="search__summary">
+              <span className="search__summary-pill">{activeTab}</span>
+              <strong>{trip.destination}</strong>
+              {trip.from && <> · from <span>{trip.from}</span></>}
+              {trip.travelDate && <> · <span>{new Date(trip.travelDate).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })}</span></>}
+              <> · <span>{trip.travellers}</span></>
+              <button
+                type="button"
+                className="search__edit-btn"
+                onClick={() => setStep(1)}
+                aria-label="Edit trip details"
+              >
+                Edit
+              </button>
+            </div>
+
+            <div className="search__fields search__fields--contact">
+              <div className="search__field">
+                <label className="search__field-label">Your Name *</label>
+                <input
+                  className="search__input"
+                  type="text"
+                  placeholder="Full name"
+                  value={contact.name}
+                  onChange={e => setC('name', e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="search__field">
+                <label className="search__field-label">Email *</label>
+                <input
+                  className="search__input"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={contact.email}
+                  onChange={e => setC('email', e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="search__field">
+                <label className="search__field-label">Phone *</label>
+                <input
+                  className="search__input"
+                  type="tel"
+                  placeholder="+91 98xxx xxxxx"
+                  value={contact.phone}
+                  onChange={e => setC('phone', e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="search__field search__field--wide">
+                <label className="search__field-label">Anything specific?</label>
+                <input
+                  className="search__input"
+                  type="text"
+                  placeholder="Honeymoon, vegetarian meals, budget…"
+                  value={contact.message}
+                  onChange={e => setC('message', e.target.value)}
+                />
+              </div>
+
+              <button type="submit" className="search__btn" disabled={busy}>
+                {busy ? 'Sending…' : 'Submit Enquiry'}
+                {!busy && (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12h14M13 6l6 6-6 6"/>
+                  </svg>
+                )}
+              </button>
+            </div>
+
+            <p className="search__legal">
+              By submitting, you agree to be contacted by Carvaan Holidays regarding your enquiry. We'll never spam.
+            </p>
+
+            {error && <div className="search__error">{error}</div>}
+          </>
+        )}
+      </form>
     </section>
   )
 }

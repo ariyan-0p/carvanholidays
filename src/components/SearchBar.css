@@ -56,6 +56,170 @@
   border-bottom-color: var(--green-strong);
 }
 
+/* Step indicator */
+.search__steps {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: var(--sp-4) var(--sp-6) 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+.search__step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+}
+.search__step span {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--light-bg);
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+}
+.search__step.is-active { color: var(--teal); }
+.search__step.is-active span {
+  background: var(--green-strong);
+  color: var(--white);
+}
+.search__step-bar {
+  flex: 1;
+  height: 2px;
+  background: var(--light-bg);
+  border-radius: 2px;
+  max-width: 80px;
+}
+
+/* Trip summary chip on step 2 */
+.search__summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: var(--sp-4) var(--sp-6) 0;
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--light-bg);
+  border-radius: var(--r-md);
+  font-size: 13px;
+  color: var(--text-body);
+}
+.search__summary strong {
+  color: var(--teal);
+  font-weight: 700;
+}
+.search__summary span { color: var(--teal); font-weight: 600; }
+.search__summary-pill {
+  display: inline-block;
+  padding: 3px 10px;
+  background: var(--teal);
+  color: var(--white);
+  border-radius: var(--r-full);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-right: 6px;
+}
+.search__edit-btn {
+  margin-left: auto;
+  padding: 4px 12px;
+  background: transparent;
+  border: 1.5px solid var(--teal);
+  border-radius: var(--r-full);
+  color: var(--teal);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.search__edit-btn:hover {
+  background: var(--teal);
+  color: var(--white);
+}
+
+/* Contact step field tweaks */
+.search__fields--contact .search__field { min-width: 180px; }
+.search__field--wide { flex: 2 1 320px; }
+
+/* Legal note */
+.search__legal {
+  margin: 0 var(--sp-6) var(--sp-4);
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* Inline error */
+.search__error {
+  margin: 0 var(--sp-6) var(--sp-4);
+  padding: 10px 14px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: var(--r-md);
+  color: #b91c1c;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Ghost button */
+.search__btn--ghost {
+  background: transparent;
+  border: 1.5px solid var(--teal);
+  color: var(--teal);
+}
+.search__btn--ghost:hover {
+  background: var(--teal);
+  color: var(--white);
+}
+
+/* Disabled */
+.search__btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Success state */
+.search__success {
+  text-align: center;
+  padding: var(--sp-12) var(--sp-8);
+}
+.search__success-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(18, 184, 74, 0.12);
+  color: var(--green-strong);
+  margin-bottom: var(--sp-4);
+}
+.search__success h3 {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--teal);
+  margin: 0 0 var(--sp-3);
+}
+.search__success p {
+  font-size: 15px;
+  color: var(--text-body);
+  margin: 0 auto var(--sp-6);
+  max-width: 480px;
+  line-height: 1.6;
+}
+.search__success .search__btn {
+  margin: 0 auto;
+}
+
 /* Fields row */
 .search__fields {
   display: flex;
@@ -191,4 +355,11 @@
   .search__field { min-width: 100%; }
   .search__divider { display: none; }
   .search__btn { width: 100%; justify-content: center; }
+  .search__steps { padding: var(--sp-3) var(--sp-4) 0; font-size: 11px; }
+  .search__step-bar { max-width: 40px; }
+  .search__summary { margin: var(--sp-3) var(--sp-4) 0; }
+  .search__summary-pill { font-size: 10px; }
+  .search__edit-btn { margin-left: 0; }
+  .search__legal, .search__error { margin-left: var(--sp-4); margin-right: var(--sp-4); }
+  .search__success { padding: var(--sp-8) var(--sp-5); }
 }

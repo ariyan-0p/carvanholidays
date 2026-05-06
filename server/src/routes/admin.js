@@ -5,6 +5,7 @@ import path from 'path'
 import fs from 'fs'
 import { signAdminToken, requireAdmin } from '../middleware/auth.js'
 import Package from '../models/Package.js'
+import Enquiry from '../models/Enquiry.js'
 import { dbReady } from '../store.js'
 
 const router = Router()
@@ -86,6 +87,43 @@ router.put('/packages/:slug', requireAdmin, async (req, res, next) => {
     const updated = await Package.findOneAndUpdate({ slug: req.params.slug }, data, { new: true })
     if (!updated) return res.status(404).json({ error: 'Not found' })
     res.json(updated)
+  } catch (e) { next(e) }
+})
+
+// ---------- Admin Enquiries ----------
+// GET /api/admin/enquiries?status=new&q=text&limit=200
+router.get('/enquiries', requireAdmin, async (req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const { status, q, limit = 200 } = req.query
+    const filter = {}
+    if (status && status !== 'all') filter.status = status
+    if (q) {
+      const re = new RegExp(q, 'i')
+      filter.$or = [{ name: re }, { email: re }, { phone: re }, { destination: re }, { from: re }, { message: re }]
+    }
+    const list = await Enquiry.find(filter).sort({ createdAt: -1 }).limit(Number(limit)).lean()
+    res.json(list)
+  } catch (e) { next(e) }
+})
+
+// PATCH /api/admin/enquiries/:id  { status }
+router.patch('/enquiries/:id', requireAdmin, async (req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const updated = await Enquiry.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    if (!updated) return res.status(404).json({ error: 'Not found' })
+    res.json(updated)
+  } catch (e) { next(e) }
+})
+
+// DELETE /api/admin/enquiries/:id
+router.delete('/enquiries/:id', requireAdmin, async (req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const r = await Enquiry.findByIdAndDelete(req.params.id)
+    if (!r) return res.status(404).json({ error: 'Not found' })
+    res.json({ ok: true })
   } catch (e) { next(e) }
 })
 
