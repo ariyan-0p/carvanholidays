@@ -14,7 +14,6 @@ export default function Home() {
     <>
       <Hero />
       <TrustStrip />
-      <AsFeaturedIn />
       <SearchBar />
       <FeaturedDestinations />
       <Packages />
@@ -22,6 +21,7 @@ export default function Home() {
       <WhyUs />
       <Offers />
       <Testimonials />
+      <AsFeaturedIn />
     </>
   )
 }
