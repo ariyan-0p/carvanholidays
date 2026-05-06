@@ -3,7 +3,10 @@ import { Link } from 'react-router-dom'
 import { fetchPackages } from '../api/client'
 import './Packages.css'
 
-export default function Packages({ limit = 4, showHeader = true }) {
+const FALLBACK_IMG =
+  'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&q=80'
+
+export default function Packages({ limit = 6, showHeader = true }) {
   const [packages, setPackages] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -19,78 +22,149 @@ export default function Packages({ limit = 4, showHeader = true }) {
   }, [limit])
 
   return (
-    <section className="packages" id="packages">
-      <div className="packages__container">
+    <section className="pkgs" id="packages">
+      <div className="pkgs__container">
         {showHeader && (
-          <div className="packages__header">
-            <div>
-              <span className="section-tag">Curated for you</span>
-              <h2 className="section-title">Our Holiday Packages</h2>
-              <p className="section-subtitle">
-                Everything planned — all you need to do is pack your bags
+          <div className="pkgs__header">
+            <div className="pkgs__heading">
+              <span className="pkgs__tag">Curated journeys</span>
+              <h2 className="pkgs__title">Featured Holiday Packages</h2>
+              <p className="pkgs__subtitle">
+                Hand-picked itineraries crafted by our travel experts — every detail planned, every memory waiting.
               </p>
             </div>
-            <Link to="/packages" className="view-all-btn">
-              All Packages
+            <Link to="/packages" className="pkgs__view-all">
+              Explore all
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M5 12H19M13 6L19 12L13 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+                <path d="M5 12H19M13 6L19 12L13 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </Link>
           </div>
         )}
 
-        {loading && <div className="packages__state">Loading packages…</div>}
-        {error && (
-          <div className="packages__state packages__state--error">
-            Couldn't load packages. Make sure the API is running on port 5000.
+        {loading && (
+          <div className="pkgs__grid">
+            {Array.from({ length: limit }).map((_, i) => (
+              <div key={i} className="pkg-skeleton">
+                <div className="pkg-skeleton__img" />
+                <div className="pkg-skeleton__line pkg-skeleton__line--wide" />
+                <div className="pkg-skeleton__line" />
+                <div className="pkg-skeleton__footer" />
+              </div>
+            ))}
           </div>
         )}
-        {!loading && !error && packages.length === 0 && (
-          <div className="packages__state">No packages yet.</div>
+
+        {error && (
+          <div className="pkgs__state pkgs__state--error">
+            Couldn't load packages right now. Please try again in a moment.
+          </div>
         )}
 
-        <div className="packages__grid">
-          {packages.map(pkg => (
-            <Link to={`/packages/${pkg.slug}`} key={pkg._id || pkg.slug} className="pkg-card">
-              <div className="pkg-card__img-wrap">
-                <img src={pkg.image} alt={pkg.title} className="pkg-card__img" />
-                {pkg.badge && <span className="pkg-card__badge">{pkg.badge}</span>}
-                <span className="pkg-card__duration">{pkg.duration}</span>
-              </div>
+        {!loading && !error && packages.length === 0 && (
+          <div className="pkgs__empty">
+            <div className="pkgs__empty-icon">
+              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M3 7l9-4 9 4-9 4-9-4z" strokeLinejoin="round"/>
+                <path d="M3 17l9 4 9-4M3 12l9 4 9-4" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <h3>New journeys coming soon</h3>
+            <p>Our team is curating fresh packages. Check back shortly.</p>
+          </div>
+        )}
 
-              <div className="pkg-card__body">
-                <h3 className="pkg-card__title">{pkg.title}</h3>
+        {!loading && !error && packages.length > 0 && (
+          <div className="pkgs__grid">
+            {packages.map(pkg => (
+              <Link
+                to={`/packages/${pkg.slug}`}
+                key={pkg._id || pkg.slug}
+                className="pkg"
+                aria-label={`View ${pkg.title} package`}
+              >
+                <div className="pkg__media">
+                  <img
+                    src={pkg.image || FALLBACK_IMG}
+                    alt={pkg.title}
+                    className="pkg__img"
+                    loading="lazy"
+                    onError={(e) => { e.currentTarget.src = FALLBACK_IMG }}
+                  />
+                  <div className="pkg__shade" />
 
-                <div className="pkg-card__rating">
-                  <span className="pkg-card__stars">
-                    {'★'.repeat(Math.floor(pkg.rating || 0))}
-                  </span>
-                  <span className="pkg-card__rating-val">{pkg.rating}</span>
-                  <span className="pkg-card__reviews">({pkg.reviews} reviews)</span>
-                </div>
-
-                <ul className="pkg-card__highlights">
-                  {(pkg.highlights || []).slice(0, 4).map((h, i) => (
-                    <li key={i}>
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                        <path d="M5 13L9 17L19 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  {pkg.badge && <span className="pkg__badge">{pkg.badge}</span>}
+                  {pkg.duration && (
+                    <span className="pkg__duration">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <circle cx="12" cy="12" r="9"/>
+                        <path d="M12 7v5l3 2" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
-                      {h}
-                    </li>
-                  ))}
-                </ul>
+                      {pkg.duration}
+                    </span>
+                  )}
 
-                <div className="pkg-card__footer">
-                  <div className="pkg-card__price-block">
-                    <span className="pkg-card__per">per person from</span>
-                    <span className="pkg-card__price">₹{Number(pkg.price).toLocaleString('en-IN')}</span>
+                  <div className="pkg__overlay">
+                    {pkg.destination && (
+                      <span className="pkg__location">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                          <path d="M12 22s-7-7.58-7-12a7 7 0 1 1 14 0c0 4.42-7 12-7 12z" strokeLinejoin="round"/>
+                          <circle cx="12" cy="10" r="2.5"/>
+                        </svg>
+                        {pkg.destination}
+                      </span>
+                    )}
+                    <h3 className="pkg__title">{pkg.title}</h3>
                   </div>
-                  <span className="pkg-card__btn">View</span>
                 </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+
+                <div className="pkg__body">
+                  <div className="pkg__meta">
+                    {pkg.rating ? (
+                      <span className="pkg__rating" aria-label={`Rated ${pkg.rating}`}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77 5.82 21l1.18-6.88-5-4.87 6.91-1.01L12 2z"/>
+                        </svg>
+                        {Number(pkg.rating).toFixed(1)}
+                        {pkg.reviews ? <span className="pkg__reviews">({pkg.reviews})</span> : null}
+                      </span>
+                    ) : <span />}
+                    {pkg.category && <span className="pkg__chip">{pkg.category}</span>}
+                  </div>
+
+                  {Array.isArray(pkg.highlights) && pkg.highlights.length > 0 && (
+                    <ul className="pkg__highlights">
+                      {pkg.highlights.slice(0, 3).map((h, i) => (
+                        <li key={i}>
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                            <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                          {h}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  <div className="pkg__footer">
+                    <div className="pkg__price-block">
+                      <span className="pkg__price-label">From</span>
+                      <span className="pkg__price">
+                        ₹{Number(pkg.price || 0).toLocaleString('en-IN')}
+                        <span className="pkg__per">/ person</span>
+                      </span>
+                    </div>
+                    <span className="pkg__cta">
+                      View
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   )
