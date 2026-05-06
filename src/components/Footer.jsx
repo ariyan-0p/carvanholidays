@@ -152,6 +152,17 @@ export default function Footer() {
             <a href="#">Sitemap</a>
           </span>
         </div>
+        <div className="footer__credit">
+          Powered by{' '}
+          <a
+            href="https://ariyan-0p.github.io/Ariyan-portlio/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="footer__credit-link"
+          >
+            Ariyan Samal
+          </a>
+        </div>
       </div>
     </footer>
   )
