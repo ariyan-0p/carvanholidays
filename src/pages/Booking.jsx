@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { fetchPackage, createBooking } from '../api/client'
+import { fetchPackage, submitEnquiry } from '../api/client'
 import './pages.css'
 
 export default function Booking() {
   const { slug } = useParams()
   const [pkg, setPkg] = useState(null)
-  const [form, setForm] = useState({ name: '', email: '', phone: '', travelDate: '', travellers: 2, message: '' })
+  const [form, setForm] = useState({ name: '', email: '', phone: '', travelDate: '', travellers: '2 Adults', message: '' })
   const [submitting, setSubmitting] = useState(false)
-  const [done, setDone] = useState(null)
+  const [done, setDone] = useState(false)
   const [error, setError] = useState(null)
 
   useEffect(() => {
@@ -22,8 +22,20 @@ export default function Booking() {
     setSubmitting(true)
     setError(null)
     try {
-      const res = await createBooking({ packageSlug: slug, ...form })
-      setDone(res)
+      await submitEnquiry({
+        type: 'Booking',
+        packageSlug: slug,
+        packageTitle: pkg?.title,
+        destination: pkg?.destination || pkg?.city,
+        travelDate: form.travelDate || undefined,
+        travellers: form.travellers,
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        message: form.message,
+        source: 'package-booking',
+      })
+      setDone(true)
     } catch (err) {
       setError(err.response?.data?.error || 'Booking failed. Please try again.')
     } finally {
@@ -36,8 +48,8 @@ export default function Booking() {
       <div className="page">
         <div className="page__body">
           <div className="success-card">
-            <h2>Thank you, {done.name}! 🎉</h2>
-            <p>Your booking request for <strong>{done.packageTitle || slug}</strong> has been received. Our team will reach out within 24 hours on {done.phone}.</p>
+            <h2>Thank you, {form.name}! 🎉</h2>
+            <p>Your booking request for <strong>{pkg?.title || slug}</strong> has been received. Our team will reach out within 24 hours on {form.phone}.</p>
             <Link to="/packages" className="book-box__btn" style={{ marginTop: 16 }}>Browse more packages</Link>
           </div>
         </div>
@@ -76,7 +88,16 @@ export default function Booking() {
             <label>Travel Date<input name="travelDate" type="date" value={form.travelDate} onChange={handle} /></label>
           </div>
           <div className="booking-form__row">
-            <label>Travellers<input name="travellers" type="number" min="1" value={form.travellers} onChange={handle} /></label>
+            <label>Travellers
+              <select name="travellers" value={form.travellers} onChange={handle}>
+                <option>1 Adult</option>
+                <option>2 Adults</option>
+                <option>2 Adults, 1 Child</option>
+                <option>2 Adults, 2 Children</option>
+                <option>Family (4+)</option>
+                <option>Group (5+)</option>
+              </select>
+            </label>
           </div>
           <label>Special Requests<textarea name="message" rows="4" value={form.message} onChange={handle} /></label>
 

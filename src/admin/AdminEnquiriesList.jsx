@@ -1,6 +1,44 @@
 import { Fragment, useEffect, useMemo, useState } from 'react'
 import { adminListEnquiries, adminUpdateEnquiry, adminDeleteEnquiry } from '../api/client'
 
+const csvEscape = (v) => {
+  if (v === null || v === undefined) return ''
+  const s = String(v).replace(/"/g, '""')
+  return /[",\n\r]/.test(s) ? `"${s}"` : s
+}
+
+const downloadCSV = (rows, filename) => {
+  const headers = ['Received', 'Type', 'Status', 'Name', 'Email', 'Phone', 'Destination', 'From', 'Travel Date', 'Travellers', 'Package', 'Source', 'Message']
+  const lines = [headers.join(',')]
+  for (const r of rows) {
+    lines.push([
+      r.createdAt ? new Date(r.createdAt).toISOString() : '',
+      r.type || '',
+      r.status || '',
+      r.name || '',
+      r.email || '',
+      r.phone || '',
+      r.destination || '',
+      r.from || '',
+      r.travelDate ? new Date(r.travelDate).toISOString().slice(0, 10) : '',
+      r.travellers || '',
+      r.packageTitle || r.packageSlug || '',
+      r.source || '',
+      r.message || '',
+    ].map(csvEscape).join(','))
+  }
+  // BOM so Excel detects UTF-8 properly
+  const blob = new Blob(['﻿' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
 const STATUSES = ['all', 'new', 'contacted', 'closed']
 
 const fmt = (d) => d ? new Date(d).toLocaleString('en-IN', {
@@ -63,9 +101,31 @@ export default function AdminEnquiriesList() {
       <header className="admin__header">
         <div>
           <h1>Enquiries</h1>
-          <p className="admin__page-sub">Submissions from the homepage search & enquiry form.</p>
+          <p className="admin__page-sub">All customer submissions — homepage search, custom tours, and bookings.</p>
         </div>
-        <button className="admin__btn" onClick={load}>Refresh</button>
+        <div className="admin__header-actions">
+          <button
+            className="admin__btn"
+            onClick={() => downloadCSV(items, `enquiries-${new Date().toISOString().slice(0,10)}.csv`)}
+            disabled={!items.length}
+            title="Download visible enquiries as CSV (opens in Excel)"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Export CSV
+          </button>
+          <button className="admin__btn admin__btn--primary" onClick={load} title="Refresh list">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="23 4 23 10 17 10"/>
+              <polyline points="1 20 1 14 7 14"/>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+            </svg>
+            Refresh
+          </button>
+        </div>
       </header>
 
       <div className="enq__toolbar">
@@ -126,7 +186,10 @@ export default function AdminEnquiriesList() {
                     </td>
                     <td data-label="Type"><span className="enq__type">{it.type || 'Holidays'}</span></td>
                     <td data-label="Trip" className="enq__cell-trip">
-                      <strong>{it.destination || '—'}</strong>
+                      <strong>{it.packageTitle || it.destination || '—'}</strong>
+                      {it.packageTitle && it.destination && it.destination !== it.packageTitle && (
+                        <small>📍 {it.destination}</small>
+                      )}
                       {it.from && <small>from {it.from}</small>}
                       <small>{fmtDate(it.travelDate)} · {it.travellers || '—'}</small>
                     </td>

@@ -118,6 +118,12 @@ img, video { max-width: 100%; height: auto; }
   .related__title { font-size: 22px !important; }
 
   /* ---- ADMIN ---- */
+  .admin__stats { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+  .admin__stat { padding: 12px 14px !important; }
+  .admin__stat-value { font-size: 22px !important; }
+  .admin__header { flex-direction: column !important; align-items: flex-start !important; }
+  .admin__header-actions { width: 100%; }
+  .admin__header-actions .admin__btn { flex: 1; justify-content: center; }
   .admin { display: block !important; }
   .admin__side {
     flex-direction: row !important;
