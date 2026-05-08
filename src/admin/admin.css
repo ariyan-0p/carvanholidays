@@ -299,3 +299,25 @@
   .enq__search input { min-width: 0; flex: 1; }
   .enq__detail { grid-template-columns: 1fr 1fr; }
 }
+
+/* Password input with eye toggle */
+.admin-login__pwd { position: relative; display: flex; align-items: stretch; }
+.admin-login__pwd input { width: 100%; padding-right: 42px; }
+.admin-login__eye {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: #6b7d83;
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.admin-login__eye:hover { color: #08434A; background: #edf6f6; }
