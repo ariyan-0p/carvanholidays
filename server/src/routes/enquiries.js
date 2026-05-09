@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import Enquiry from '../models/Enquiry.js'
 import { dbReady } from '../store.js'
+import { sendEnquiryEmail } from '../services/mailer.js'
 
 const router = Router()
 
@@ -17,6 +18,9 @@ router.post('/', async (req, res, next) => {
       travelDate: travelDate || undefined,
       travellers, name, email, phone, message, source,
     })
+    // Fire-and-forget email notification — never block the response on it.
+    sendEnquiryEmail(created.toObject ? created.toObject() : created)
+      .catch((err) => console.error('[enquiries] email notify failed:', err?.message || err))
     res.status(201).json({ ok: true, id: created._id })
   } catch (e) {
     next(e)

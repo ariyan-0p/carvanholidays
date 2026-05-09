@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import Contact from '../models/Contact.js'
 import { dbReady, memCreateContact } from '../store.js'
+import { sendContactEmail } from '../services/mailer.js'
 
 const router = Router()
 
@@ -10,11 +11,15 @@ router.post('/', async (req, res, next) => {
     if (!name || !email || !message) {
       return res.status(400).json({ error: 'Name, email and message are required' })
     }
+    let saved
     if (!dbReady()) {
-      return res.status(201).json(memCreateContact(req.body))
+      saved = memCreateContact(req.body)
+    } else {
+      saved = await Contact.create(req.body)
     }
-    const created = await Contact.create(req.body)
-    res.status(201).json(created)
+    sendContactEmail(req.body)
+      .catch((err) => console.error('[contact] email notify failed:', err?.message || err))
+    res.status(201).json(saved)
   } catch (e) {
     next(e)
   }
