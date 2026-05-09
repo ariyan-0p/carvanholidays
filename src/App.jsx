@@ -2,6 +2,7 @@ import { Routes, Route, useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollToTop'
+import PopupEnquiry from './components/PopupEnquiry'
 import Home from './pages/Home'
 import PackagesPage from './pages/PackagesPage'
 import PackageDetail from './pages/PackageDetail'
@@ -50,6 +51,7 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
         {!isAdmin && <Footer />}
+        {!isAdmin && <PopupEnquiry />}
       </div>
     </AdminAuthProvider>
   )
