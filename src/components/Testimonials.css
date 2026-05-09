@@ -55,6 +55,9 @@
   line-height: 1.7;
   flex: 1;
   font-style: italic;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
 }
 
 .review-card__reviewer {
