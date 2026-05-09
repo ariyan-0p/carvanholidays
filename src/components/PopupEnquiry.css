@@ -24,11 +24,72 @@
   background: var(--white);
   border-radius: var(--r-lg);
   width: 100%;
-  max-width: 720px;
+  max-width: 920px;
   max-height: 92vh;
-  overflow-y: auto;
+  overflow: hidden;
   box-shadow: 0 32px 80px rgba(8, 67, 74, 0.4);
   animation: pe-slide 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+}
+
+/* Left banner panel */
+.pe-modal__banner {
+  position: relative;
+  min-height: 480px;
+  background-size: cover;
+  background-position: center;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+}
+.pe-modal__banner-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.pe-modal__banner-content {
+  position: relative;
+  padding: var(--sp-7) var(--sp-7) var(--sp-8);
+  z-index: 1;
+}
+.pe-modal__banner-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 5px 12px;
+  border-radius: var(--r-full);
+  margin-bottom: var(--sp-4);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.pe-modal__banner-heading {
+  font-size: 38px;
+  font-weight: 900;
+  margin: 0 0 10px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.25);
+}
+.pe-modal__banner-sub {
+  font-size: 15px;
+  margin: 0;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.22);
+}
+
+/* Right form panel — replaces the old single-column layout */
+.pe-modal__right {
+  overflow-y: auto;
+  max-height: 92vh;
 }
 @keyframes pe-slide {
   from { transform: translateY(20px); opacity: 0; }
@@ -195,6 +256,15 @@
   margin: 0 auto var(--sp-6);
   max-width: 460px;
   line-height: 1.6;
+}
+
+/* Stack the two-column layout once the modal can no longer fit it */
+@media (max-width: 800px) {
+  .pe-modal__panel { grid-template-columns: 1fr; }
+  .pe-modal__banner { min-height: 180px; }
+  .pe-modal__banner-content { padding: var(--sp-5) var(--sp-5) var(--sp-6); }
+  .pe-modal__banner-heading { font-size: 26px; }
+  .pe-modal__banner-sub { font-size: 13.5px; }
 }
 
 @media (max-width: 600px) {

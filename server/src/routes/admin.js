@@ -12,6 +12,7 @@ import InstaPost from '../models/InstaPost.js'
 import Partner from '../models/Partner.js'
 import Blog from '../models/Blog.js'
 import HomeSection from '../models/HomeSection.js'
+import PopupConfig from '../models/PopupConfig.js'
 import { dbReady } from '../store.js'
 
 const router = Router()
@@ -303,6 +304,32 @@ router.get('/home-sections', requireAdmin, async (_req, res, next) => {
     const map = {}
     for (const it of list) map[it.key] = it
     res.json(map)
+  } catch (e) { next(e) }
+})
+
+// ---------- Popup form config ----------
+router.get('/popup-config', requireAdmin, async (_req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const cfg = await PopupConfig.findOneAndUpdate(
+      { singleton: 'main' },
+      { $setOnInsert: { singleton: 'main' } },
+      { new: true, upsert: true, setDefaultsOnInsert: true }
+    )
+    res.json(cfg)
+  } catch (e) { next(e) }
+})
+
+router.put('/popup-config', requireAdmin, async (req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const { _id, singleton, createdAt, updatedAt, ...patch } = req.body || {}
+    const updated = await PopupConfig.findOneAndUpdate(
+      { singleton: 'main' },
+      { $set: { ...patch, singleton: 'main' } },
+      { new: true, upsert: true, setDefaultsOnInsert: true }
+    )
+    res.json(updated)
   } catch (e) { next(e) }
 })
 

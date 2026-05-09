@@ -34,6 +34,9 @@ export default function AdminLayout() {
           <NavLink to="/admin/announcements" className={({isActive}) => `admin__nav-link ${isActive ? 'is-active' : ''}`}>
             Announcement Bar
           </NavLink>
+          <NavLink to="/admin/popup" className={({isActive}) => `admin__nav-link ${isActive ? 'is-active' : ''}`}>
+            Popup Form
+          </NavLink>
           <NavLink to="/admin/insta" className={({isActive}) => `admin__nav-link ${isActive ? 'is-active' : ''}`}>
             Instagram Reels
           </NavLink>

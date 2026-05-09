@@ -174,4 +174,13 @@ export const adminListHomeSections = () =>
 export const adminUpdateHomeSection = (key, data) =>
   api.put(`/admin/home-sections/${key}`, data).then(r => r.data)
 
+export const fetchPopupConfig = () =>
+  api.get('/popup-config').then(r => r.data)
+
+export const adminGetPopupConfig = () =>
+  api.get('/admin/popup-config').then(r => r.data)
+
+export const adminUpdatePopupConfig = (data) =>
+  api.put('/admin/popup-config', data).then(r => r.data)
+
 export default api
