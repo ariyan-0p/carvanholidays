@@ -2,7 +2,10 @@
    ANNOUNCEMENT BAR (top of page)
    =========================== */
 .annbar {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   width: 100%;
   height: 38px;
   font-size: 13.5px;
@@ -11,7 +14,7 @@
   display: flex;
   align-items: center;
   overflow: hidden;
-  z-index: 200;
+  z-index: 1100;
   isolation: isolate;
 }
 

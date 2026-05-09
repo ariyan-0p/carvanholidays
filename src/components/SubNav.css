@@ -5,7 +5,7 @@
   background: #ffffff;
   border-bottom: 1px solid var(--border);
   position: sticky;
-  top: 72px;
+  top: calc(72px + var(--annbar-h, 0px));
   z-index: 90;
 }
 

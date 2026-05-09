@@ -14,6 +14,14 @@ export default function AnnouncementBar() {
       .finally(() => setReady(true))
   }, [])
 
+  // Push navbar/subnav down by the bar's height while it's on screen.
+  useEffect(() => {
+    const visible = ready && items.length > 0
+    const h = visible ? (window.matchMedia('(max-width: 600px)').matches ? '34px' : '38px') : '0px'
+    document.documentElement.style.setProperty('--annbar-h', h)
+    return () => document.documentElement.style.setProperty('--annbar-h', '0px')
+  }, [ready, items.length])
+
   if (!ready || items.length === 0) return null
 
   // Marquee uses the first item's colors as the bar background.
