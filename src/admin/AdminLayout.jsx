@@ -31,6 +31,9 @@ export default function AdminLayout() {
           <NavLink to="/admin/announcements" className={({isActive}) => `admin__nav-link ${isActive ? 'is-active' : ''}`}>
             Announcement Bar
           </NavLink>
+          <NavLink to="/admin/insta" className={({isActive}) => `admin__nav-link ${isActive ? 'is-active' : ''}`}>
+            Instagram Reels
+          </NavLink>
         </nav>
         <div className="admin__user">
           <div className="admin__user-email">{auth?.email}</div>

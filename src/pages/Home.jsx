@@ -8,6 +8,7 @@ import RegionExplorer from '../components/RegionExplorer'
 import WhyUs from '../components/WhyUs'
 import Offers from '../components/Offers'
 import Testimonials from '../components/Testimonials'
+import InstaShowcase from '../components/InstaShowcase'
 
 export default function Home() {
   return (
@@ -22,6 +23,7 @@ export default function Home() {
       <WhyUs />
       <Offers />
       <Testimonials />
+      <InstaShowcase />
     </>
   )
 }

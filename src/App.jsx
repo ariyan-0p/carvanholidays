@@ -24,6 +24,8 @@ import AdminTestimonialsList from './admin/AdminTestimonialsList'
 import AdminTestimonialForm from './admin/AdminTestimonialForm'
 import AdminAnnouncementsList from './admin/AdminAnnouncementsList'
 import AdminAnnouncementForm from './admin/AdminAnnouncementForm'
+import AdminInstaList from './admin/AdminInstaList'
+import AdminInstaForm from './admin/AdminInstaForm'
 import './App.css'
 
 function App() {
@@ -60,6 +62,9 @@ function App() {
             <Route path="announcements" element={<AdminAnnouncementsList />} />
             <Route path="announcements/new" element={<AdminAnnouncementForm />} />
             <Route path="announcements/:id/edit" element={<AdminAnnouncementForm />} />
+            <Route path="insta" element={<AdminInstaList />} />
+            <Route path="insta/new" element={<AdminInstaForm />} />
+            <Route path="insta/:id/edit" element={<AdminInstaForm />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />

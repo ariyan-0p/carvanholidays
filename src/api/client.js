@@ -114,4 +114,19 @@ export const adminUpdateAnnouncement = (id, data) =>
 export const adminDeleteAnnouncement = (id) =>
   api.delete(`/admin/announcements/${id}`).then(r => r.data)
 
+export const fetchInsta = () =>
+  api.get('/insta').then(r => r.data)
+
+export const adminListInsta = () =>
+  api.get('/admin/insta').then(r => r.data)
+
+export const adminCreateInsta = (data) =>
+  api.post('/admin/insta', data).then(r => r.data)
+
+export const adminUpdateInsta = (id, data) =>
+  api.put(`/admin/insta/${id}`, data).then(r => r.data)
+
+export const adminDeleteInsta = (id) =>
+  api.delete(`/admin/insta/${id}`).then(r => r.data)
+
 export default api
