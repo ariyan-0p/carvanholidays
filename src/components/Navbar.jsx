@@ -6,6 +6,7 @@ import './Navbar.css'
 const navLinks = [
   { label: 'Home', to: '/' },
   { label: 'Destinations', to: '/cities' },
+  { label: 'Blog', to: '/blog' },
   { label: 'About', to: '/about' },
   { label: 'Contact', to: '/contact' },
 ]

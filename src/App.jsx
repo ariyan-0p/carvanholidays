@@ -13,6 +13,8 @@ import CityDetailPage from './pages/CityDetailPage'
 import About from './pages/About'
 import Contact from './pages/Contact'
 import Booking from './pages/Booking'
+import Blogs from './pages/Blogs'
+import BlogDetail from './pages/BlogDetail'
 import NotFound from './pages/NotFound'
 import { AdminAuthProvider, RequireAdmin } from './admin/AdminAuth'
 import AdminLogin from './admin/AdminLogin'
@@ -28,6 +30,8 @@ import AdminInstaList from './admin/AdminInstaList'
 import AdminInstaForm from './admin/AdminInstaForm'
 import AdminPartnersList from './admin/AdminPartnersList'
 import AdminPartnerForm from './admin/AdminPartnerForm'
+import AdminBlogsList from './admin/AdminBlogsList'
+import AdminBlogForm from './admin/AdminBlogForm'
 import './App.css'
 
 function App() {
@@ -50,6 +54,8 @@ function App() {
           <Route path="/book/:slug" element={<Booking />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/blog" element={<Blogs />} />
+          <Route path="/blog/:slug" element={<BlogDetail />} />
 
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<RequireAdmin><AdminLayout /></RequireAdmin>}>
@@ -70,6 +76,9 @@ function App() {
             <Route path="partners" element={<AdminPartnersList />} />
             <Route path="partners/new" element={<AdminPartnerForm />} />
             <Route path="partners/:id/edit" element={<AdminPartnerForm />} />
+            <Route path="blogs" element={<AdminBlogsList />} />
+            <Route path="blogs/new" element={<AdminBlogForm />} />
+            <Route path="blogs/:id/edit" element={<AdminBlogForm />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />

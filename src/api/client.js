@@ -144,4 +144,25 @@ export const adminUpdatePartner = (id, data) =>
 export const adminDeletePartner = (id) =>
   api.delete(`/admin/partners/${id}`).then(r => r.data)
 
+export const fetchBlogs = () =>
+  api.get('/blogs').then(r => r.data)
+
+export const fetchBlog = (slug) =>
+  api.get(`/blogs/${slug}`).then(r => r.data)
+
+export const adminListBlogs = () =>
+  api.get('/admin/blogs').then(r => r.data)
+
+export const adminGetBlog = (id) =>
+  api.get(`/admin/blogs/${id}`).then(r => r.data)
+
+export const adminCreateBlog = (data) =>
+  api.post('/admin/blogs', data).then(r => r.data)
+
+export const adminUpdateBlog = (id, data) =>
+  api.put(`/admin/blogs/${id}`, data).then(r => r.data)
+
+export const adminDeleteBlog = (id) =>
+  api.delete(`/admin/blogs/${id}`).then(r => r.data)
+
 export default api

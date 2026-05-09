@@ -10,6 +10,7 @@ import Testimonial from '../models/Testimonial.js'
 import Announcement from '../models/Announcement.js'
 import InstaPost from '../models/InstaPost.js'
 import Partner from '../models/Partner.js'
+import Blog from '../models/Blog.js'
 import { dbReady } from '../store.js'
 
 const router = Router()
@@ -230,6 +231,64 @@ router.delete('/partners/:id', requireAdmin, async (req, res, next) => {
   try {
     if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
     const r = await Partner.findByIdAndDelete(req.params.id)
+    if (!r) return res.status(404).json({ error: 'Not found' })
+    res.json({ ok: true })
+  } catch (e) { next(e) }
+})
+
+// ---------- Admin Blogs CRUD ----------
+router.get('/blogs', requireAdmin, async (_req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const list = await Blog.find().sort({ publishedAt: -1, createdAt: -1 }).select('-content').lean()
+    res.json(list)
+  } catch (e) { next(e) }
+})
+
+router.get('/blogs/:id', requireAdmin, async (req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const item = await Blog.findById(req.params.id).lean()
+    if (!item) return res.status(404).json({ error: 'Not found' })
+    res.json(item)
+  } catch (e) { next(e) }
+})
+
+router.post('/blogs', requireAdmin, async (req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const data = { ...req.body }
+    if (!data.title || !String(data.title).trim()) return res.status(400).json({ error: 'Title is required' })
+    if (!data.slug && data.title) data.slug = slugify(data.title)
+    if (data.slug) data.slug = slugify(data.slug)
+    if (Array.isArray(data.tags)) data.tags = data.tags.map(t => String(t).trim()).filter(Boolean)
+    const created = await Blog.create(data)
+    res.status(201).json(created)
+  } catch (e) {
+    if (e?.code === 11000) return res.status(409).json({ error: 'A blog with that slug already exists' })
+    next(e)
+  }
+})
+
+router.put('/blogs/:id', requireAdmin, async (req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const data = { ...req.body }
+    if (data.slug) data.slug = slugify(data.slug)
+    if (Array.isArray(data.tags)) data.tags = data.tags.map(t => String(t).trim()).filter(Boolean)
+    const updated = await Blog.findByIdAndUpdate(req.params.id, data, { new: true })
+    if (!updated) return res.status(404).json({ error: 'Not found' })
+    res.json(updated)
+  } catch (e) {
+    if (e?.code === 11000) return res.status(409).json({ error: 'A blog with that slug already exists' })
+    next(e)
+  }
+})
+
+router.delete('/blogs/:id', requireAdmin, async (req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const r = await Blog.findByIdAndDelete(req.params.id)
     if (!r) return res.status(404).json({ error: 'Not found' })
     res.json({ ok: true })
   } catch (e) { next(e) }

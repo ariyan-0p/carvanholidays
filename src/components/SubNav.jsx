@@ -56,6 +56,7 @@ const items = [
     icon: '💬', label: 'More about us', to: '/about', color: '#475569',
     children: [
       { label: 'About Carvaan', to: '/about' },
+      { label: 'Travel Blog', to: '/blog' },
       { label: 'Contact Us', to: '/contact' },
       { label: 'Browse Packages', to: '/packages' },
       { label: 'Destinations', to: '/cities' },
