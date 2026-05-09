@@ -11,6 +11,7 @@ import Announcement from '../models/Announcement.js'
 import InstaPost from '../models/InstaPost.js'
 import Partner from '../models/Partner.js'
 import Blog from '../models/Blog.js'
+import HomeSection from '../models/HomeSection.js'
 import { dbReady } from '../store.js'
 
 const router = Router()
@@ -291,6 +292,32 @@ router.delete('/blogs/:id', requireAdmin, async (req, res, next) => {
     const r = await Blog.findByIdAndDelete(req.params.id)
     if (!r) return res.status(404).json({ error: 'Not found' })
     res.json({ ok: true })
+  } catch (e) { next(e) }
+})
+
+// ---------- Admin Home Section overrides ----------
+router.get('/home-sections', requireAdmin, async (_req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const list = await HomeSection.find().lean()
+    const map = {}
+    for (const it of list) map[it.key] = it
+    res.json(map)
+  } catch (e) { next(e) }
+})
+
+// PUT /api/admin/home-sections/:key — upsert override for a known section key
+router.put('/home-sections/:key', requireAdmin, async (req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const key = String(req.params.key || '').trim()
+    if (!key) return res.status(400).json({ error: 'Section key required' })
+    const updated = await HomeSection.findOneAndUpdate(
+      { key },
+      { $set: { ...req.body, key } },
+      { new: true, upsert: true, setDefaultsOnInsert: true }
+    )
+    res.json(updated)
   } catch (e) { next(e) }
 })
 

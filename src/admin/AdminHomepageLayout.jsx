@@ -1,22 +1,78 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { adminListPackages, adminUpdatePackage } from '../api/client'
+import {
+  adminListPackages,
+  adminUpdatePackage,
+  adminListHomeSections,
+  adminUpdateHomeSection,
+} from '../api/client'
 import { HOME_SECTIONS } from '../config/homeSections'
 
 export default function AdminHomepageLayout() {
   const [items, setItems] = useState([])
+  const [overrides, setOverrides] = useState({})
   const [loading, setLoading] = useState(true)
   const [err, setErr] = useState(null)
   const [busyId, setBusyId] = useState(null)
+  const [editingKey, setEditingKey] = useState(null)
+  const [editDraft, setEditDraft] = useState({ tag: '', title: '', subtitle: '', visible: true })
 
   const load = () => {
     setLoading(true); setErr(null)
-    adminListPackages()
-      .then(setItems)
+    Promise.all([adminListPackages(), adminListHomeSections().catch(() => ({}))])
+      .then(([pkgs, ovr]) => {
+        setItems(pkgs)
+        setOverrides(ovr || {})
+      })
       .catch(e => setErr(e?.response?.data?.error || e.message))
       .finally(() => setLoading(false))
   }
   useEffect(load, [])
+
+  // Merge default + admin override for display
+  const sectionFor = (s) => {
+    const ovr = overrides[s.key] || {}
+    const pick = (k) => (ovr[k] != null && ovr[k] !== '' ? ovr[k] : s[k])
+    return {
+      ...s,
+      tag: pick('tag'),
+      title: pick('title'),
+      subtitle: pick('subtitle'),
+      visible: ovr.visible !== false,
+      isOverridden: !!overrides[s.key],
+    }
+  }
+
+  const startEdit = (s) => {
+    setEditingKey(s.key)
+    const ovr = overrides[s.key] || {}
+    setEditDraft({
+      tag: ovr.tag ?? s.tag ?? '',
+      title: ovr.title ?? s.title ?? '',
+      subtitle: ovr.subtitle ?? s.subtitle ?? '',
+      visible: ovr.visible !== false,
+    })
+  }
+
+  const cancelEdit = () => setEditingKey(null)
+
+  const saveEdit = async (key) => {
+    setBusyId('section:' + key)
+    try {
+      await adminUpdateHomeSection(key, editDraft)
+      setEditingKey(null)
+      load()
+    } finally { setBusyId(null) }
+  }
+
+  const resetSection = async (key) => {
+    setBusyId('section:' + key)
+    try {
+      await adminUpdateHomeSection(key, { tag: '', title: '', subtitle: '', visible: true })
+      setEditingKey(null)
+      load()
+    } finally { setBusyId(null) }
+  }
 
   const grouped = useMemo(() => {
     const m = Object.fromEntries(HOME_SECTIONS.map(s => [s.key, []]))
@@ -69,13 +125,88 @@ export default function AdminHomepageLayout() {
 
       {!loading && !err && (
         <div className="admin__home-layout">
-          {HOME_SECTIONS.map((s) => (
-            <div key={s.key} className="admin__home-col">
+          {HOME_SECTIONS.map((s) => {
+            const live = sectionFor(s)
+            const isEditing = editingKey === s.key
+            return (
+            <div key={s.key} className={`admin__home-col ${live.visible ? '' : 'is-hidden'}`}>
               <div className="admin__home-col-head">
-                <span className="admin__home-col-tag">{s.tag || s.label}</span>
-                <h3>{s.label}</h3>
-                <small>{s.subtitle}</small>
-                <span className="admin__home-col-count">{grouped[s.key].length} package{grouped[s.key].length === 1 ? '' : 's'}</span>
+                {!isEditing ? (
+                  <>
+                    <span className="admin__home-col-tag">{live.tag || s.label}</span>
+                    <h3>{live.title || s.label}</h3>
+                    <small>{live.subtitle}</small>
+                    <div className="admin__home-col-actions">
+                      <button type="button" className="admin__btn admin__btn--sm" onClick={() => startEdit(s)}>
+                        Edit heading
+                      </button>
+                      {live.isOverridden && (
+                        <button
+                          type="button"
+                          className="admin__btn admin__btn--sm"
+                          onClick={() => resetSection(s.key)}
+                          disabled={busyId === 'section:' + s.key}
+                          title="Restore default heading"
+                        >
+                          Reset
+                        </button>
+                      )}
+                    </div>
+                    <span className="admin__home-col-count">
+                      {grouped[s.key].length} package{grouped[s.key].length === 1 ? '' : 's'}
+                      {!live.visible && ' · hidden'}
+                    </span>
+                  </>
+                ) : (
+                  <div className="admin__home-edit">
+                    <label>
+                      <span>Tag (small badge)</span>
+                      <input
+                        type="text"
+                        value={editDraft.tag}
+                        onChange={(e) => setEditDraft(d => ({ ...d, tag: e.target.value }))}
+                        placeholder={s.tag}
+                      />
+                    </label>
+                    <label>
+                      <span>Title</span>
+                      <input
+                        type="text"
+                        value={editDraft.title}
+                        onChange={(e) => setEditDraft(d => ({ ...d, title: e.target.value }))}
+                        placeholder={s.title}
+                      />
+                    </label>
+                    <label>
+                      <span>Subtitle</span>
+                      <textarea
+                        rows="2"
+                        value={editDraft.subtitle}
+                        onChange={(e) => setEditDraft(d => ({ ...d, subtitle: e.target.value }))}
+                        placeholder={s.subtitle}
+                      />
+                    </label>
+                    <label className="admin__home-edit-toggle">
+                      <input
+                        type="checkbox"
+                        checked={editDraft.visible}
+                        onChange={(e) => setEditDraft(d => ({ ...d, visible: e.target.checked }))}
+                      />
+                      <span>Show this shelf on the homepage</span>
+                    </label>
+                    <div className="admin__home-edit-actions">
+                      <button type="button" className="admin__btn admin__btn--sm" onClick={cancelEdit}>Cancel</button>
+                      <button
+                        type="button"
+                        className="admin__btn admin__btn--primary admin__btn--sm"
+                        onClick={() => saveEdit(s.key)}
+                        disabled={busyId === 'section:' + s.key}
+                      >
+                        {busyId === 'section:' + s.key ? 'Saving…' : 'Save heading'}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="admin__home-col-body">
@@ -117,7 +248,7 @@ export default function AdminHomepageLayout() {
                 ))}
               </div>
             </div>
-          ))}
+          )})}
 
           <div className="admin__home-all">
             <h3>All packages — toggle any shelf</h3>

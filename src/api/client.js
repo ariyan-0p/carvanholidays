@@ -165,4 +165,13 @@ export const adminUpdateBlog = (id, data) =>
 export const adminDeleteBlog = (id) =>
   api.delete(`/admin/blogs/${id}`).then(r => r.data)
 
+export const fetchHomeSections = () =>
+  api.get('/home-sections').then(r => r.data)
+
+export const adminListHomeSections = () =>
+  api.get('/admin/home-sections').then(r => r.data)
+
+export const adminUpdateHomeSection = (key, data) =>
+  api.put(`/admin/home-sections/${key}`, data).then(r => r.data)
+
 export default api

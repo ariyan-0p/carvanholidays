@@ -1049,3 +1049,16 @@
   gap: 8px;
   margin-top: 10px;
 }
+
+/* ----- Edit-heading inline form on homepage layout columns ----- */
+.admin__home-col.is-hidden .admin__home-col-head { opacity: .55; }
+.admin__home-col-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.admin__home-edit { display: flex; flex-direction: column; gap: 8px; }
+.admin__home-edit label { display: flex; flex-direction: column; gap: 3px; font-size: 11.5px; font-weight: 600; color: #6b7d83; }
+.admin__home-edit input,
+.admin__home-edit textarea { padding: 7px 9px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; font-family: inherit; }
+.admin__home-edit input:focus,
+.admin__home-edit textarea:focus { outline: none; border-color: #08434A; box-shadow: 0 0 0 3px rgba(8,67,74,0.08); }
+.admin__home-edit-toggle { flex-direction: row !important; align-items: center; gap: 8px !important; font-size: 12.5px; color: #08434A; }
+.admin__home-edit-toggle input { width: auto; }
+.admin__home-edit-actions { display: flex; gap: 6px; justify-content: flex-end; margin-top: 4px; }
