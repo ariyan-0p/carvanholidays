@@ -51,6 +51,18 @@
   gap: var(--sp-3);
   padding: var(--sp-6);
   flex: 1;
+  position: relative;
+}
+
+/* Message-only cards: center the quote vertically so short quotes don't float at the top */
+.review-card:not(:has(.review-card__media)) .review-card__body {
+  justify-content: center;
+  text-align: center;
+  padding: var(--sp-8) var(--sp-6);
+}
+
+.review-card:not(:has(.review-card__media)) .review-card__stars {
+  margin: 0 auto;
 }
 
 .review-card__stars {
@@ -67,6 +79,14 @@
   margin: 0;
   overflow-wrap: anywhere;
   word-break: break-word;
+}
+
+/* Slightly bigger quote on message-only cards since they have no media */
+.review-card:not(:has(.review-card__media)) .review-card__text {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--teal);
+  font-weight: 500;
 }
 
 /* Media at top of card (video / photo variants) */
