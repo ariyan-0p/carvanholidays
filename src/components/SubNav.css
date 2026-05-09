@@ -13,7 +13,7 @@
 .subnav__inner {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 0 var(--sp-8);
+  padding: 0 var(--sp-4);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
@@ -23,12 +23,14 @@
 .subnav__list {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: var(--sp-2);
-  margin: 0;
-  padding: 10px 0;
+  justify-content: flex-start;
+  gap: 4px;
+  margin: 0 auto;
+  padding: 8px 0;
   list-style: none;
   white-space: nowrap;
+  width: max-content;
+  max-width: 100%;
 }
 
 .subnav__li {
@@ -38,11 +40,11 @@
 .subnav__item {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 9px 16px;
+  gap: 6px;
+  padding: 7px 12px;
   border-radius: var(--r-full);
   color: var(--teal);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
@@ -59,7 +61,7 @@
 }
 .subnav__item--toggle { line-height: 1; }
 
-.subnav__icon { font-size: 16px; line-height: 1; display: inline-flex; }
+.subnav__icon { font-size: 14px; line-height: 1; display: inline-flex; }
 .subnav__label { letter-spacing: 0.1px; }
 .subnav__chev {
   margin-left: 2px;
