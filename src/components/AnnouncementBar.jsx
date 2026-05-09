@@ -28,7 +28,11 @@ export default function AnnouncementBar() {
   const head = items[0]
   const bg = head.bgColor || '#12B84A'
   const fg = head.textColor || '#ffffff'
-  const animation = head.animation || 'marquee'
+  // Marquee only kicks in when there are multiple announcements; a single
+  // announcement is always shown centered so it reads as one calm message.
+  const animation = items.length > 1 && head.animation === 'marquee'
+    ? 'marquee'
+    : (head.animation === 'pulse' ? 'pulse' : 'static')
 
   // Build a doubled track so the marquee loops seamlessly.
   const renderItem = (a, key) => {
