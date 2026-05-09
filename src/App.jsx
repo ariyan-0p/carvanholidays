@@ -1,5 +1,6 @@
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar'
+import SubNav from './components/SubNav'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollToTop'
 import PopupEnquiry from './components/PopupEnquiry'
@@ -31,6 +32,7 @@ function App() {
       <div className="app">
         <ScrollToTop />
         {!isAdmin && <Navbar />}
+        {!isAdmin && <SubNav />}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/packages" element={<PackagesPage />} />
