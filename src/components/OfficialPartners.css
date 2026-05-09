@@ -1,0 +1,103 @@
+/* ===========================
+   OFFICIAL PARTNERS — logo strip
+   =========================== */
+.partners {
+  padding: var(--sp-12) 0;
+  background: var(--off-white, #f8fafb);
+  border-top: 1px solid var(--light-bg);
+  border-bottom: 1px solid var(--light-bg);
+  overflow: hidden;
+}
+
+.partners__container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.partners__heading {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-8);
+  padding: 0 var(--sp-8);
+}
+.partners__line { flex: 1; height: 1px; background: var(--border); }
+.partners__label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* Static row (few logos) */
+.partners__row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--sp-10);
+  padding: 0 var(--sp-8);
+}
+
+/* Marquee (many logos) */
+.partners__marquee {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+}
+.partners__track {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-12);
+  width: max-content;
+  animation: partners-scroll 50s linear infinite;
+  padding: 0 var(--sp-8);
+}
+.partners__marquee:hover .partners__track { animation-play-state: paused; }
+
+@keyframes partners-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* Logo */
+.partners__link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+.partners__logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+  flex-shrink: 0;
+  filter: grayscale(1);
+  opacity: 0.72;
+  transition: filter 0.25s ease, opacity 0.25s ease, transform 0.25s ease;
+}
+.partners__logo img {
+  max-height: 100%;
+  max-width: 180px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+.partners__logo:hover,
+.partners__link:hover .partners__logo {
+  filter: grayscale(0);
+  opacity: 1;
+  transform: scale(1.04);
+}
+
+@media (max-width: 720px) {
+  .partners { padding: var(--sp-8) 0; }
+  .partners__row { gap: var(--sp-6); }
+  .partners__logo { height: 48px; }
+  .partners__logo img { max-width: 140px; }
+}

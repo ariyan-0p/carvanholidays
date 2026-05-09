@@ -905,3 +905,7 @@
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 .admin__ann-preset:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(0,0,0,0.15); }
+
+.admin__thumb--contain { object-fit: contain; background: #f8fafb; padding: 4px; }
+.admin__media-preview-el--logo { max-width: 220px; max-height: 110px; object-fit: contain; background: #f8fafb; padding: 8px; border: 1px solid #e2e8f0; }
+.admin__media-preview--partner { align-items: center; }

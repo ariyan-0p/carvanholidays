@@ -129,4 +129,19 @@ export const adminUpdateInsta = (id, data) =>
 export const adminDeleteInsta = (id) =>
   api.delete(`/admin/insta/${id}`).then(r => r.data)
 
+export const fetchPartners = () =>
+  api.get('/partners').then(r => r.data)
+
+export const adminListPartners = () =>
+  api.get('/admin/partners').then(r => r.data)
+
+export const adminCreatePartner = (data) =>
+  api.post('/admin/partners', data).then(r => r.data)
+
+export const adminUpdatePartner = (id, data) =>
+  api.put(`/admin/partners/${id}`, data).then(r => r.data)
+
+export const adminDeletePartner = (id) =>
+  api.delete(`/admin/partners/${id}`).then(r => r.data)
+
 export default api

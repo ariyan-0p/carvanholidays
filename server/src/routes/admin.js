@@ -9,6 +9,7 @@ import Enquiry from '../models/Enquiry.js'
 import Testimonial from '../models/Testimonial.js'
 import Announcement from '../models/Announcement.js'
 import InstaPost from '../models/InstaPost.js'
+import Partner from '../models/Partner.js'
 import { dbReady } from '../store.js'
 
 const router = Router()
@@ -192,6 +193,43 @@ router.delete('/insta/:id', requireAdmin, async (req, res, next) => {
   try {
     if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
     const r = await InstaPost.findByIdAndDelete(req.params.id)
+    if (!r) return res.status(404).json({ error: 'Not found' })
+    res.json({ ok: true })
+  } catch (e) { next(e) }
+})
+
+// ---------- Admin Official Partners CRUD ----------
+router.get('/partners', requireAdmin, async (_req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const list = await Partner.find().sort({ order: 1, createdAt: -1 }).lean()
+    res.json(list)
+  } catch (e) { next(e) }
+})
+
+router.post('/partners', requireAdmin, async (req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    if (!req.body?.name || !String(req.body.name).trim()) return res.status(400).json({ error: 'Name is required' })
+    if (!req.body?.logoUrl) return res.status(400).json({ error: 'Logo is required' })
+    const created = await Partner.create(req.body)
+    res.status(201).json(created)
+  } catch (e) { next(e) }
+})
+
+router.put('/partners/:id', requireAdmin, async (req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const updated = await Partner.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    if (!updated) return res.status(404).json({ error: 'Not found' })
+    res.json(updated)
+  } catch (e) { next(e) }
+})
+
+router.delete('/partners/:id', requireAdmin, async (req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const r = await Partner.findByIdAndDelete(req.params.id)
     if (!r) return res.status(404).json({ error: 'Not found' })
     res.json({ ok: true })
   } catch (e) { next(e) }

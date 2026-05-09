@@ -9,6 +9,7 @@ import WhyUs from '../components/WhyUs'
 import Offers from '../components/Offers'
 import Testimonials from '../components/Testimonials'
 import InstaShowcase from '../components/InstaShowcase'
+import OfficialPartners from '../components/OfficialPartners'
 
 export default function Home() {
   return (
@@ -24,6 +25,7 @@ export default function Home() {
       <Offers />
       <Testimonials />
       <InstaShowcase />
+      <OfficialPartners />
     </>
   )
 }

@@ -13,6 +13,7 @@ import enquiriesRouter from './routes/enquiries.js'
 import testimonialsRouter from './routes/testimonials.js'
 import announcementsRouter from './routes/announcements.js'
 import instaRouter from './routes/insta.js'
+import partnersRouter from './routes/partners.js'
 import { seedIfEmpty } from './seed.js'
 
 const app = express()
@@ -38,6 +39,7 @@ app.use('/api/enquiries', enquiriesRouter)
 app.use('/api/testimonials', testimonialsRouter)
 app.use('/api/announcements', announcementsRouter)
 app.use('/api/insta', instaRouter)
+app.use('/api/partners', partnersRouter)
 app.use('/api/admin', adminRouter)
 
 app.use((err, _req, res, _next) => {
