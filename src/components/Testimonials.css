@@ -74,6 +74,36 @@
   flex-shrink: 0;
 }
 
+/* Video & photo variants */
+.review-card--video,
+.review-card--photo { padding: 0; overflow: hidden; }
+
+.review-card--video .review-card__text,
+.review-card--photo .review-card__text { padding: 0 var(--sp-6); }
+
+.review-card--video .review-card__reviewer,
+.review-card--photo .review-card__reviewer { padding: 0 var(--sp-6) var(--sp-5); border-top: none; }
+
+.review-card__video {
+  width: 100%;
+  aspect-ratio: 9 / 12;
+  object-fit: cover;
+  background: #000;
+  display: block;
+}
+
+.review-card__photo {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+}
+
+.review-card__reviewer--simple {
+  padding-top: var(--sp-3);
+  margin-top: var(--sp-3);
+}
+
 .review-card__name {
   display: block;
   font-size: 14px;

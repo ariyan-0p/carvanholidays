@@ -6,6 +6,7 @@ import fs from 'fs'
 import { signAdminToken, requireAdmin } from '../middleware/auth.js'
 import Package from '../models/Package.js'
 import Enquiry from '../models/Enquiry.js'
+import Testimonial from '../models/Testimonial.js'
 import { dbReady } from '../store.js'
 
 const router = Router()
@@ -53,6 +54,71 @@ const upload = multer({
 router.post('/upload', requireAdmin, upload.array('files', 10), (req, res) => {
   const urls = (req.files || []).map(f => `/uploads/packages/${f.filename}`)
   res.json({ urls })
+})
+
+// ---------- Media uploads (images + videos, e.g. testimonials) ----------
+const mediaDir = path.resolve(process.cwd(), 'uploads', 'testimonials')
+fs.mkdirSync(mediaDir, { recursive: true })
+
+const mediaStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, mediaDir),
+  filename: (_req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase()
+    const safe = path.basename(file.originalname, ext).replace(/[^a-z0-9-_]/gi, '-').slice(0, 40)
+    cb(null, `${Date.now()}-${safe}${ext}`)
+  },
+})
+const mediaUpload = multer({
+  storage: mediaStorage,
+  limits: { fileSize: 80 * 1024 * 1024 }, // 80MB to comfortably allow short clips
+  fileFilter: (_req, file, cb) => {
+    if (!/^(image|video)\//.test(file.mimetype)) return cb(new Error('Only image or video files allowed'))
+    cb(null, true)
+  },
+})
+
+// POST /api/admin/media  (form field: "files", up to 5 images or videos)
+router.post('/media', requireAdmin, mediaUpload.array('files', 5), (req, res) => {
+  const urls = (req.files || []).map(f => `/uploads/testimonials/${f.filename}`)
+  res.json({ urls })
+})
+
+// ---------- Admin Testimonials CRUD ----------
+router.get('/testimonials', requireAdmin, async (_req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const list = await Testimonial.find().sort({ order: 1, createdAt: -1 }).lean()
+    res.json(list)
+  } catch (e) { next(e) }
+})
+
+router.post('/testimonials', requireAdmin, async (req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const { kind, name } = req.body || {}
+    if (!['video', 'photo', 'message'].includes(kind)) return res.status(400).json({ error: 'Invalid kind' })
+    if (!name || !String(name).trim()) return res.status(400).json({ error: 'Name is required' })
+    const created = await Testimonial.create(req.body)
+    res.status(201).json(created)
+  } catch (e) { next(e) }
+})
+
+router.put('/testimonials/:id', requireAdmin, async (req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const updated = await Testimonial.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    if (!updated) return res.status(404).json({ error: 'Not found' })
+    res.json(updated)
+  } catch (e) { next(e) }
+})
+
+router.delete('/testimonials/:id', requireAdmin, async (req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const r = await Testimonial.findByIdAndDelete(req.params.id)
+    if (!r) return res.status(404).json({ error: 'Not found' })
+    res.json({ ok: true })
+  } catch (e) { next(e) }
 })
 
 // ---------- Admin Package CRUD ----------

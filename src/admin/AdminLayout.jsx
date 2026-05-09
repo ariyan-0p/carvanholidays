@@ -25,6 +25,9 @@ export default function AdminLayout() {
           <NavLink to="/admin/enquiries" className={({isActive}) => `admin__nav-link ${isActive ? 'is-active' : ''}`}>
             Enquiries
           </NavLink>
+          <NavLink to="/admin/testimonials" className={({isActive}) => `admin__nav-link ${isActive ? 'is-active' : ''}`}>
+            Testimonials
+          </NavLink>
         </nav>
         <div className="admin__user">
           <div className="admin__user-email">{auth?.email}</div>

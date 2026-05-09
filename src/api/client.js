@@ -76,4 +76,27 @@ export const adminUploadImages = (files) => {
   }).then(r => r.data)
 }
 
+export const adminUploadMedia = (files) => {
+  const fd = new FormData()
+  for (const f of files) fd.append('files', f)
+  return api.post('/admin/media', fd, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }).then(r => r.data)
+}
+
+export const fetchTestimonials = () =>
+  api.get('/testimonials').then(r => r.data)
+
+export const adminListTestimonials = () =>
+  api.get('/admin/testimonials').then(r => r.data)
+
+export const adminCreateTestimonial = (data) =>
+  api.post('/admin/testimonials', data).then(r => r.data)
+
+export const adminUpdateTestimonial = (id, data) =>
+  api.put(`/admin/testimonials/${id}`, data).then(r => r.data)
+
+export const adminDeleteTestimonial = (id) =>
+  api.delete(`/admin/testimonials/${id}`).then(r => r.data)
+
 export default api

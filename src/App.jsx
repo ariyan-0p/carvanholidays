@@ -18,6 +18,8 @@ import AdminLayout from './admin/AdminLayout'
 import AdminPackagesList from './admin/AdminPackagesList'
 import AdminPackageForm from './admin/AdminPackageForm'
 import AdminEnquiriesList from './admin/AdminEnquiriesList'
+import AdminTestimonialsList from './admin/AdminTestimonialsList'
+import AdminTestimonialForm from './admin/AdminTestimonialForm'
 import './App.css'
 
 function App() {
@@ -46,6 +48,9 @@ function App() {
             <Route path="packages/new" element={<AdminPackageForm />} />
             <Route path="packages/:slug/edit" element={<AdminPackageForm />} />
             <Route path="enquiries" element={<AdminEnquiriesList />} />
+            <Route path="testimonials" element={<AdminTestimonialsList />} />
+            <Route path="testimonials/new" element={<AdminTestimonialForm />} />
+            <Route path="testimonials/:id/edit" element={<AdminTestimonialForm />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />
