@@ -71,65 +71,36 @@ export default function Testimonials() {
 
 function TestimonialCard({ t }) {
   const stars = '★'.repeat(Math.max(1, Math.min(5, t.rating || 5)))
-
-  if (t.kind === 'video' && t.mediaUrl) {
-    return (
-      <div className="review-card review-card--video">
-        <video
-          className="review-card__video"
-          src={t.mediaUrl}
-          poster={t.posterUrl || undefined}
-          controls
-          preload="metadata"
-          playsInline
-        />
-        {t.quote && <p className="review-card__text">"{t.quote}"</p>}
-        <div className="review-card__reviewer review-card__reviewer--simple">
-          <div>
-            <span className="review-card__name">{t.name}</span>
-            {(t.location || t.trip) && (
-              <span className="review-card__meta">
-                {[t.location, t.trip].filter(Boolean).join(' • ')}
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  if (t.kind === 'photo' && t.mediaUrl) {
-    return (
-      <div className="review-card review-card--photo">
-        <img className="review-card__photo" src={t.mediaUrl} alt={t.name} loading="lazy" />
-        {t.quote && <p className="review-card__text">"{t.quote}"</p>}
-        <div className="review-card__reviewer review-card__reviewer--simple">
-          <div>
-            <span className="review-card__name">{t.name}</span>
-            {(t.location || t.trip) && (
-              <span className="review-card__meta">
-                {[t.location, t.trip].filter(Boolean).join(' • ')}
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-    )
-  }
+  const meta = [t.location, t.trip].filter(Boolean).join(' • ')
+  const isVideo = t.kind === 'video' && t.mediaUrl
+  const isPhoto = t.kind === 'photo' && t.mediaUrl
+  const isMessage = !isVideo && !isPhoto
 
   return (
     <div className="review-card">
-      <div className="review-card__stars">{stars}</div>
-      <p className="review-card__text">"{t.quote}"</p>
+      {isVideo && (
+        <div className="review-card__media">
+          <video src={t.mediaUrl} poster={t.posterUrl || undefined} controls preload="metadata" playsInline />
+        </div>
+      )}
+      {isPhoto && (
+        <div className="review-card__media">
+          <img src={t.mediaUrl} alt={t.name} loading="lazy" />
+        </div>
+      )}
+
+      <div className="review-card__body">
+        <div className="review-card__stars">{stars}</div>
+        {t.quote && <p className="review-card__text">"{t.quote}"</p>}
+      </div>
+
       <div className="review-card__reviewer">
-        {t.mediaUrl && <img src={t.mediaUrl} alt={t.name} className="review-card__avatar" />}
+        {isMessage && t.mediaUrl && (
+          <img src={t.mediaUrl} alt={t.name} className="review-card__avatar" />
+        )}
         <div>
           <span className="review-card__name">{t.name}</span>
-          {(t.location || t.trip) && (
-            <span className="review-card__meta">
-              {[t.location, t.trip].filter(Boolean).join(' • ')}
-            </span>
-          )}
+          {meta && <span className="review-card__meta">{meta}</span>}
         </div>
       </div>
     </div>
