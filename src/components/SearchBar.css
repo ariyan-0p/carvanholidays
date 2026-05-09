@@ -44,8 +44,14 @@
 }
 
 .search__tab-icon {
-  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  color: currentColor;
+  opacity: 0.85;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
+.search__tab:hover .search__tab-icon,
+.search__tab--active .search__tab-icon { opacity: 1; transform: scale(1.05); }
 
 .search__tab:hover {
   color: var(--teal);

@@ -2,9 +2,25 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import './SubNav.css'
 
+const I = (paths) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    {paths}
+  </svg>
+)
+
+const ICONS = {
+  group: I(<><circle cx="9" cy="8" r="3.2" /><path d="M2 21c.5-3 3.2-5 7-5s6.5 2 7 5" /><circle cx="17" cy="9.5" r="2.5" /><path d="M22 19c-.3-2-1.6-3.4-3.5-4" /></>),
+  fire: I(<><path d="M12 3c1.5 3 4 4.5 4 7.5a4 4 0 0 1-8 0c0-1 .4-1.8 1-2.5" /><path d="M9.5 14a3.5 3.5 0 1 0 5 0c-.7-.7-1.2-1.6-1.5-2.5-1 1-2.5 1-3.5 2.5z" /></>),
+  sparkles: I(<><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6L12 3z" /><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15z" /></>),
+  rocket: I(<><path d="M14 4c4 0 6 2 6 6-2 0-4 1-5 2l-7 7-3-3 7-7c1-1 2-3 2-5z" /><path d="M9 13l-2 2c-1 1-2 1-3 1l1-3c0-1 1-2 2-2l2 2z" /><circle cx="15" cy="9" r="1.4" /></>),
+  beach: I(<><path d="M2 18h20" /><circle cx="7" cy="6" r="2" /><path d="M7 8v3" /><path d="M7 8c2.5-.5 5 0 7 2" /><path d="M7 8c-1.2 1-2 2.4-2.5 4" /><path d="M14 16c0-3 2-5 5-5" /></>),
+  target: I(<><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1.5" /></>),
+  info: I(<><circle cx="12" cy="12" r="9" /><path d="M12 8v.01M11 12h1v5h1" /></>),
+}
+
 const items = [
   {
-    icon: '🌴', label: 'Group Tours', to: '/packages', color: '#2563eb',
+    icon: ICONS.group, label: 'Group Tours', to: '/packages', color: '#2563eb',
     children: [
       { label: 'India Tours', to: '/packages?q=India' },
       { label: 'Europe Tours', to: '/packages?q=Europe' },
@@ -15,7 +31,7 @@ const items = [
     ],
   },
   {
-    icon: '🔥', label: 'Holiday Deals', to: '/packages', color: '#f59e0b',
+    icon: ICONS.fire, label: 'Holiday Deals', to: '/packages', color: '#f59e0b',
     children: [
       { label: 'Beach Deals', to: '/packages?category=beach' },
       { label: 'Honeymoon Deals', to: '/packages?category=honeymoon' },
@@ -25,7 +41,7 @@ const items = [
     ],
   },
   {
-    icon: '✨', label: 'Travel Styles', to: '/packages', color: '#8b5cf6',
+    icon: ICONS.sparkles, label: 'Travel Styles', to: '/packages', color: '#8b5cf6',
     children: [
       { label: 'Honeymoon', to: '/packages?category=honeymoon' },
       { label: 'Family', to: '/packages?category=family' },
@@ -36,10 +52,10 @@ const items = [
     ],
   },
   {
-    icon: '🚀', label: 'Upcoming Tours', to: '/packages', color: '#10b981',
+    icon: ICONS.rocket, label: 'Upcoming Tours', to: '/packages', color: '#10b981',
   },
   {
-    icon: '🏝️', label: 'Weekend Getaways', to: '/cities', color: '#ec4899',
+    icon: ICONS.beach, label: 'Weekend Getaways', to: '/cities', color: '#ec4899',
     children: [
       { label: 'Jaipur', to: '/cities/jaipur' },
       { label: 'Shimla', to: '/cities/shimla' },
@@ -50,10 +66,10 @@ const items = [
     ],
   },
   {
-    icon: '🎯', label: 'Customised Trips', to: '/contact', color: '#14b8a6',
+    icon: ICONS.target, label: 'Customised Trips', to: '/contact', color: '#14b8a6',
   },
   {
-    icon: '💬', label: 'More about us', to: '/about', color: '#475569',
+    icon: ICONS.info, label: 'More about us', to: '/about', color: '#475569',
     children: [
       { label: 'About Carvaan', to: '/about' },
       { label: 'Travel Blog', to: '/blog' },

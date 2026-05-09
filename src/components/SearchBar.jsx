@@ -298,11 +298,55 @@ export default function SearchBar() {
 }
 
 function tabIcon(tab) {
+  const props = { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true }
   switch (tab) {
-    case 'Holidays': return '🏖️'
-    case 'Flights':  return '✈️'
-    case 'Hotels':   return '🏨'
-    case 'Visa':     return '📋'
-    default:         return '🌍'
+    case 'Holidays':
+      // palm + sun
+      return (
+        <svg {...props}>
+          <circle cx="6" cy="6" r="2.2" />
+          <path d="M6 8.2v13.3" />
+          <path d="M6 8.2c2 0 5 1.2 7.5 4.2" />
+          <path d="M6 8.2c-1.6 1.4-2.5 3.5-3 6" />
+          <path d="M6 8.2c2.2-1 5-.8 7.6.8" />
+          <path d="M21 21.5c-.5-3.4-2.6-6-5.4-6.8" />
+        </svg>
+      )
+    case 'Flights':
+      // paper-plane / takeoff
+      return (
+        <svg {...props}>
+          <path d="M2 16l20-7-7 12-2.5-5.5L2 16z" />
+          <path d="M12.5 15.5L15 22" />
+        </svg>
+      )
+    case 'Hotels':
+      // bed
+      return (
+        <svg {...props}>
+          <path d="M3 18V6" />
+          <path d="M21 18v-6a3 3 0 0 0-3-3H8a3 3 0 0 0-3 3v6" />
+          <path d="M3 14h18" />
+          <path d="M3 18h18" />
+          <circle cx="9" cy="11" r="1.6" />
+        </svg>
+      )
+    case 'Visa':
+      // passport book
+      return (
+        <svg {...props}>
+          <rect x="4.5" y="2.5" width="15" height="19" rx="2.5" />
+          <circle cx="12" cy="9" r="3" />
+          <path d="M9.5 14h5" />
+          <path d="M8.5 17h7" />
+        </svg>
+      )
+    default:
+      return (
+        <svg {...props}>
+          <circle cx="12" cy="12" r="9" />
+          <path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" />
+        </svg>
+      )
   }
 }

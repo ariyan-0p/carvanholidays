@@ -53,7 +53,15 @@
   border-bottom-color: var(--teal);
 }
 
-.subnav__icon { display: none; }
+.subnav__icon {
+  display: inline-flex;
+  align-items: center;
+  color: currentColor;
+  opacity: 0.85;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+.subnav__item:hover .subnav__icon,
+.subnav__li.is-open .subnav__icon { opacity: 1; transform: scale(1.05); }
 
 .subnav__label { white-space: nowrap; }
 
