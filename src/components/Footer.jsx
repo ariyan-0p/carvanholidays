@@ -99,18 +99,18 @@ export default function Footer() {
               We handle the stress, you enjoy the rest. Let us craft your perfect holiday experience.
             </p>
             <div className="footer__contact">
-              <a href="tel:+919131900000" className="footer__contact-item">
+              <a href="tel:+919131978160" className="footer__contact-item">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                   <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81 19.79 19.79 0 01.01 2.19 2 2 0 012 .01h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                 </svg>
-                +91 91319 00000
+                +91 91319 78160
               </a>
-              <a href="mailto:hello@carvaanholidays.com" className="footer__contact-item">
+              <a href="mailto:info@carvaanholidays.com" className="footer__contact-item">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" strokeWidth="2"/>
                   <polyline points="22,6 12,13 2,6" stroke="currentColor" strokeWidth="2"/>
                 </svg>
-                hello@carvaanholidays.com
+                info@carvaanholidays.com
               </a>
             </div>
             <div className="footer__socials">

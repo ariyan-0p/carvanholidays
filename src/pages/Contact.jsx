@@ -44,11 +44,11 @@ export default function Contact() {
             </div>
             <div>
               <h3>Phone</h3>
-              <p>+91 99999 99999<br />Mon – Sat, 10 AM – 7 PM</p>
+              <p>+91 91319 78160<br />Mon – Sat, 10 AM – 7 PM</p>
             </div>
             <div>
               <h3>Email</h3>
-              <p>hello@carvaanholidays.com<br />support@carvaanholidays.com</p>
+              <p>info@carvaanholidays.com</p>
             </div>
           </div>
 
