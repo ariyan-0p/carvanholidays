@@ -17,6 +17,7 @@
   overflow: hidden;
   z-index: 1100;
   isolation: isolate;
+  transition: background 0.7s ease, color 0.7s ease;
 }
 
 /* Diagonal shimmer that sweeps across, like a gloss on a banner */
@@ -52,26 +53,42 @@
   padding: 0 var(--sp-6);
 }
 
-/* Each slide animates in from below + fades in */
+/* Each slide animates in with a smooth fade + lift + clear */
 .annbar__slide {
   display: inline-flex;
   align-items: center;
-  animation: annbar-slide-in 0.55s cubic-bezier(0.2, 0.85, 0.25, 1) both;
+  animation: annbar-slide-in 0.7s cubic-bezier(0.2, 0.85, 0.25, 1) both;
+  transform-origin: center;
 }
 @keyframes annbar-slide-in {
   0% {
     opacity: 0;
-    transform: translateY(60%);
-    filter: blur(2px);
+    transform: translateY(95%) scale(0.92);
+    filter: blur(4px);
+    letter-spacing: 1.6px;
   }
-  60% {
+  45% {
     opacity: 1;
     filter: blur(0);
   }
+  70% {
+    transform: translateY(-4%) scale(1.02);
+  }
   100% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+    letter-spacing: 0.2px;
   }
+}
+
+/* Sparkle gets a quick burst when its slide enters */
+.annbar__slide .annbar__sparkle {
+  animation: annbar-sparkle-burst 0.8s cubic-bezier(0.2, 0.85, 0.25, 1) both, annbar-spin 3.6s ease-in-out 0.8s infinite;
+}
+@keyframes annbar-sparkle-burst {
+  0% { transform: rotate(-90deg) scale(0); opacity: 0; }
+  60% { transform: rotate(20deg) scale(1.4); opacity: 1; }
+  100% { transform: rotate(0) scale(1); opacity: 1; }
 }
 
 /* Item layout */

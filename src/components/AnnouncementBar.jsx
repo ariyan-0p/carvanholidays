@@ -36,9 +36,9 @@ export default function AnnouncementBar() {
 
   if (!ready || items.length === 0) return null
 
-  const head = items[0]
-  const bg = head.bgColor || '#12B84A'
-  const fg = head.textColor || '#ffffff'
+  const current = items[idx % items.length]
+  const bg = current.bgColor || '#12B84A'
+  const fg = current.textColor || '#ffffff'
 
   const renderItem = (a) => (
     <span className="annbar__item">
@@ -49,8 +49,6 @@ export default function AnnouncementBar() {
 
   const wrapLink = (a, node) =>
     a.link ? <Link to={a.link} className="annbar__link">{node}</Link> : node
-
-  const current = items[idx % items.length]
 
   return (
     <div
