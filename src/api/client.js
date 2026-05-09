@@ -99,4 +99,19 @@ export const adminUpdateTestimonial = (id, data) =>
 export const adminDeleteTestimonial = (id) =>
   api.delete(`/admin/testimonials/${id}`).then(r => r.data)
 
+export const fetchAnnouncements = () =>
+  api.get('/announcements').then(r => r.data)
+
+export const adminListAnnouncements = () =>
+  api.get('/admin/announcements').then(r => r.data)
+
+export const adminCreateAnnouncement = (data) =>
+  api.post('/admin/announcements', data).then(r => r.data)
+
+export const adminUpdateAnnouncement = (id, data) =>
+  api.put(`/admin/announcements/${id}`, data).then(r => r.data)
+
+export const adminDeleteAnnouncement = (id) =>
+  api.delete(`/admin/announcements/${id}`).then(r => r.data)
+
 export default api

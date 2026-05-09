@@ -885,3 +885,23 @@
   display: flex; align-items: center; justify-content: center;
   background: #f1f5f9; color: #08434A; font-weight: 800; font-size: 18px;
 }
+
+/* ----- Announcement admin ----- */
+.admin__ann-preview {
+  display: inline-block; padding: 5px 10px; border-radius: var(--r-full, 999px);
+  font-size: 12px; font-weight: 700; max-width: 320px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.admin__ann-livebar {
+  height: 38px; display: flex; align-items: center; justify-content: center;
+  gap: 10px; font-size: 13.5px; font-weight: 600; letter-spacing: 0.2px;
+  border-radius: 6px; padding: 0 16px; overflow: hidden;
+}
+.admin__ann-livebar-sparkle { font-size: 12px; }
+.admin__ann-presets { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.admin__ann-preset {
+  padding: 8px 14px; border-radius: 999px; border: none;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.admin__ann-preset:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(0,0,0,0.15); }

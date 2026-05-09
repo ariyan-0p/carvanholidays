@@ -7,6 +7,7 @@ import { signAdminToken, requireAdmin } from '../middleware/auth.js'
 import Package from '../models/Package.js'
 import Enquiry from '../models/Enquiry.js'
 import Testimonial from '../models/Testimonial.js'
+import Announcement from '../models/Announcement.js'
 import { dbReady } from '../store.js'
 
 const router = Router()
@@ -116,6 +117,42 @@ router.delete('/testimonials/:id', requireAdmin, async (req, res, next) => {
   try {
     if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
     const r = await Testimonial.findByIdAndDelete(req.params.id)
+    if (!r) return res.status(404).json({ error: 'Not found' })
+    res.json({ ok: true })
+  } catch (e) { next(e) }
+})
+
+// ---------- Admin Announcements CRUD ----------
+router.get('/announcements', requireAdmin, async (_req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const list = await Announcement.find().sort({ order: 1, createdAt: -1 }).lean()
+    res.json(list)
+  } catch (e) { next(e) }
+})
+
+router.post('/announcements', requireAdmin, async (req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    if (!req.body?.text || !String(req.body.text).trim()) return res.status(400).json({ error: 'Text is required' })
+    const created = await Announcement.create(req.body)
+    res.status(201).json(created)
+  } catch (e) { next(e) }
+})
+
+router.put('/announcements/:id', requireAdmin, async (req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const updated = await Announcement.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    if (!updated) return res.status(404).json({ error: 'Not found' })
+    res.json(updated)
+  } catch (e) { next(e) }
+})
+
+router.delete('/announcements/:id', requireAdmin, async (req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const r = await Announcement.findByIdAndDelete(req.params.id)
     if (!r) return res.status(404).json({ error: 'Not found' })
     res.json({ ok: true })
   } catch (e) { next(e) }

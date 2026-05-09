@@ -1,6 +1,7 @@
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import SubNav from './components/SubNav'
+import AnnouncementBar from './components/AnnouncementBar'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollToTop'
 import PopupEnquiry from './components/PopupEnquiry'
@@ -21,6 +22,8 @@ import AdminPackageForm from './admin/AdminPackageForm'
 import AdminEnquiriesList from './admin/AdminEnquiriesList'
 import AdminTestimonialsList from './admin/AdminTestimonialsList'
 import AdminTestimonialForm from './admin/AdminTestimonialForm'
+import AdminAnnouncementsList from './admin/AdminAnnouncementsList'
+import AdminAnnouncementForm from './admin/AdminAnnouncementForm'
 import './App.css'
 
 function App() {
@@ -31,6 +34,7 @@ function App() {
     <AdminAuthProvider>
       <div className="app">
         <ScrollToTop />
+        {!isAdmin && <AnnouncementBar />}
         {!isAdmin && <Navbar />}
         {!isAdmin && <SubNav />}
         <Routes>
@@ -53,6 +57,9 @@ function App() {
             <Route path="testimonials" element={<AdminTestimonialsList />} />
             <Route path="testimonials/new" element={<AdminTestimonialForm />} />
             <Route path="testimonials/:id/edit" element={<AdminTestimonialForm />} />
+            <Route path="announcements" element={<AdminAnnouncementsList />} />
+            <Route path="announcements/new" element={<AdminAnnouncementForm />} />
+            <Route path="announcements/:id/edit" element={<AdminAnnouncementForm />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />
