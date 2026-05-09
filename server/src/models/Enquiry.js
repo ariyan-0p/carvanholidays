@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 
 const enquirySchema = new mongoose.Schema(
   {
-    type: { type: String, default: 'Holidays', enum: ['Holidays', 'Flights', 'Hotels', 'Visa', 'Custom Tour', 'Booking'], index: true },
+    type: { type: String, default: 'Holidays', enum: ['Holidays', 'Flights', 'Hotels', 'Visa', 'Cars', 'Custom Tour', 'Booking'], index: true },
     from: String,
     destination: String,
     packageSlug: String,

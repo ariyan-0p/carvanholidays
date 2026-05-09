@@ -2,7 +2,17 @@ import { useState } from 'react'
 import { submitEnquiry } from '../api/client'
 import './SearchBar.css'
 
-const tabs = ['Holidays', 'Flights', 'Hotels', 'Visa']
+const tabs = ['Holidays', 'Flights', 'Hotels', 'Visa', 'Cars']
+
+const TAB_LABELS = {
+  Holidays: { from: 'Travelling From', dest: 'Destination *', date: 'Travel Date', count: 'Travellers' },
+  Flights:  { from: 'From',            dest: 'To *',          date: 'Travel Date', count: 'Travellers' },
+  Hotels:   { from: 'Nearby City',     dest: 'City *',        date: 'Check-in Date', count: 'Guests' },
+  Visa:     { from: 'From Country',    dest: 'Visa for *',    date: 'Travel Date', count: 'Applicants' },
+  Cars:     { from: 'Pickup City *',   dest: 'Drop City',     date: 'Pickup Date', count: 'Car Type' },
+}
+
+const CAR_TYPES = ['Hatchback', 'Sedan', 'SUV', 'Premium SUV', 'Tempo Traveller (8-12)', 'Luxury / Innova Crysta']
 
 const holidayDestinations = [
   'Bali', 'Maldives', 'Thailand', 'Dubai', 'Europe',
@@ -11,10 +21,10 @@ const holidayDestinations = [
 
 const todayISO = () => new Date().toISOString().slice(0, 10)
 
-export default function SearchBar() {
-  const [activeTab, setActiveTab] = useState('Holidays')
+export default function SearchBar({ defaultTab = 'Holidays' }) {
+  const [activeTab, setActiveTab] = useState(defaultTab)
   const [trip, setTrip] = useState({
-    from: '', destination: '', travelDate: '', travellers: '2 Adults',
+    from: '', destination: '', travelDate: '', travellers: defaultTab === 'Cars' ? 'Sedan' : '2 Adults',
   })
   const [contact, setContact] = useState({ name: '', email: '', phone: '', message: '' })
   const [step, setStep] = useState(1)        // 1 = trip, 2 = contact
@@ -28,7 +38,12 @@ export default function SearchBar() {
   const goToContact = (e) => {
     e?.preventDefault()
     setError(null)
-    if (!trip.destination.trim()) {
+    if (activeTab === 'Cars') {
+      if (!trip.from.trim()) {
+        setError('Please tell us your pickup city.')
+        return
+      }
+    } else if (!trip.destination.trim()) {
       setError('Please tell us where you want to go.')
       return
     }
@@ -67,10 +82,20 @@ export default function SearchBar() {
   const reset = () => {
     setSubmitted(false)
     setStep(1)
-    setTrip({ from: '', destination: '', travelDate: '', travellers: '2 Adults' })
+    setTrip({ from: '', destination: '', travelDate: '', travellers: activeTab === 'Cars' ? 'Sedan' : '2 Adults' })
     setContact({ name: '', email: '', phone: '', message: '' })
     setError(null)
   }
+
+  const switchTab = (tab) => {
+    setActiveTab(tab)
+    setError(null)
+    // sensible default for the count field per tab
+    setTrip((t) => ({ ...t, travellers: tab === 'Cars' ? 'Sedan' : '2 Adults' }))
+  }
+
+  const labels = TAB_LABELS[activeTab] || TAB_LABELS.Holidays
+  const isCars = activeTab === 'Cars'
 
   if (submitted) {
     return (
@@ -105,7 +130,7 @@ export default function SearchBar() {
               role="tab"
               aria-selected={activeTab === tab}
               className={`search__tab ${activeTab === tab ? 'search__tab--active' : ''}`}
-              onClick={() => setActiveTab(tab)}
+              onClick={() => switchTab(tab)}
             >
               <span className="search__tab-icon">{tabIcon(tab)}</span>
               {tab}
@@ -128,13 +153,14 @@ export default function SearchBar() {
           <>
             <div className="search__fields">
               <div className="search__field">
-                <label className="search__field-label">Travelling From</label>
+                <label className="search__field-label">{labels.from}</label>
                 <input
                   className="search__input"
                   type="text"
-                  placeholder="Your city"
+                  placeholder={isCars ? 'e.g. Delhi, Mumbai…' : 'Your city'}
                   value={trip.from}
                   onChange={e => setT('from', e.target.value)}
+                  required={isCars}
                 />
               </div>
 
@@ -145,15 +171,15 @@ export default function SearchBar() {
               </div>
 
               <div className="search__field">
-                <label className="search__field-label">Destination *</label>
+                <label className="search__field-label">{labels.dest}</label>
                 <input
                   className="search__input"
                   type="text"
-                  placeholder="Where do you want to go?"
+                  placeholder={isCars ? 'Same as pickup if round trip' : 'Where do you want to go?'}
                   list="destinations"
                   value={trip.destination}
                   onChange={e => setT('destination', e.target.value)}
-                  required
+                  required={!isCars}
                 />
                 <datalist id="destinations">
                   {holidayDestinations.map(d => <option key={d} value={d} />)}
@@ -161,7 +187,7 @@ export default function SearchBar() {
               </div>
 
               <div className="search__field">
-                <label className="search__field-label">Travel Date</label>
+                <label className="search__field-label">{labels.date}</label>
                 <input
                   className="search__input"
                   type="date"
@@ -172,18 +198,22 @@ export default function SearchBar() {
               </div>
 
               <div className="search__field">
-                <label className="search__field-label">Travellers</label>
+                <label className="search__field-label">{labels.count}</label>
                 <select
                   className="search__input search__select"
                   value={trip.travellers}
                   onChange={e => setT('travellers', e.target.value)}
                 >
-                  <option>1 Adult</option>
-                  <option>2 Adults</option>
-                  <option>2 Adults, 1 Child</option>
-                  <option>2 Adults, 2 Children</option>
-                  <option>Family (4+)</option>
-                  <option>Group (5+)</option>
+                  {isCars
+                    ? CAR_TYPES.map(c => <option key={c}>{c}</option>)
+                    : <>
+                        <option>1 Adult</option>
+                        <option>2 Adults</option>
+                        <option>2 Adults, 1 Child</option>
+                        <option>2 Adults, 2 Children</option>
+                        <option>Family (4+)</option>
+                        <option>Group (5+)</option>
+                      </>}
                 </select>
               </div>
 
@@ -198,9 +228,17 @@ export default function SearchBar() {
             {/* Popular searches */}
             <div className="search__popular">
               <span className="search__popular-label">Popular:</span>
-              {['Bali', 'Maldives', 'Goa', 'Thailand', 'Europe'].map(dest => (
-                <button type="button" key={dest} className="search__tag" onClick={() => setT('destination', dest)}>
-                  {dest}
+              {(isCars
+                ? ['Delhi', 'Mumbai', 'Bangalore', 'Jaipur', 'Goa']
+                : ['Bali', 'Maldives', 'Goa', 'Thailand', 'Europe']
+              ).map(item => (
+                <button
+                  type="button"
+                  key={item}
+                  className="search__tag"
+                  onClick={() => setT(isCars ? 'from' : 'destination', item)}
+                >
+                  {item}
                 </button>
               ))}
             </div>
@@ -213,8 +251,17 @@ export default function SearchBar() {
           <>
             <div className="search__summary">
               <span className="search__summary-pill">{activeTab}</span>
-              <strong>{trip.destination}</strong>
-              {trip.from && <> · from <span>{trip.from}</span></>}
+              {isCars ? (
+                <>
+                  <strong>{trip.from}</strong>
+                  {trip.destination && <> → <span>{trip.destination}</span></>}
+                </>
+              ) : (
+                <>
+                  <strong>{trip.destination}</strong>
+                  {trip.from && <> · from <span>{trip.from}</span></>}
+                </>
+              )}
               {trip.travelDate && <> · <span>{new Date(trip.travelDate).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })}</span></>}
               <> · <span>{trip.travellers}</span></>
               <button
@@ -339,6 +386,17 @@ function tabIcon(tab) {
           <circle cx="12" cy="9" r="3" />
           <path d="M9.5 14h5" />
           <path d="M8.5 17h7" />
+        </svg>
+      )
+    case 'Cars':
+      // car silhouette
+      return (
+        <svg {...props}>
+          <path d="M3 14l1.6-4.6A3 3 0 0 1 7.4 7.5h9.2a3 3 0 0 1 2.8 1.9L21 14" />
+          <rect x="3" y="14" width="18" height="5" rx="1.4" />
+          <circle cx="7.5" cy="19" r="1.5" />
+          <circle cx="16.5" cy="19" r="1.5" />
+          <path d="M7 14h10" />
         </svg>
       )
     default:

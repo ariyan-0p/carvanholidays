@@ -7,7 +7,7 @@ const footerLinks = {
     { label: 'About Us', to: '/about' },
     { label: 'Our Story', to: '/about' },
     { label: 'Careers', to: '#' },
-    { label: 'Blog', to: '#' },
+    { label: 'Blog', to: '/blog' },
   ],
   Destinations: [
     { label: 'Bali', to: '/packages?q=bali' },
@@ -19,6 +19,7 @@ const footerLinks = {
   ],
   Services: [
     { label: 'Holiday Packages', to: '/packages' },
+    { label: 'Car Rentals', to: '/car-rentals' },
     { label: 'Beach Holidays', to: '/packages?category=beach' },
     { label: 'Heritage Tours', to: '/packages?category=heritage' },
     { label: 'Luxury Escapes', to: '/packages?category=luxury' },

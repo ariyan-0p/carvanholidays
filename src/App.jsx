@@ -15,6 +15,7 @@ import Contact from './pages/Contact'
 import Booking from './pages/Booking'
 import Blogs from './pages/Blogs'
 import BlogDetail from './pages/BlogDetail'
+import CarRentals from './pages/CarRentals'
 import NotFound from './pages/NotFound'
 import { AdminAuthProvider, RequireAdmin } from './admin/AdminAuth'
 import AdminLogin from './admin/AdminLogin'
@@ -56,6 +57,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/blog" element={<Blogs />} />
           <Route path="/blog/:slug" element={<BlogDetail />} />
+          <Route path="/car-rentals" element={<CarRentals />} />
 
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<RequireAdmin><AdminLayout /></RequireAdmin>}>

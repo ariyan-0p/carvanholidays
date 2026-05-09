@@ -14,6 +14,7 @@ const ICONS = {
   sparkles: I(<><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6L12 3z" /><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15z" /></>),
   rocket: I(<><path d="M14 4c4 0 6 2 6 6-2 0-4 1-5 2l-7 7-3-3 7-7c1-1 2-3 2-5z" /><path d="M9 13l-2 2c-1 1-2 1-3 1l1-3c0-1 1-2 2-2l2 2z" /><circle cx="15" cy="9" r="1.4" /></>),
   beach: I(<><path d="M2 18h20" /><circle cx="7" cy="6" r="2" /><path d="M7 8v3" /><path d="M7 8c2.5-.5 5 0 7 2" /><path d="M7 8c-1.2 1-2 2.4-2.5 4" /><path d="M14 16c0-3 2-5 5-5" /></>),
+  car: I(<><path d="M3 14l1.6-4.6A3 3 0 0 1 7.4 7.5h9.2a3 3 0 0 1 2.8 1.9L21 14" /><rect x="3" y="14" width="18" height="5" rx="1.4" /><circle cx="7.5" cy="19" r="1.5" /><circle cx="16.5" cy="19" r="1.5" /></>),
   target: I(<><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1.5" /></>),
   info: I(<><circle cx="12" cy="12" r="9" /><path d="M12 8v.01M11 12h1v5h1" /></>),
 }
@@ -53,6 +54,9 @@ const items = [
   },
   {
     icon: ICONS.rocket, label: 'Upcoming Tours', to: '/packages', color: '#10b981',
+  },
+  {
+    icon: ICONS.car, label: 'Car Rentals', to: '/car-rentals', color: '#0ea5e9',
   },
   {
     icon: ICONS.beach, label: 'Weekend Getaways', to: '/cities', color: '#ec4899',
