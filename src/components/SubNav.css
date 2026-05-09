@@ -1,8 +1,8 @@
 /* ===========================
-   SUB-NAV (under main navbar)
+   SUB-NAV — colored category chips
    =========================== */
 .subnav {
-  background: #ffffff;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafb 100%);
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   position: sticky;
@@ -14,7 +14,7 @@
 .subnav__inner {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 0 var(--sp-6);
+  padding: 12px var(--sp-6);
   overflow: visible;
 }
 
@@ -22,7 +22,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  flex-wrap: wrap;
+  gap: 8px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -30,37 +31,41 @@
 
 .subnav__li {
   position: relative;
+  --accent: #08434A;
 }
 
-/* Items */
+/* Item chip */
 .subnav__item {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 14px 14px;
-  font-size: 13.5px;
+  gap: 8px;
+  padding: 9px 14px;
+  font-size: 13px;
   font-weight: 600;
-  color: #4b6066;
+  color: var(--accent);
   text-decoration: none;
   cursor: pointer;
-  background: transparent;
-  border: none;
-  border-bottom: 2px solid transparent;
+  background: color-mix(in srgb, var(--accent) 8%, #ffffff);
+  border: 1.5px solid color-mix(in srgb, var(--accent) 20%, transparent);
+  border-radius: var(--r-full);
   font-family: inherit;
   letter-spacing: 0.1px;
-  transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+  transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
 }
 .subnav__item:hover,
 .subnav__li.is-open .subnav__item {
-  color: var(--teal);
-  border-bottom-color: var(--green-strong);
+  background: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent);
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--accent) 35%, transparent);
+  transform: translateY(-1px);
 }
 
 .subnav__icon {
   font-size: 15px;
   line-height: 1;
   display: inline-flex;
-  filter: saturate(1.1);
+  filter: saturate(1.15);
 }
 
 .subnav__label { white-space: nowrap; }
@@ -69,24 +74,30 @@
   margin-left: 1px;
   transition: transform 0.2s ease;
   flex-shrink: 0;
-  opacity: 0.7;
+  opacity: 0.85;
 }
-.subnav__li.is-open .subnav__chev { transform: rotate(180deg); opacity: 1; }
+.subnav__li.is-open .subnav__chev { transform: rotate(180deg); }
 
 /* Dropdown */
 .subnav__menu {
   position: absolute;
-  top: calc(100% - 1px);
+  top: calc(100% + 10px);
   left: 50%;
   transform: translateX(-50%);
   min-width: 240px;
   background: #ffffff;
-  border: 1px solid var(--border);
   border-radius: 14px;
-  box-shadow: 0 24px 60px rgba(8, 67, 74, 0.18), 0 4px 12px rgba(8, 67, 74, 0.06);
+  box-shadow: 0 28px 60px rgba(8, 67, 74, 0.18), 0 6px 18px rgba(8, 67, 74, 0.08);
   padding: 8px;
   display: none;
   z-index: 200;
+  overflow: hidden;
+}
+.subnav__menu-accent {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--accent);
 }
 .subnav__menu::before {
   content: '';
@@ -96,13 +107,12 @@
   transform: translateX(-50%) rotate(45deg);
   width: 12px;
   height: 12px;
-  background: #ffffff;
-  border-left: 1px solid var(--border);
-  border-top: 1px solid var(--border);
+  background: var(--accent);
+  z-index: 1;
 }
 .subnav__li.is-open .subnav__menu {
   display: block;
-  animation: subnav-pop 0.18s ease;
+  animation: subnav-pop 0.2s ease;
 }
 @keyframes subnav-pop {
   from { opacity: 0; transform: translate(-50%, -6px); }
@@ -110,50 +120,54 @@
 }
 
 .subnav__menu-item {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   padding: 10px 14px;
+  margin-top: 2px;
   border-radius: 9px;
-  color: var(--teal);
+  color: #1f2a2d;
   font-size: 13.5px;
   font-weight: 500;
   text-decoration: none;
   white-space: nowrap;
   transition: background 0.15s ease, color 0.15s ease, padding-left 0.15s ease;
 }
+.subnav__menu-item:first-of-type { margin-top: 6px; }
 .subnav__menu-item::before {
   content: '';
-  width: 4px;
-  height: 4px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: var(--green-accent, #12B84A);
+  background: var(--accent);
   opacity: 0;
   transition: opacity 0.15s ease;
+  flex-shrink: 0;
 }
 .subnav__menu-item:hover {
-  background: var(--light-bg);
-  color: var(--green-strong);
+  background: color-mix(in srgb, var(--accent) 10%, #ffffff);
+  color: var(--accent);
   padding-left: 16px;
 }
 .subnav__menu-item:hover::before { opacity: 1; }
 
 .subnav__menu-item.is-emphasis {
-  margin-top: 4px;
+  margin-top: 6px;
   border-top: 1px solid var(--border);
   padding-top: 12px;
   font-weight: 700;
-  color: var(--green-strong);
+  color: var(--accent);
 }
 .subnav__menu-item.is-emphasis::before { display: none; }
 
-/* Compact for slightly narrower viewports */
+/* Tighter on mid-size screens */
 @media (max-width: 1100px) {
-  .subnav__item { padding: 12px 10px; font-size: 12.5px; gap: 5px; }
+  .subnav__item { padding: 8px 12px; font-size: 12.5px; gap: 6px; }
   .subnav__icon { font-size: 14px; }
 }
 
-/* Hide on mobile — the main navbar already provides primary navigation */
+/* Hide on mobile — main navbar already covers primary navigation */
 @media (max-width: 900px) {
   .subnav { display: none; }
 }
