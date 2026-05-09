@@ -33,6 +33,7 @@ import AdminPartnersList from './admin/AdminPartnersList'
 import AdminPartnerForm from './admin/AdminPartnerForm'
 import AdminBlogsList from './admin/AdminBlogsList'
 import AdminBlogForm from './admin/AdminBlogForm'
+import AdminHomepageLayout from './admin/AdminHomepageLayout'
 import './App.css'
 
 function App() {
@@ -81,6 +82,7 @@ function App() {
             <Route path="blogs" element={<AdminBlogsList />} />
             <Route path="blogs/new" element={<AdminBlogForm />} />
             <Route path="blogs/:id/edit" element={<AdminBlogForm />} />
+            <Route path="homepage" element={<AdminHomepageLayout />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />

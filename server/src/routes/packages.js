@@ -5,10 +5,10 @@ import { dbReady, memFindPackages, memFindPackage } from '../store.js'
 
 const router = Router()
 
-// GET /api/packages?category=beach&featured=true&q=bali&city=jaipur&limit=20
+// GET /api/packages?category=beach&featured=true&q=bali&city=jaipur&section=top-picks&limit=20
 router.get('/', async (req, res, next) => {
   try {
-    const { category, featured, q, city, limit } = req.query
+    const { category, featured, q, city, section, limit } = req.query
     if (!dbReady()) {
       return res.json(memFindPackages({ category, featured, q, city, limit }))
     }
@@ -20,7 +20,19 @@ router.get('/', async (req, res, next) => {
       const re = new RegExp(q, 'i')
       filter.$or = [{ title: re }, { destination: re }, { country: re }, { city: re }, { summary: re }]
     }
-    const query = Package.find(filter).sort({ featured: -1, createdAt: -1 })
+    if (section) {
+      // Honour the legacy `featured: true` flag for the 'featured' shelf so we
+      // don't break what's already on the homepage.
+      if (section === 'featured') {
+        filter.$or = [{ homepageSections: section }, { featured: true }]
+      } else {
+        filter.homepageSections = section
+      }
+    }
+    const sortKey = section
+      ? { homepageOrder: 1, featured: -1, createdAt: -1 }
+      : { featured: -1, createdAt: -1 }
+    const query = Package.find(filter).sort(sortKey)
     if (limit) query.limit(Number(limit))
     res.json(await query.lean())
   } catch (e) {

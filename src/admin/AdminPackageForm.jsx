@@ -5,6 +5,7 @@ import api, {
   adminUpdatePackage,
   adminUploadImages,
 } from '../api/client'
+import { HOME_SECTIONS } from '../config/homeSections'
 
 const empty = {
   slug: '', title: '', city: '', destination: '', country: '',
@@ -16,6 +17,7 @@ const empty = {
   itinerary: [],
   image: '', gallery: [],
   featured: false, active: true,
+  homepageSections: [], homepageOrder: 0,
 }
 
 const CATEGORIES = ['beach','heritage','luxury','honeymoon','adventure','family','multi-country','pilgrimage']
@@ -149,6 +151,46 @@ export default function AdminPackageForm() {
         </label>
         <label className="admin__form-toggle">
           <input type="checkbox" checked={!!form.active} onChange={e => set('active', e.target.checked)} /> Active
+        </label>
+      </section>
+
+      <section className="admin__form-block">
+        <div className="admin__form-block-head">
+          <h3>Homepage placement</h3>
+          <span className="admin__sub" style={{ marginLeft: 'auto' }}>Pick which homepage shelves should show this package.</span>
+        </div>
+        <div className="admin__sections-grid">
+          {HOME_SECTIONS.map((s) => {
+            const isOn = (form.homepageSections || []).includes(s.key)
+            return (
+              <button
+                key={s.key}
+                type="button"
+                className={`admin__section-chip ${isOn ? 'is-on' : ''}`}
+                onClick={() => {
+                  const cur = new Set(form.homepageSections || [])
+                  isOn ? cur.delete(s.key) : cur.add(s.key)
+                  set('homepageSections', Array.from(cur))
+                }}
+              >
+                <span className="admin__section-chip-dot" />
+                <span>
+                  <strong>{s.label}</strong>
+                  <small>{s.subtitle}</small>
+                </span>
+              </button>
+            )
+          })}
+        </div>
+        <label style={{ marginTop: 8 }}>
+          Display order in shelves
+          <input
+            type="number"
+            value={form.homepageOrder ?? 0}
+            onChange={e => set('homepageOrder', Number(e.target.value) || 0)}
+            placeholder="0 — lower numbers appear first"
+            style={{ maxWidth: 200 }}
+          />
         </label>
       </section>
 

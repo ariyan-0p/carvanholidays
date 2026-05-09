@@ -909,3 +909,143 @@
 .admin__thumb--contain { object-fit: contain; background: #f8fafb; padding: 4px; }
 .admin__media-preview-el--logo { max-width: 220px; max-height: 110px; object-fit: contain; background: #f8fafb; padding: 8px; border: 1px solid #e2e8f0; }
 .admin__media-preview--partner { align-items: center; }
+
+/* ----- Homepage placement chips ----- */
+.admin__sections-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+}
+.admin__sections-grid--inline { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); margin-top: 8px; }
+.admin__section-chip {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .15s ease;
+}
+.admin__section-chip:hover { border-color: #08434A; }
+.admin__section-chip.is-on { border-color: #12B84A; background: rgba(18,184,74,0.08); }
+.admin__section-chip strong { display: block; font-size: 13px; color: #08434A; line-height: 1.3; }
+.admin__section-chip small { display: block; font-size: 11.5px; color: #6b7d83; margin-top: 2px; line-height: 1.4; }
+.admin__section-chip-dot {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid #cbd5e1;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: all .15s ease;
+}
+.admin__section-chip.is-on .admin__section-chip-dot { background: #12B84A; border-color: #12B84A; box-shadow: inset 0 0 0 3px #fff; }
+.admin__section-chip--small {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  font-size: 11.5px;
+  font-weight: 600;
+  border-radius: 999px;
+}
+.admin__section-chip--small strong { display: inline; font-size: 11.5px; }
+
+/* ----- Homepage layout columns ----- */
+.admin__home-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  margin-top: 8px;
+}
+.admin__home-col {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+}
+.admin__home-col-head {
+  padding: 14px 14px 10px;
+  border-bottom: 1px solid #f1f5f9;
+  position: relative;
+}
+.admin__home-col-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: #12B84A;
+  background: rgba(18,184,74,0.1);
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+.admin__home-col-head h3 { margin: 6px 0 2px; font-size: 14.5px; color: #08434A; }
+.admin__home-col-head small { font-size: 12px; color: #6b7d83; line-height: 1.45; display: block; }
+.admin__home-col-count {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+.admin__home-col-body {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 100px;
+}
+.admin__home-empty {
+  text-align: center;
+  padding: 18px 10px;
+  font-size: 12px;
+  color: #94a3b8;
+  border: 1px dashed #e2e8f0;
+  border-radius: 8px;
+}
+.admin__home-item {
+  display: flex;
+  gap: 10px;
+  padding: 8px;
+  border: 1px solid #f1f5f9;
+  border-radius: 8px;
+  background: #fcfcfd;
+  align-items: flex-start;
+}
+.admin__home-item .admin__thumb {
+  width: 64px; height: 48px; border-radius: 6px; object-fit: cover; flex-shrink: 0;
+}
+.admin__home-item-body { flex: 1; min-width: 0; }
+.admin__home-item-title {
+  font-size: 13px; font-weight: 700; color: #08434A; text-decoration: none;
+  display: block;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.admin__home-item-meta { font-size: 11.5px; color: #6b7d83; margin-top: 2px; }
+.admin__home-item-controls {
+  display: flex; align-items: center; gap: 8px; margin-top: 6px;
+  flex-wrap: wrap;
+}
+.admin__home-item-controls label { font-size: 11px; font-weight: 600; color: #6b7d83; display: inline-flex; align-items: center; gap: 4px; }
+.admin__home-item-controls input { width: 60px; padding: 4px 6px; }
+
+.admin__home-all {
+  grid-column: 1 / -1;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 8px;
+}
+.admin__home-all h3 { margin: 0 0 4px; }
+.admin__home-all-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}

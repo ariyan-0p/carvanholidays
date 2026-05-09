@@ -38,6 +38,8 @@ const packageSchema = new mongoose.Schema(
     exclusions: [String],
     itinerary: [itinerarySchema],
     featured: { type: Boolean, default: false },
+    homepageSections: { type: [String], default: [], index: true },
+    homepageOrder: { type: Number, default: 0 },
     active: { type: Boolean, default: true },
   },
   { timestamps: true }

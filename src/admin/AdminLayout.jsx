@@ -19,6 +19,9 @@ export default function AdminLayout() {
           <NavLink to="/admin/packages" className={({isActive}) => `admin__nav-link ${isActive ? 'is-active' : ''}`}>
             Packages
           </NavLink>
+          <NavLink to="/admin/homepage" className={({isActive}) => `admin__nav-link ${isActive ? 'is-active' : ''}`}>
+            Homepage Layout
+          </NavLink>
           <NavLink to="/admin/packages/new" className={({isActive}) => `admin__nav-link ${isActive ? 'is-active' : ''}`}>
             New Package
           </NavLink>
