@@ -72,9 +72,9 @@ export default function AdminBannersList() {
       <div className="admin__form-section">
         <strong>Recommended banner sizes</strong>
         <ul style={{ margin: '8px 0 0 18px', lineHeight: 1.7, fontSize: 14, color: '#475569' }}>
-          <li><b>Desktop banner:</b> 1920 × 520 px (≈3.7 : 1 wide), JPG or PNG, ≤ 500 KB</li>
-          <li><b>Mobile banner (optional):</b> 800 × 800 px (1 : 1 square) or 800 × 1000 px, JPG, ≤ 300 KB</li>
-          <li>Keep all important text away from the very edges — banners are slightly clipped on small screens.</li>
+          <li><b>Desktop banner:</b> 1920 × 520 px · <b>aspect ratio ≈ 3.7 : 1</b> (wide letterbox) · JPG/PNG · ≤ 500 KB</li>
+          <li><b>Mobile banner (optional):</b> 800 × 800 px · <b>aspect ratio 1 : 1</b> (square) — or 800 × 1000 px (<b>4 : 5</b>) · JPG · ≤ 300 KB</li>
+          <li>Keep important text away from the very edges — banners are slightly cropped on smaller screens.</li>
         </ul>
       </div>
 

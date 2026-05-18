@@ -58,10 +58,10 @@ export default function AdminHeroList() {
       <div className="admin__form-section">
         <strong>Recommended media sizes</strong>
         <ul style={{ margin: '8px 0 0 18px', lineHeight: 1.7, fontSize: 14, color: '#475569' }}>
-          <li><b>Image background:</b> 1920 × 1080 px (16:9 landscape), JPG or PNG, ≤ 2 MB</li>
-          <li><b>Video background:</b> 1920 × 1080 px, MP4 (H.264), 8–15 seconds, ≤ 20 MB ideal (80 MB max)</li>
-          <li><b>Video poster (optional):</b> 1920 × 1080 px JPG — shown while the video loads</li>
-          <li><b>Side cards (optional, up to 3):</b> 400 × 600 px (2:3 portrait), JPG, ≤ 500 KB each</li>
+          <li><b>Image background:</b> 1920 × 1080 px · <b>aspect ratio 16:9</b> (landscape) · JPG/PNG · ≤ 2 MB</li>
+          <li><b>Video background:</b> 1920 × 1080 px · <b>aspect ratio 16:9</b> (landscape) · MP4 (H.264) · 8–15 sec · ≤ 20 MB ideal (80 MB max)</li>
+          <li><b>Video poster (optional):</b> 1920 × 1080 px · <b>aspect ratio 16:9</b> · JPG — shown while the video loads</li>
+          <li><b>Side cards (optional, up to 3):</b> 400 × 600 px · <b>aspect ratio 2:3</b> (portrait) · JPG · ≤ 500 KB each</li>
         </ul>
       </div>
 

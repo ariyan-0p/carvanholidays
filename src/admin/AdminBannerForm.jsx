@@ -114,7 +114,8 @@ export default function AdminBannerForm() {
         <div className="admin__form-section">
           <label className="admin__label">Desktop banner image *</label>
           <p className="admin__help">
-            <b>Recommended:</b> 1920 × 520 px (≈ 3.7 : 1 wide), JPG/PNG, ≤ 500 KB.
+            <b>Recommended:</b> 1920 × 520 px · <b>aspect ratio ≈ 3.7 : 1</b> (wide letterbox) · JPG/PNG · ≤ 500 KB.
+            Slimmer ratios (e.g. 1920 × 480 = 4:1) also work — the banner fills the full width with the image cropped to fit.
           </p>
           {form.imageUrl ? (
             <div className="admin__hero-media-preview" style={{ aspectRatio: '1920 / 520' }}>
@@ -147,7 +148,8 @@ export default function AdminBannerForm() {
         <div className="admin__form-section">
           <label className="admin__label">Mobile banner image (optional)</label>
           <p className="admin__help">
-            <b>Recommended:</b> 800 × 800 px (1 : 1) or 800 × 1000 px, JPG, ≤ 300 KB. Falls back to desktop image if not set.
+            <b>Recommended:</b> 800 × 800 px · <b>aspect ratio 1 : 1</b> (square) · JPG · ≤ 300 KB.
+            A taller 800 × 1000 px (<b>4 : 5</b> portrait) also works. If not set, the desktop image is used on phones (cropped to a square).
           </p>
           {form.mobileImageUrl ? (
             <div className="admin__hero-media-preview admin__hero-media-preview--small" style={{ aspectRatio: '1 / 1' }}>

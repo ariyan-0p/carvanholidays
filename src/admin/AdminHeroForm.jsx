@@ -25,10 +25,10 @@ const EMPTY = {
 }
 
 const SIZES = {
-  image: '1920 × 1080 px (16:9 landscape), JPG/PNG, ≤ 2 MB',
-  video: '1920 × 1080 px MP4 (H.264), 8–15 seconds, ≤ 20 MB ideal (80 MB max)',
-  poster: '1920 × 1080 px JPG (used while the video loads)',
-  card: '400 × 600 px (2:3 portrait), JPG, ≤ 500 KB each',
+  image:  '1920 × 1080 px · aspect ratio 16:9 (landscape) · JPG/PNG · ≤ 2 MB',
+  video:  '1920 × 1080 px · aspect ratio 16:9 (landscape) · MP4 (H.264) · 8–15 sec · ≤ 20 MB ideal (80 MB max)',
+  poster: '1920 × 1080 px · aspect ratio 16:9 · JPG (shown while the video loads)',
+  card:   '400 × 600 px · aspect ratio 2:3 (portrait) · JPG · ≤ 500 KB each',
 }
 
 const mediaSrc = (u) => (u && u.startsWith('/uploads/') ? u : u)
