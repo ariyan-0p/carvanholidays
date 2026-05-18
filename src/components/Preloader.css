@@ -139,8 +139,8 @@
   left: 50%;
   top: 0;
   bottom: 0;
-  width: min(360px, 60vw);
-  margin-left: calc(min(360px, 60vw) / -2);
+  width: min(880px, 90vw);
+  margin-left: calc(min(880px, 90vw) / -2);
   z-index: 2;
   display: flex;
   align-items: flex-start;
@@ -150,19 +150,19 @@
 .preloader__plane {
   width: 100%;
   height: auto;
-  /* Rotate so the plane points upward and slightly forward */
-  transform: translateY(120vh) rotate(-45deg) scale(1.05);
+  /* Pointing straight up */
+  transform: translateY(120vh) rotate(0deg) scale(1);
   filter:
-    drop-shadow(0 0 22px rgba(168, 245, 124, 0.55))
-    drop-shadow(0 8px 18px rgba(0, 0, 0, 0.55));
-  animation: pre-fly-up 2.6s cubic-bezier(0.65, 0.02, 0.35, 1) forwards;
+    drop-shadow(0 0 32px rgba(168, 245, 124, 0.55))
+    drop-shadow(0 12px 28px rgba(0, 0, 0, 0.55));
+  animation: pre-fly-up 2.8s cubic-bezier(0.65, 0.02, 0.35, 1) forwards;
 }
 @keyframes pre-fly-up {
-  0%   { transform: translateY(120vh) rotate(-45deg) scale(1.05); opacity: 0; }
+  0%   { transform: translateY(120vh) rotate(0deg) scale(1);    opacity: 0; }
   10%  { opacity: 1; }
-  60%  { transform: translateY(20vh)  rotate(-45deg) scale(1.05); opacity: 1; }
-  78%  { transform: translateY(-10vh) rotate(-45deg) scale(0.9);  opacity: 1; }
-  100% { transform: translateY(-90vh) rotate(-45deg) scale(0.5);  opacity: 0; }
+  55%  { transform: translateY(10vh)  rotate(0deg) scale(1);    opacity: 1; }
+  78%  { transform: translateY(-25vh) rotate(0deg) scale(0.85); opacity: 1; }
+  100% { transform: translateY(-110vh) rotate(0deg) scale(0.5); opacity: 0; }
 }
 
 /* === Brand block — sits in lower-third so the plane can fly through === */
@@ -231,7 +231,7 @@
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .preloader__plane { animation: none !important; transform: translateY(40vh) rotate(-45deg) scale(1); }
+  .preloader__plane { animation: none !important; transform: translateY(30vh) rotate(0deg) scale(1); }
   .preloader__trail-line, .preloader__trail-glow { animation: none !important; transform: scaleY(1); }
   .preloader__puff, .preloader__aurora, .preloader__grid { animation: none !important; }
   .preloader__tag, .preloader__title, .preloader__loader {
@@ -240,5 +240,5 @@
 }
 
 @media (max-width: 640px) {
-  .preloader__plane-wrap { width: min(280px, 70vw); margin-left: calc(min(280px, 70vw) / -2); }
+  .preloader__plane-wrap { width: min(560px, 92vw); margin-left: calc(min(560px, 92vw) / -2); }
 }
