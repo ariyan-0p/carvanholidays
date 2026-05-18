@@ -3,8 +3,10 @@
    =========================== */
 
 .testimonials {
-  padding: var(--sp-20) var(--sp-8);
-  background: var(--off-white);
+  padding: var(--sp-24) var(--sp-8);
+  background:
+    radial-gradient(1000px 500px at 100% 0%, rgba(168, 245, 124, 0.06), transparent 60%),
+    var(--off-white);
 }
 
 .testimonials__container {
@@ -29,13 +31,13 @@
 /* Review Card — base (message-only) */
 .review-card {
   background: var(--white);
-  border-radius: var(--r-lg);
-  border: 1px solid var(--border);
+  border-radius: 4px;
+  border: 1px solid rgba(8, 67, 74, 0.05);
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.5s var(--ease-out), box-shadow 0.5s var(--ease-out);
   min-width: 0;
 }
 
@@ -83,10 +85,13 @@
 
 /* Slightly bigger quote on message-only cards since they have no media */
 .review-card:not(:has(.review-card__media)) .review-card__text {
-  font-size: 16px;
-  line-height: 1.7;
+  font-family: var(--font-display);
+  font-size: 19px;
+  line-height: 1.5;
   color: var(--teal);
-  font-weight: 500;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: -0.005em;
 }
 
 /* Media at top of card (video / photo variants) */
@@ -145,12 +150,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--sp-4);
-  padding: var(--sp-5) var(--sp-8);
+  gap: var(--sp-5);
+  padding: var(--sp-6) var(--sp-10);
   background: var(--teal);
-  border-radius: var(--r-xl);
-  max-width: 480px;
+  border-radius: 4px;
+  max-width: 520px;
   margin: 0 auto;
+  box-shadow: var(--shadow-md);
 }
 
 .testimonials__badge-stars {
@@ -161,8 +167,9 @@
 
 .testimonials__badge-score {
   display: block;
-  font-size: 22px;
-  font-weight: 900;
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 500;
   color: var(--white);
   line-height: 1;
 }

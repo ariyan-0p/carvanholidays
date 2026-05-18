@@ -8,9 +8,10 @@
   right: 0;
   width: 100%;
   height: 38px;
-  font-size: 13.5px;
-  font-weight: 600;
-  letter-spacing: 0.2px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 2.6px;
+  text-transform: uppercase;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -28,13 +29,13 @@
   background: linear-gradient(
     100deg,
     transparent 0%,
-    transparent 35%,
-    rgba(255, 255, 255, 0.18) 50%,
-    transparent 65%,
+    transparent 40%,
+    rgba(255, 255, 255, 0.10) 50%,
+    transparent 60%,
     transparent 100%
   );
-  background-size: 220% 100%;
-  animation: annbar-sheen 4.5s linear infinite;
+  background-size: 240% 100%;
+  animation: annbar-sheen 7s linear infinite;
   z-index: 1;
 }
 @keyframes annbar-sheen {
@@ -57,28 +58,12 @@
 .annbar__slide {
   display: inline-flex;
   align-items: center;
-  animation: annbar-slide-in 0.7s cubic-bezier(0.2, 0.85, 0.25, 1) both;
+  animation: annbar-slide-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
   transform-origin: center;
 }
 @keyframes annbar-slide-in {
-  0% {
-    opacity: 0;
-    transform: translateY(95%) scale(0.92);
-    filter: blur(4px);
-    letter-spacing: 1.6px;
-  }
-  45% {
-    opacity: 1;
-    filter: blur(0);
-  }
-  70% {
-    transform: translateY(-4%) scale(1.02);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    letter-spacing: 0.2px;
-  }
+  0%   { opacity: 0; transform: translateY(60%); filter: blur(3px); }
+  100% { opacity: 1; transform: translateY(0);   filter: blur(0); }
 }
 
 /* Sparkle gets a quick burst when its slide enters */
@@ -95,9 +80,21 @@
 .annbar__item {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
 }
-.annbar__text { display: inline-block; }
+.annbar__text {
+  display: inline-block;
+  font-feature-settings: "ss01", "tnum";
+}
+.annbar__item::before,
+.annbar__item::after {
+  content: '';
+  display: inline-block;
+  width: 18px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.5;
+}
 
 .annbar__link {
   color: inherit;
@@ -115,9 +112,10 @@
 /* Sparkle */
 .annbar__sparkle {
   display: inline-block;
-  font-size: 12px;
-  animation: annbar-spin 3.6s ease-in-out infinite;
-  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.6));
+  font-size: 10px;
+  opacity: 0.85;
+  animation: annbar-spin 5s ease-in-out infinite;
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.4));
 }
 @keyframes annbar-spin {
   0%, 100% { transform: rotate(0) scale(1); }

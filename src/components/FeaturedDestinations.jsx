@@ -1,4 +1,36 @@
 import './FeaturedDestinations.css'
+import { useReveal } from '../hooks/useReveal'
+
+function DestCard({ dest, index }) {
+  const [ref, visible] = useReveal({ delay: (index % 4) * 80 })
+  return (
+    <a
+      href="#"
+      ref={ref}
+      className={`dest-card reveal reveal--scale ${visible ? 'is-visible' : ''}`}
+    >
+      <div className="dest-card__img-wrap">
+        <img src={dest.image} alt={dest.name} className="dest-card__img" />
+        <span className="dest-card__tag">{dest.tag}</span>
+      </div>
+      <div className="dest-card__body">
+        <div>
+          <h3 className="dest-card__name">{dest.name}</h3>
+          <p className="dest-card__country">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="currentColor"/>
+            </svg>
+            {dest.country}
+          </p>
+        </div>
+        <div className="dest-card__price">
+          <span className="dest-card__from">from</span>
+          <span className="dest-card__amount">{dest.from}</span>
+        </div>
+      </div>
+    </a>
+  )
+}
 
 const destinations = [
   {
@@ -68,13 +100,17 @@ const destinations = [
 ]
 
 export default function FeaturedDestinations() {
+  const [headerRef, headerVisible] = useReveal()
   return (
     <section className="destinations" id="destinations">
       <div className="destinations__container">
-        <div className="destinations__header">
+        <div
+          ref={headerRef}
+          className={`destinations__header reveal ${headerVisible ? 'is-visible' : ''}`}
+        >
           <div>
             <span className="section-tag">Where to go?</span>
-            <h2 className="section-title">Popular Destinations</h2>
+            <h2 className="section-title">Popular <em>Destinations</em></h2>
             <p className="section-subtitle">
               Handpicked destinations loved by thousands of happy travellers
             </p>
@@ -88,28 +124,8 @@ export default function FeaturedDestinations() {
         </div>
 
         <div className="destinations__grid">
-          {destinations.map(dest => (
-            <a href="#" key={dest.id} className="dest-card">
-              <div className="dest-card__img-wrap">
-                <img src={dest.image} alt={dest.name} className="dest-card__img" />
-                <span className="dest-card__tag">{dest.tag}</span>
-              </div>
-              <div className="dest-card__body">
-                <div>
-                  <h3 className="dest-card__name">{dest.name}</h3>
-                  <p className="dest-card__country">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="currentColor"/>
-                    </svg>
-                    {dest.country}
-                  </p>
-                </div>
-                <div className="dest-card__price">
-                  <span className="dest-card__from">from</span>
-                  <span className="dest-card__amount">{dest.from}</span>
-                </div>
-              </div>
-            </a>
+          {destinations.map((dest, i) => (
+            <DestCard key={dest.id} dest={dest} index={i} />
           ))}
         </div>
       </div>

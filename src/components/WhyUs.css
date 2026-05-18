@@ -26,25 +26,32 @@
 }
 
 .whyus__stat-value {
-  font-size: clamp(28px, 3vw, 40px);
-  font-weight: 900;
+  font-family: var(--font-display);
+  font-size: clamp(36px, 4vw, 56px);
+  font-weight: 400;
   color: var(--teal);
   line-height: 1;
-  letter-spacing: -1px;
+  letter-spacing: -0.02em;
 }
 
 .whyus__stat-label {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 600;
+  letter-spacing: 2.2px;
+  text-transform: uppercase;
   color: var(--teal);
-  opacity: 0.75;
+  opacity: 0.7;
   text-align: center;
+  margin-top: 6px;
 }
 
 /* Features section */
 .whyus__features {
-  background: var(--teal);
-  padding: var(--sp-20) var(--sp-8);
+  background:
+    radial-gradient(900px 500px at 10% 0%, rgba(168, 245, 124, 0.06), transparent 60%),
+    radial-gradient(700px 500px at 100% 100%, rgba(168, 245, 124, 0.04), transparent 60%),
+    var(--teal);
+  padding: var(--sp-24) var(--sp-8);
 }
 
 .whyus__features-inner {
@@ -60,14 +67,22 @@
 /* Light variants for dark bg */
 .section-tag--light {
   color: var(--green-accent);
+  opacity: 1;
+}
+.section-tag--light::before {
+  background: var(--green-accent);
 }
 
 .section-title--light {
   color: var(--white);
 }
+.section-title--light em {
+  color: var(--green-accent);
+}
 
 .section-subtitle--light {
   color: rgba(255,255,255,0.65);
+  margin: 0 auto;
 }
 
 /* Grid */
@@ -79,16 +94,17 @@
 
 /* Feature card */
 .whyus__feature-card {
-  padding: var(--sp-8) var(--sp-6);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(168, 245, 124, 0.15);
-  border-radius: var(--r-lg);
+  padding: var(--sp-10) var(--sp-6);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
   text-align: center;
-  transition: background 0.3s ease, transform 0.3s ease;
+  transition: background 0.5s var(--ease-out), transform 0.5s var(--ease-out), border-color 0.5s var(--ease-out);
 }
 
 .whyus__feature-card:hover {
-  background: rgba(168, 245, 124, 0.1);
+  background: rgba(168, 245, 124, 0.06);
+  border-color: rgba(168, 245, 124, 0.3);
   transform: translateY(-4px);
 }
 
@@ -100,10 +116,12 @@
 }
 
 .whyus__feature-title {
-  font-size: 18px;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
   color: var(--white);
   margin-bottom: var(--sp-3);
+  letter-spacing: -0.01em;
 }
 
 .whyus__feature-desc {

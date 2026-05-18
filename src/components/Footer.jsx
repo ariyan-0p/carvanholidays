@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import logo from '../assets/logotransparent.PNG'
+import brandMark from '../assets/brand-mark-inverted.png'
 import './Footer.css'
 
 const footerLinks = {
@@ -79,6 +80,7 @@ const socials = [
 export default function Footer() {
   return (
     <footer className="footer">
+      <img src={brandMark} alt="" aria-hidden className="footer__watermark" />
       {/* Marquee ticker */}
       <div className="footer__ticker">
         <div className="footer__ticker-track">

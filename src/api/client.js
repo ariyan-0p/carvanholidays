@@ -174,6 +174,31 @@ export const adminListHomeSections = () =>
 export const adminUpdateHomeSection = (key, data) =>
   api.put(`/admin/home-sections/${key}`, data).then(r => r.data)
 
+// ---------- Hero slides ----------
+export const fetchHeroSlides = () =>
+  api.get('/hero').then(r => r.data)
+
+export const adminListHeroSlides = () =>
+  api.get('/admin/hero').then(r => r.data)
+
+export const adminCreateHeroSlide = (data) =>
+  api.post('/admin/hero', data).then(r => r.data)
+
+export const adminUpdateHeroSlide = (id, data) =>
+  api.put(`/admin/hero/${id}`, data).then(r => r.data)
+
+export const adminDeleteHeroSlide = (id) =>
+  api.delete(`/admin/hero/${id}`).then(r => r.data)
+
+export const adminUploadHeroMedia = (files, onProgress) => {
+  const fd = new FormData()
+  for (const f of files) fd.append('files', f)
+  return api.post('/admin/hero-upload', fd, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    onUploadProgress: onProgress,
+  }).then(r => r.data)
+}
+
 export const fetchPopupConfig = () =>
   api.get('/popup-config').then(r => r.data)
 

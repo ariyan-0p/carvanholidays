@@ -1,10 +1,12 @@
 import './WhyUs.css'
+import { useReveal } from '../hooks/useReveal'
+import { useCountUp } from '../hooks/useCountUp'
 
 const stats = [
-  { value: '50,000+', label: 'Happy Travellers' },
-  { value: '200+',    label: 'Destinations' },
-  { value: '15+',     label: 'Years of Experience' },
-  { value: '4.9★',   label: 'Average Rating' },
+  { value: 50000, label: 'Happy Travellers', suffix: '+', format: 'k' },
+  { value: 200,   label: 'Destinations',     suffix: '+' },
+  { value: 15,    label: 'Years of Experience', suffix: '+' },
+  { value: 4.9,   label: 'Average Rating',   suffix: '★', decimals: 1 },
 ]
 
 const features = [
@@ -46,17 +48,44 @@ const features = [
   },
 ]
 
+function StatItem({ value, label, suffix, decimals, format }) {
+  const [ref, n] = useCountUp(value, { duration: 2000, decimals: decimals || 0 })
+  const display = format === 'k' && n >= 1000
+    ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1).replace(/\.0$/, '')}k`
+    : decimals
+      ? n.toFixed(decimals)
+      : n.toLocaleString('en-IN')
+  return (
+    <div ref={ref} className="whyus__stat">
+      <span className="whyus__stat-value">{display}{suffix}</span>
+      <span className="whyus__stat-label">{label}</span>
+    </div>
+  )
+}
+
+function FeatureCard({ icon, title, desc, index }) {
+  const [ref, visible] = useReveal({ delay: index * 80 })
+  return (
+    <div
+      ref={ref}
+      className={`whyus__feature-card reveal reveal--scale ${visible ? 'is-visible' : ''}`}
+    >
+      <div className="whyus__feature-icon">{icon}</div>
+      <h3 className="whyus__feature-title">{title}</h3>
+      <p className="whyus__feature-desc">{desc}</p>
+    </div>
+  )
+}
+
 export default function WhyUs() {
+  const [headerRef, headerVisible] = useReveal()
   return (
     <section className="whyus" id="about">
       {/* Stats banner */}
       <div className="whyus__stats">
         <div className="whyus__stats-inner">
           {stats.map((s, i) => (
-            <div key={i} className="whyus__stat">
-              <span className="whyus__stat-value">{s.value}</span>
-              <span className="whyus__stat-label">{s.label}</span>
-            </div>
+            <StatItem key={i} {...s} />
           ))}
         </div>
       </div>
@@ -64,10 +93,13 @@ export default function WhyUs() {
       {/* Features */}
       <div className="whyus__features">
         <div className="whyus__features-inner">
-          <div className="whyus__features-header">
+          <div
+            ref={headerRef}
+            className={`whyus__features-header reveal ${headerVisible ? 'is-visible' : ''}`}
+          >
             <span className="section-tag section-tag--light">Why Carvaan?</span>
             <h2 className="section-title section-title--light">
-              We Handle the Stress.<br />You Enjoy the Rest.
+              We handle the stress.<br /><em>You enjoy the rest.</em>
             </h2>
             <p className="section-subtitle section-subtitle--light">
               From the moment you decide to travel until you're back home with amazing memories,<br />
@@ -77,11 +109,7 @@ export default function WhyUs() {
 
           <div className="whyus__grid">
             {features.map((f, i) => (
-              <div key={i} className="whyus__feature-card">
-                <div className="whyus__feature-icon">{f.icon}</div>
-                <h3 className="whyus__feature-title">{f.title}</h3>
-                <p className="whyus__feature-desc">{f.desc}</p>
-              </div>
+              <FeatureCard key={i} index={i} {...f} />
             ))}
           </div>
         </div>

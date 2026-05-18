@@ -13,6 +13,7 @@ import Partner from '../models/Partner.js'
 import Blog from '../models/Blog.js'
 import HomeSection from '../models/HomeSection.js'
 import PopupConfig from '../models/PopupConfig.js'
+import HeroSlide from '../models/HeroSlide.js'
 import { dbReady } from '../store.js'
 
 const router = Router()
@@ -87,6 +88,69 @@ const mediaUpload = multer({
 router.post('/media', requireAdmin, mediaUpload.array('files', 5), (req, res) => {
   const urls = (req.files || []).map(f => `/uploads/testimonials/${f.filename}`)
   res.json({ urls })
+})
+
+// ---------- Hero media uploads (bigger size cap for video) ----------
+const heroDir = path.resolve(process.cwd(), 'uploads', 'hero')
+fs.mkdirSync(heroDir, { recursive: true })
+
+const heroStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, heroDir),
+  filename: (_req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase()
+    const safe = path.basename(file.originalname, ext).replace(/[^a-z0-9-_]/gi, '-').slice(0, 40)
+    cb(null, `${Date.now()}-${safe}${ext}`)
+  },
+})
+const heroUpload = multer({
+  storage: heroStorage,
+  limits: { fileSize: 80 * 1024 * 1024 }, // 80MB — comfortable for short MP4
+  fileFilter: (_req, file, cb) => {
+    if (!/^(image|video)\//.test(file.mimetype)) return cb(new Error('Only image or video files allowed'))
+    cb(null, true)
+  },
+})
+
+// POST /api/admin/hero-upload  (form field: "files")
+router.post('/hero-upload', requireAdmin, heroUpload.array('files', 5), (req, res) => {
+  const urls = (req.files || []).map(f => `/uploads/hero/${f.filename}`)
+  res.json({ urls })
+})
+
+// ---------- Admin Hero Slides CRUD ----------
+router.get('/hero', requireAdmin, async (_req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const list = await HeroSlide.find().sort({ order: 1, createdAt: -1 }).lean()
+    res.json(list)
+  } catch (e) { next(e) }
+})
+
+router.post('/hero', requireAdmin, async (req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    if (!req.body?.mediaUrl) return res.status(400).json({ error: 'Media file is required' })
+    const created = await HeroSlide.create(req.body)
+    res.status(201).json(created)
+  } catch (e) { next(e) }
+})
+
+router.put('/hero/:id', requireAdmin, async (req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const updated = await HeroSlide.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    if (!updated) return res.status(404).json({ error: 'Not found' })
+    res.json(updated)
+  } catch (e) { next(e) }
+})
+
+router.delete('/hero/:id', requireAdmin, async (req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const r = await HeroSlide.findByIdAndDelete(req.params.id)
+    if (!r) return res.status(404).json({ error: 'Not found' })
+    res.json({ ok: true })
+  } catch (e) { next(e) }
 })
 
 // ---------- Admin Testimonials CRUD ----------

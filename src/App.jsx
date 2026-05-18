@@ -4,6 +4,7 @@ import SubNav from './components/SubNav'
 import AnnouncementBar from './components/AnnouncementBar'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollToTop'
+import ScrollProgress from './components/ScrollProgress'
 import PopupEnquiry from './components/PopupEnquiry'
 import Home from './pages/Home'
 import PackagesPage from './pages/PackagesPage'
@@ -35,6 +36,8 @@ import AdminBlogsList from './admin/AdminBlogsList'
 import AdminBlogForm from './admin/AdminBlogForm'
 import AdminHomepageLayout from './admin/AdminHomepageLayout'
 import AdminPopupConfig from './admin/AdminPopupConfig'
+import AdminHeroList from './admin/AdminHeroList'
+import AdminHeroForm from './admin/AdminHeroForm'
 import './App.css'
 
 function App() {
@@ -46,6 +49,7 @@ function App() {
       <div className="app">
         <ScrollToTop />
         {!isAdmin && <AnnouncementBar />}
+        {!isAdmin && <ScrollProgress />}
         {!isAdmin && <Navbar />}
         {!isAdmin && <SubNav />}
         <Routes>
@@ -85,6 +89,9 @@ function App() {
             <Route path="blogs/:id/edit" element={<AdminBlogForm />} />
             <Route path="homepage" element={<AdminHomepageLayout />} />
             <Route path="popup" element={<AdminPopupConfig />} />
+            <Route path="hero" element={<AdminHeroList />} />
+            <Route path="hero/new" element={<AdminHeroForm />} />
+            <Route path="hero/:id/edit" element={<AdminHeroForm />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />

@@ -8,19 +8,24 @@
   left: 0;
   right: 0;
   z-index: 1000;
-  background: var(--teal);
-  transition: box-shadow 0.3s ease;
+  background: rgba(8, 67, 74, 0.92);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  transition: background 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out), border-color 0.4s var(--ease-out);
 }
 
 .navbar--scrolled {
-  box-shadow: 0 4px 20px rgba(8, 67, 74, 0.35);
+  background: rgba(8, 67, 74, 0.98);
+  box-shadow: 0 4px 24px rgba(8, 67, 74, 0.28);
+  border-bottom-color: rgba(255,255,255,0.1);
 }
 
 .navbar__inner {
-  max-width: 1280px;
+  max-width: 1320px;
   margin: 0 auto;
-  padding: 0 var(--sp-8);
-  height: 84px;
+  padding: 0 var(--sp-10);
+  height: 92px;
   display: flex;
   align-items: center;
   gap: var(--sp-8);
@@ -31,12 +36,42 @@
   flex-shrink: 0;
   display: flex;
   align-items: center;
+  gap: 14px;
 }
 
 .navbar__logo img {
-  height: 68px;
+  height: 64px;
   width: auto;
   object-fit: contain;
+  transition: transform 0.5s var(--ease-out), filter 0.5s var(--ease-out);
+  filter: drop-shadow(0 2px 10px rgba(0,0,0,0.25));
+}
+.navbar__logo:hover img {
+  transform: scale(1.04);
+}
+
+.navbar__wordmark {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+  color: var(--white);
+}
+.navbar__wordmark-name {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: -0.005em;
+  color: var(--white);
+}
+.navbar__wordmark-sub {
+  font-family: var(--font);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 3.4px;
+  text-transform: uppercase;
+  color: var(--green-accent);
+  margin-top: 4px;
 }
 
 /* Links */
@@ -48,16 +83,34 @@
 }
 
 .navbar__link {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 5px;
-  padding: var(--sp-2) var(--sp-4);
-  color: rgba(255, 255, 255, 0.88);
-  font-size: 15px;
+  padding: var(--sp-2) var(--sp-3);
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0.2px;
-  border-radius: var(--r-sm);
-  transition: color 0.2s ease, background 0.2s ease;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border-radius: 0;
+  transition: color 0.35s var(--ease-out);
+}
+.navbar__link::after {
+  content: '';
+  position: absolute;
+  left: var(--sp-3);
+  right: var(--sp-3);
+  bottom: 2px;
+  height: 1px;
+  background: var(--green-accent);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.45s var(--ease-out);
+}
+.navbar__link:hover::after,
+.navbar__link--active::after {
+  transform: scaleX(1);
 }
 
 .navbar__link svg {
@@ -67,7 +120,7 @@
 
 .navbar__link:hover {
   color: var(--green-accent);
-  background: rgba(168, 245, 124, 0.08);
+  background: transparent;
 }
 
 .navbar__link:hover svg {
@@ -76,28 +129,30 @@
 }
 
 .navbar__link--active {
-  color: var(--green-accent);
-  background: rgba(168, 245, 124, 0.12);
+  color: var(--white);
+  background: transparent;
 }
 
 /* CTA Button */
 .navbar__cta {
   margin-left: var(--sp-4);
-  padding: 9px 24px;
-  border: 2px solid rgba(255, 255, 255, 0.7);
+  padding: 11px 26px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: var(--r-full);
   color: var(--white);
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 2.2px;
+  text-transform: uppercase;
   white-space: nowrap;
-  transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+  transition: background 0.45s var(--ease-out), border-color 0.45s var(--ease-out), color 0.45s var(--ease-out), transform 0.45s var(--ease-out);
 }
 
 .navbar__cta:hover {
   background: var(--green-accent);
   border-color: var(--green-accent);
   color: var(--teal);
+  transform: translateY(-1px);
 }
 
 /* Hamburger */
@@ -127,17 +182,17 @@
 @media (max-width: 768px) {
   .navbar__inner {
     padding: 0 var(--sp-5);
-    height: 72px;
+    height: 76px;
   }
 
   .navbar__logo img {
-    height: 56px;
+    height: 52px;
   }
 
   .navbar__links {
     display: none;
     position: absolute;
-    top: 72px;
+    top: 76px;
     left: 0;
     right: 0;
     background: var(--teal);

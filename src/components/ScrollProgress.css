@@ -1,0 +1,27 @@
+.scroll-progress {
+  position: fixed;
+  top: var(--annbar-h, 0px);
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: transparent;
+  z-index: 1200;
+  pointer-events: none;
+}
+.scroll-progress__bar {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--green-strong) 0%,
+    var(--green-accent) 50%,
+    var(--teal-light) 100%
+  );
+  background-size: 200% 100%;
+  animation: progress-sheen 3s linear infinite;
+  box-shadow: 0 0 14px rgba(168, 245, 124, 0.65);
+  transition: width 0.12s linear;
+}
+@keyframes progress-sheen {
+  0%   { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
+}

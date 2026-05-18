@@ -17,6 +17,7 @@ import partnersRouter from './routes/partners.js'
 import blogsRouter from './routes/blogs.js'
 import homeSectionsRouter from './routes/homeSections.js'
 import popupConfigRouter from './routes/popupConfig.js'
+import heroRouter from './routes/hero.js'
 import { seedIfEmpty } from './seed.js'
 
 const app = express()
@@ -46,6 +47,7 @@ app.use('/api/partners', partnersRouter)
 app.use('/api/blogs', blogsRouter)
 app.use('/api/home-sections', homeSectionsRouter)
 app.use('/api/popup-config', popupConfigRouter)
+app.use('/api/hero', heroRouter)
 app.use('/api/admin', adminRouter)
 
 app.use((err, _req, res, _next) => {
