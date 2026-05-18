@@ -5,6 +5,7 @@ import AnnouncementBar from './components/AnnouncementBar'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollToTop'
 import ScrollProgress from './components/ScrollProgress'
+import Preloader from './components/Preloader'
 import PopupEnquiry from './components/PopupEnquiry'
 import Home from './pages/Home'
 import PackagesPage from './pages/PackagesPage'
@@ -49,6 +50,7 @@ function App() {
   return (
     <AdminAuthProvider>
       <div className="app">
+        {!isAdmin && <Preloader />}
         <ScrollToTop />
         {!isAdmin && <AnnouncementBar />}
         {!isAdmin && <ScrollProgress />}

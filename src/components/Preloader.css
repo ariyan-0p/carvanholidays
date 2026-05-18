@@ -1,0 +1,211 @@
+/* ===========================
+   TRAVEL PRELOADER
+   =========================== */
+
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(80% 70% at 50% 40%, #0c5660 0%, #06363c 65%, #03252a 100%);
+  overflow: hidden;
+  isolation: isolate;
+  opacity: 1;
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+}
+
+.preloader--exit {
+  opacity: 0;
+  transform: scale(1.04);
+  pointer-events: none;
+}
+
+/* === Aurora === */
+.preloader__aurora {
+  position: absolute;
+  inset: -10%;
+  background:
+    radial-gradient(60% 50% at 30% 30%, rgba(168, 245, 124, 0.18), transparent 60%),
+    radial-gradient(50% 40% at 75% 65%, rgba(116, 143, 156, 0.20), transparent 65%),
+    radial-gradient(40% 30% at 50% 100%, rgba(18, 184, 74, 0.10), transparent 60%);
+  filter: blur(60px);
+  animation: pre-aurora 12s ease-in-out infinite alternate;
+  z-index: 0;
+}
+@keyframes pre-aurora {
+  0%   { transform: translate3d(0, 0, 0) scale(1); opacity: 0.85; }
+  100% { transform: translate3d(30px, -20px, 0) scale(1.1); opacity: 1; }
+}
+
+/* === Clouds === */
+.preloader__clouds {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.preloader__cloud {
+  position: absolute;
+  width: 280px;
+  height: 30px;
+  background:
+    radial-gradient(40px 18px at 30% 50%, rgba(255,255,255,0.18), transparent 70%),
+    radial-gradient(60px 26px at 55% 60%, rgba(255,255,255,0.13), transparent 70%),
+    radial-gradient(34px 16px at 80% 45%, rgba(255,255,255,0.16), transparent 70%);
+  filter: blur(2px);
+  opacity: 0.55;
+}
+.preloader__cloud--1 { top: 18%; left: -300px; animation: pre-cloud 16s linear infinite; }
+.preloader__cloud--2 { top: 60%; left: -300px; animation: pre-cloud 22s linear infinite 4s; transform: scale(0.85); opacity: 0.4; }
+.preloader__cloud--3 { top: 78%; left: -300px; animation: pre-cloud 30s linear infinite 9s; transform: scale(1.2); opacity: 0.35; }
+@keyframes pre-cloud {
+  0%   { transform: translateX(0) scale(var(--s, 1)); }
+  100% { transform: translateX(calc(100vw + 320px)) scale(var(--s, 1)); }
+}
+
+/* === Stage that holds the plane + dashed path === */
+.preloader__stage {
+  position: relative;
+  width: min(880px, 92vw);
+  height: 200px;
+  z-index: 2;
+  margin-bottom: var(--sp-8);
+}
+
+.preloader__path {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.preloader__path-line {
+  stroke-dashoffset: 1400;
+  animation: pre-draw 2.4s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+@keyframes pre-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+.preloader__plane {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 46px;
+  height: 46px;
+  color: var(--green-accent);
+  filter:
+    drop-shadow(0 0 12px rgba(168, 245, 124, 0.55))
+    drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
+  /* Offset-path makes the plane follow the SAME curve as the dashed line */
+  offset-path: path('M -40 130 Q 250 20, 500 100 T 1040 70');
+  offset-distance: 0%;
+  offset-rotate: auto 30deg;
+  animation: pre-fly 2.4s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+@keyframes pre-fly {
+  0%   { offset-distance: 0%;   opacity: 0; }
+  6%   { opacity: 1; }
+  92%  { opacity: 1; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+
+/* Fallback for browsers without offset-path (older Safari) — translate across instead */
+@supports not (offset-path: path('M 0 0')) {
+  .preloader__plane {
+    animation: pre-fly-fallback 2.4s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  }
+  @keyframes pre-fly-fallback {
+    0%   { transform: translate(-60px, 130px) rotate(-15deg); opacity: 0; }
+    50%  { transform: translate(50vw, 60px)   rotate(0deg);   opacity: 1; }
+    100% { transform: translate(calc(100% + 60px), 70px) rotate(10deg); opacity: 0; }
+  }
+}
+
+/* === Brand block === */
+.preloader__brand {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  color: var(--white);
+  padding: 0 var(--sp-5);
+}
+
+.preloader__tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--green-accent);
+  opacity: 0;
+  animation: pre-fade-up 0.9s var(--ease-out) 0.4s forwards;
+  margin-bottom: var(--sp-4);
+}
+
+.preloader__title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 5vw, 52px);
+  font-weight: 300;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  color: var(--white);
+  margin: 0 0 var(--sp-6);
+  opacity: 0;
+  animation: pre-fade-up 1s var(--ease-out) 0.7s forwards;
+}
+.preloader__title em {
+  font-style: italic;
+  color: var(--green-accent);
+}
+
+@keyframes pre-fade-up {
+  from { opacity: 0; transform: translateY(14px); filter: blur(4px); }
+  to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+}
+
+/* Loading bar */
+.preloader__loader {
+  width: 220px;
+  max-width: 60vw;
+  height: 2px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  overflow: hidden;
+  opacity: 0;
+  animation: pre-fade-up 0.8s var(--ease-out) 1s forwards;
+}
+.preloader__loader-fill {
+  display: block;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, var(--green-accent), transparent);
+  animation: pre-loader-sweep 1.4s ease-in-out infinite;
+  border-radius: inherit;
+}
+@keyframes pre-loader-sweep {
+  0%   { transform: translateX(-120%); }
+  100% { transform: translateX(360%); }
+}
+
+/* Reduced motion: keep brand visible but skip the animated travel arc */
+@media (prefers-reduced-motion: reduce) {
+  .preloader__path-line { stroke-dashoffset: 0; }
+  .preloader__plane,
+  .preloader__cloud,
+  .preloader__aurora { animation: none !important; }
+  .preloader__plane { display: none; }
+  .preloader__tag,
+  .preloader__title,
+  .preloader__loader { opacity: 1; animation: none !important; transform: none !important; filter: none !important; }
+}
+
+@media (max-width: 640px) {
+  .preloader__stage { height: 160px; margin-bottom: var(--sp-5); }
+  .preloader__plane { width: 36px; height: 36px; }
+}
