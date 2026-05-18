@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react'
 import './Preloader.css'
 
-const SESSION_KEY = 'ch_preloader_shown'
 const MIN_DURATION = 2400 // ms — minimum time the preloader is visible
 const MAX_DURATION = 4000 // ms — hard cap
 
 export default function Preloader() {
-  const initial = typeof window !== 'undefined' && !sessionStorage.getItem(SESSION_KEY)
-  const [visible, setVisible] = useState(initial)
+  // Play on every full page load / refresh.
+  const [visible, setVisible] = useState(true)
   const [exiting, setExiting] = useState(false)
 
   useEffect(() => {
@@ -18,10 +17,7 @@ export default function Preloader() {
       const remaining = Math.max(0, MIN_DURATION - elapsed)
       setTimeout(() => {
         setExiting(true)
-        setTimeout(() => {
-          setVisible(false)
-          try { sessionStorage.setItem(SESSION_KEY, '1') } catch { /* noop */ }
-        }, 800)
+        setTimeout(() => setVisible(false), 800)
       }, remaining)
     }
     if (document.readyState === 'complete') finish()
