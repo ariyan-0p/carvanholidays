@@ -10,6 +10,7 @@ import WhyUs from '../components/WhyUs'
 import Testimonials from '../components/Testimonials'
 import InstaShowcase from '../components/InstaShowcase'
 import OfficialPartners from '../components/OfficialPartners'
+import PromoBanner from '../components/PromoBanner'
 import { HOME_SECTIONS } from '../config/homeSections'
 import { fetchHomeSections } from '../api/client'
 
@@ -56,8 +57,10 @@ export default function Home() {
       <SearchBar />
       <AsFeaturedIn />
       <FeaturedDestinations />
+      <PromoBanner slot="after-destinations" />
       {renderShelf(featured)}
       {renderShelf(topPicks)}
+      <PromoBanner slot="before-region" />
       <RegionExplorer />
       <WhyUs />
       {renderShelf(trending)}

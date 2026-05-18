@@ -199,6 +199,22 @@ export const adminUploadHeroMedia = (files, onProgress) => {
   }).then(r => r.data)
 }
 
+// ---------- Promo banners ----------
+export const fetchBanners = (slot) =>
+  api.get('/banners', { params: slot ? { slot } : {} }).then(r => r.data)
+
+export const adminListBanners = () =>
+  api.get('/admin/banners').then(r => r.data)
+
+export const adminCreateBanner = (data) =>
+  api.post('/admin/banners', data).then(r => r.data)
+
+export const adminUpdateBanner = (id, data) =>
+  api.put(`/admin/banners/${id}`, data).then(r => r.data)
+
+export const adminDeleteBanner = (id) =>
+  api.delete(`/admin/banners/${id}`).then(r => r.data)
+
 export const fetchPopupConfig = () =>
   api.get('/popup-config').then(r => r.data)
 

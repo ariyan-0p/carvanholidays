@@ -38,6 +38,8 @@ import AdminHomepageLayout from './admin/AdminHomepageLayout'
 import AdminPopupConfig from './admin/AdminPopupConfig'
 import AdminHeroList from './admin/AdminHeroList'
 import AdminHeroForm from './admin/AdminHeroForm'
+import AdminBannersList from './admin/AdminBannersList'
+import AdminBannerForm from './admin/AdminBannerForm'
 import './App.css'
 
 function App() {
@@ -92,6 +94,9 @@ function App() {
             <Route path="hero" element={<AdminHeroList />} />
             <Route path="hero/new" element={<AdminHeroForm />} />
             <Route path="hero/:id/edit" element={<AdminHeroForm />} />
+            <Route path="banners" element={<AdminBannersList />} />
+            <Route path="banners/new" element={<AdminBannerForm />} />
+            <Route path="banners/:id/edit" element={<AdminBannerForm />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />

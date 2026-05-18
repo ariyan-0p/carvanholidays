@@ -14,6 +14,7 @@ import Blog from '../models/Blog.js'
 import HomeSection from '../models/HomeSection.js'
 import PopupConfig from '../models/PopupConfig.js'
 import HeroSlide from '../models/HeroSlide.js'
+import PromoBanner, { BANNER_SLOTS } from '../models/PromoBanner.js'
 import { dbReady } from '../store.js'
 
 const router = Router()
@@ -148,6 +149,45 @@ router.delete('/hero/:id', requireAdmin, async (req, res, next) => {
   try {
     if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
     const r = await HeroSlide.findByIdAndDelete(req.params.id)
+    if (!r) return res.status(404).json({ error: 'Not found' })
+    res.json({ ok: true })
+  } catch (e) { next(e) }
+})
+
+// ---------- Admin Promo Banners CRUD ----------
+router.get('/banners', requireAdmin, async (_req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const list = await PromoBanner.find().sort({ slot: 1, order: 1, createdAt: -1 }).lean()
+    res.json(list)
+  } catch (e) { next(e) }
+})
+
+router.post('/banners', requireAdmin, async (req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    if (!req.body?.imageUrl) return res.status(400).json({ error: 'Banner image is required' })
+    if (!req.body?.slot || !BANNER_SLOTS.includes(req.body.slot)) {
+      return res.status(400).json({ error: 'Invalid slot' })
+    }
+    const created = await PromoBanner.create(req.body)
+    res.status(201).json(created)
+  } catch (e) { next(e) }
+})
+
+router.put('/banners/:id', requireAdmin, async (req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const updated = await PromoBanner.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    if (!updated) return res.status(404).json({ error: 'Not found' })
+    res.json(updated)
+  } catch (e) { next(e) }
+})
+
+router.delete('/banners/:id', requireAdmin, async (req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const r = await PromoBanner.findByIdAndDelete(req.params.id)
     if (!r) return res.status(404).json({ error: 'Not found' })
     res.json({ ok: true })
   } catch (e) { next(e) }

@@ -25,6 +25,9 @@ export default function AdminLayout() {
           <NavLink to="/admin/hero" className={({isActive}) => `admin__nav-link ${isActive ? 'is-active' : ''}`}>
             Hero Banner
           </NavLink>
+          <NavLink to="/admin/banners" className={({isActive}) => `admin__nav-link ${isActive ? 'is-active' : ''}`}>
+            Promo Banners
+          </NavLink>
           <NavLink to="/admin/packages/new" className={({isActive}) => `admin__nav-link ${isActive ? 'is-active' : ''}`}>
             New Package
           </NavLink>
