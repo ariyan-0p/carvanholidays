@@ -89,6 +89,14 @@ export default function Hero() {
     return () => { mounted = false }
   }, [])
 
+  // Warm the browser cache for the first image slide so it paints instantly.
+  useEffect(() => {
+    const first = slides[0]
+    if (!first || first.kind !== 'image' || !first.mediaUrl) return
+    const img = new Image()
+    img.src = resolveUrl(first.mediaUrl)
+  }, [slides])
+
   const goTo = useCallback((idx) => {
     if (animating) return
     setAnimating(true)

@@ -16,16 +16,19 @@
   position: absolute;
   inset: 0;
   background-size: cover;
-  background-position: center;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-color: #08434a; /* matches overlay tone — avoids white flash before image loads */
   opacity: 0;
   transition: opacity 0.8s ease;
   transform: scale(1.04);
   animation: none;
+  will-change: transform, opacity;
 }
 
 /* Background video */
 .hero__bg--video {
-  background: #000;
+  background: #08434a;
   overflow: hidden;
 }
 .hero__bg--video video {
@@ -46,8 +49,8 @@
 }
 
 @keyframes heroZoom {
-  from { transform: scale(1.04); }
-  to   { transform: scale(1); }
+  from { transform: scale(1.06); }
+  to   { transform: scale(1.02); } /* stay slightly overscaled to avoid sub-pixel edge bleed */
 }
 
 /* Overlay: dark gradient from left */
