@@ -6,15 +6,22 @@ import {
 } from '../api/client'
 
 const FIELD_KEYS = [
-  { key: 'destination', label: 'Destination' },
-  { key: 'travelDate',  label: 'Travel date' },
-  { key: 'travellers',  label: 'Travellers' },
-  { key: 'tripType',    label: 'Trip type' },
-  { key: 'budget',      label: 'Budget' },
-  { key: 'name',        label: 'Name' },
-  { key: 'phone',       label: 'Phone' },
-  { key: 'email',       label: 'Email' },
-  { key: 'message',     label: 'Message / notes' },
+  // Primary (default-on) — the JustWravel-style compact form
+  { key: 'firstName',        label: 'First name' },
+  { key: 'lastName',         label: 'Last name' },
+  { key: 'email',            label: 'Email' },
+  { key: 'phone',            label: 'Phone' },
+  { key: 'tripPreference',   label: 'Trip preference (select)' },
+  { key: 'destination',      label: 'Destination (select)' },
+  { key: 'marketingConsent', label: 'Marketing consent checkbox' },
+  // Optional (off-by-default) — admin can flip on
+  { key: 'travelDate', label: 'Travel date' },
+  { key: 'travellers', label: 'Travellers' },
+  { key: 'budget',     label: 'Budget' },
+  { key: 'message',    label: 'Message / notes' },
+  // Legacy — kept for back-compat (single full-name field)
+  { key: 'name',     label: 'Full name (legacy single field)' },
+  { key: 'tripType', label: 'Trip type (legacy)' },
 ]
 
 export default function AdminPopupConfig() {
@@ -34,6 +41,12 @@ export default function AdminPopupConfig() {
 
   const set = (k, v) => setCfg((c) => ({ ...c, [k]: v }))
   const setField = (k, v) => setCfg((c) => ({ ...c, fields: { ...(c.fields || {}), [k]: v } }))
+
+  // Helpers for the editable option lists
+  const setListFromText = (key) => (e) => {
+    const items = e.target.value.split('\n').map(s => s.trim()).filter(Boolean)
+    set(key, items)
+  }
 
   const onUpload = async (e) => {
     const file = e.target.files?.[0]
@@ -96,6 +109,11 @@ export default function AdminPopupConfig() {
         {/* Banner panel (left side of popup) */}
         <section className="admin__form-block">
           <h3>Left banner</h3>
+          <p className="admin__sub" style={{ marginBottom: 10 }}>
+            <strong>Recommended:</strong> 1000 × 1000 px · aspect ratio <strong>1:1 (square)</strong> · JPG/PNG · ≤ 500 KB.
+            The popup crops the image to a square; anything outside the square is hidden. On mobile (≤ 760 px wide) the banner switches to 16:9 above the form.
+            If empty, a teal-to-green gradient is shown.
+          </p>
           {cfg.bannerUrl ? (
             <div className="admin__media-preview">
               <img src={cfg.bannerUrl} alt="" className="admin__media-preview-el" />
@@ -104,8 +122,8 @@ export default function AdminPopupConfig() {
           ) : (
             <label className="admin__upload">
               <input type="file" accept="image/*" onChange={onUpload} disabled={uploading} />
-              <span>{uploading ? 'Uploading…' : 'Click to upload banner image'}</span>
-              <small>Tall portrait or landscape works. If empty, a teal-to-green gradient is used.</small>
+              <span>{uploading ? 'Uploading…' : 'Click to upload banner image (1:1 square)'}</span>
+              <small>1000 × 1000 px · square · JPG/PNG · ≤ 500 KB</small>
             </label>
           )}
 
@@ -156,6 +174,67 @@ export default function AdminPopupConfig() {
             <label className="admin__field admin__field--wide">
               <span>Success message</span>
               <textarea rows="2" value={cfg.successMessage || ''} onChange={(e) => set('successMessage', e.target.value)} />
+            </label>
+          </div>
+        </section>
+
+        {/* Dropdown options */}
+        <section className="admin__form-block">
+          <h3>Dropdown options</h3>
+          <p className="admin__sub" style={{ marginBottom: 8 }}>
+            One option per line. These populate the "What kind of trip do you prefer?" and "Where do you want to go?" selects.
+          </p>
+          <div className="admin__form-grid">
+            <label className="admin__field admin__field--wide">
+              <span>Trip preference options</span>
+              <textarea
+                rows="7"
+                value={(cfg.tripPreferenceOptions || []).join('\n')}
+                onChange={setListFromText('tripPreferenceOptions')}
+                placeholder="Family Holiday&#10;Honeymoon&#10;Adventure&#10;..."
+              />
+            </label>
+            <label className="admin__field admin__field--wide">
+              <span>Destination options</span>
+              <textarea
+                rows="7"
+                value={(cfg.destinationOptions || []).join('\n')}
+                onChange={setListFromText('destinationOptions')}
+                placeholder="Bali&#10;Maldives&#10;Goa&#10;..."
+              />
+            </label>
+          </div>
+        </section>
+
+        {/* Phone + consent */}
+        <section className="admin__form-block">
+          <h3>Phone &amp; consent</h3>
+          <div className="admin__form-grid">
+            <label className="admin__field">
+              <span>Default country code</span>
+              <input
+                type="text"
+                value={cfg.countryCode || '+91'}
+                onChange={(e) => set('countryCode', e.target.value)}
+                placeholder="+91"
+              />
+            </label>
+            <label className="admin__field admin__field--inline">
+              <input
+                type="checkbox"
+                checked={cfg.marketingConsentDefault !== false}
+                onChange={(e) => set('marketingConsentDefault', e.target.checked)}
+              />
+              <span>Marketing checkbox checked by default</span>
+            </label>
+            <label className="admin__field admin__field--wide">
+              <span>Marketing consent label</span>
+              <textarea
+                rows="2"
+                value={cfg.marketingConsentLabel || ''}
+                onChange={(e) => set('marketingConsentLabel', e.target.value)}
+                placeholder="Keep me updated with offers, trips, and travel inspiration via email, SMS, and WhatsApp"
+              />
             </label>
           </div>
         </section>

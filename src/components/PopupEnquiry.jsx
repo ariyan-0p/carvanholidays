@@ -5,15 +5,19 @@ import './PopupEnquiry.css'
 const todayISO = () => new Date().toISOString().slice(0, 10)
 
 const INITIAL = {
+  firstName: '',
+  lastName: '',
+  name: '',           // legacy
+  email: '',
+  phone: '',
+  tripPreference: '',
   destination: '',
   travelDate: '',
   travellers: '2 Adults',
   tripType: 'Family Holiday',
   budget: '₹50k – ₹1L per person',
-  name: '',
-  phone: '',
-  email: '',
   message: '',
+  marketingConsent: true,
 }
 
 const FALLBACK_CFG = {
@@ -22,18 +26,31 @@ const FALLBACK_CFG = {
   bannerSubheading: 'On hand-picked holiday packages this season',
   bannerOverlayColor: '#08434A',
   tag: 'Limited-time offer',
-  title: 'Get up to 30% off on your next holiday',
+  title: 'Plan Your Next Trip',
   subtitle: "Tell us a few quick details and our travel expert will share a custom quote — free, no obligation.",
   successTitle: 'Thanks for your enquiry!',
   successMessage: "We'll call you within 4 business hours with the best deals.",
-  cta: 'Get my custom quote',
+  cta: "Let's Go",
   legal: "By submitting, you consent to be contacted by Carvaan Holidays. We'll never share your details.",
+  countryCode: '+91',
+  tripPreferenceOptions: [
+    'Family Holiday', 'Honeymoon', 'Couple Getaway', 'Adventure',
+    'Beach & Leisure', 'Pilgrimage', 'Group / Friends',
+  ],
+  destinationOptions: [
+    'Bali', 'Maldives', 'Thailand', 'Dubai', 'Europe',
+    'Goa', 'Kerala', 'Rajasthan', 'Ladakh', 'Andaman', 'Kashmir',
+  ],
+  marketingConsentLabel: 'Keep me updated with offers, trips, and travel inspiration via email, SMS, and WhatsApp',
+  marketingConsentDefault: true,
   intervalSeconds: 45,
   active: true,
   showAfterSubmit: false,
   fields: {
-    destination: true, travelDate: true, travellers: true, tripType: true, budget: true,
-    name: true, phone: true, email: true, message: true,
+    firstName: true, lastName: true, name: false,
+    email: true, phone: true,
+    tripPreference: true, destination: true, marketingConsent: true,
+    travelDate: false, travellers: false, tripType: false, budget: false, message: false,
   },
 }
 
@@ -46,34 +63,40 @@ export default function PopupEnquiry() {
   const [error, setError] = useState(null)
   const [submitted, setSubmitted] = useState(false)
 
-  // Load config
   useEffect(() => {
     fetchPopupConfig()
-      .then((c) => setCfg({ ...FALLBACK_CFG, ...(c || {}), fields: { ...FALLBACK_CFG.fields, ...(c?.fields || {}) } }))
+      .then((c) => {
+        const merged = {
+          ...FALLBACK_CFG,
+          ...(c || {}),
+          fields: { ...FALLBACK_CFG.fields, ...(c?.fields || {}) },
+          tripPreferenceOptions: (c?.tripPreferenceOptions?.length ? c.tripPreferenceOptions : FALLBACK_CFG.tripPreferenceOptions),
+          destinationOptions:    (c?.destinationOptions?.length ? c.destinationOptions : FALLBACK_CFG.destinationOptions),
+        }
+        setCfg(merged)
+        setForm((f) => ({ ...f, marketingConsent: merged.marketingConsentDefault !== false }))
+      })
       .catch(() => setCfg(FALLBACK_CFG))
   }, [])
 
-  // Auto-open every N seconds (until the user submits successfully).
   useEffect(() => {
     if (!cfg) return
     if (cfg.active === false) return
     if (submittedOnce && !cfg.showAfterSubmit) return
     const ms = Math.max(15, Number(cfg.intervalSeconds) || 45) * 1000
-    const id = setInterval(() => {
-      setOpen((prev) => (prev ? prev : true))
-    }, ms)
+    const id = setInterval(() => setOpen((prev) => prev || true), ms)
     return () => clearInterval(id)
   }, [cfg, submittedOnce])
 
-  // Lock body scroll + ESC to close while open.
   useEffect(() => {
     if (!open) return
     const onKey = (e) => e.key === 'Escape' && setOpen(false)
     document.addEventListener('keydown', onKey)
+    const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     return () => {
       document.removeEventListener('keydown', onKey)
-      document.body.style.overflow = ''
+      document.body.style.overflow = prev
     }
   }, [open])
 
@@ -83,36 +106,43 @@ export default function PopupEnquiry() {
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }))
   const close = () => setOpen(false)
 
+  const fullName = () => {
+    if (fields.firstName || fields.lastName) {
+      return [form.firstName, form.lastName].filter(Boolean).join(' ').trim()
+    }
+    return form.name.trim()
+  }
+
   const submit = async (e) => {
     e.preventDefault()
     setError(null)
 
-    const need = (key, label) => {
-      if (fields[key] && !String(form[key] || '').trim()) {
-        setError(`Please fill ${label}.`)
-        return false
-      }
-      return true
-    }
-    if (!need('destination', 'destination')) return
-    if (!need('name', 'your name')) return
-    if (!need('phone', 'phone number')) return
-    if (!need('email', 'email')) return
+    const name = fullName()
+    if (!name) { setError('Please tell us your name.'); return }
+    if (fields.phone && !form.phone.trim()) { setError('Please share your phone number.'); return }
+    if (fields.email && !form.email.trim()) { setError('Please share your email.'); return }
 
     setBusy(true)
     try {
-      const extra = []
-      if (fields.tripType) extra.push(`Trip type: ${form.tripType}`)
-      if (fields.budget) extra.push(`Budget: ${form.budget}`)
-      const tagged = `[From Popup Form]${extra.length ? ' ' + extra.join('. ') + '.' : ''}${form.message ? ' Notes: ' + form.message : ''}`
+      const extras = []
+      if (fields.tripPreference && form.tripPreference) extras.push(`Trip preference: ${form.tripPreference}`)
+      if (fields.tripType && form.tripType) extras.push(`Trip type: ${form.tripType}`)
+      if (fields.budget && form.budget) extras.push(`Budget: ${form.budget}`)
+      if (fields.marketingConsent) extras.push(`Marketing consent: ${form.marketingConsent ? 'Yes' : 'No'}`)
+      const tagged = `[From Popup Form]${extras.length ? ' ' + extras.join('. ') + '.' : ''}${form.message ? ' Notes: ' + form.message : ''}`
+
+      const phone = form.phone.trim()
+        ? (form.phone.trim().startsWith('+') ? form.phone.trim() : `${cfg.countryCode || '+91'} ${form.phone.trim()}`)
+        : ''
+
       await submitEnquiry({
         type: 'Holidays',
-        destination: form.destination,
+        destination: form.destination || form.tripPreference || '—',
         travelDate: form.travelDate || undefined,
         travellers: form.travellers,
-        name: form.name,
+        name,
         email: form.email,
-        phone: form.phone,
+        phone,
         message: tagged,
         source: 'popup-form',
       })
@@ -127,7 +157,7 @@ export default function PopupEnquiry() {
 
   const done = () => {
     setSubmitted(false)
-    setForm(INITIAL)
+    setForm({ ...INITIAL, marketingConsent: cfg.marketingConsentDefault !== false })
     setOpen(false)
   }
 
@@ -136,22 +166,33 @@ export default function PopupEnquiry() {
       <div className="pe-modal__panel" onClick={(e) => e.stopPropagation()}>
         <button className="pe-modal__close" onClick={close} aria-label="Close">×</button>
 
-        {/* Left banner */}
+        {/* Left banner — outer column stretches to form height. When an image
+            is uploaded it sits as a 1:1 square at the top; below the square the
+            same overlay colour continues so there's no visible seam. With no
+            image, the full column shows a single seamless gradient. */}
         <aside
-          className="pe-modal__banner"
+          className={`pe-modal__banner ${cfg.bannerUrl ? 'has-image' : ''}`}
           style={{
-            backgroundImage: cfg.bannerUrl ? `url(${cfg.bannerUrl})` : undefined,
-            background: cfg.bannerUrl ? undefined : `linear-gradient(135deg, ${cfg.bannerOverlayColor || '#08434A'} 0%, #12B84A 130%)`,
+            background: cfg.bannerUrl
+              ? (cfg.bannerOverlayColor || '#08434A')
+              : `linear-gradient(160deg, #12B84A 0%, ${cfg.bannerOverlayColor || '#08434A'} 70%)`,
           }}
         >
           <div
-            className="pe-modal__banner-overlay"
-            style={{ background: `linear-gradient(180deg, rgba(0,0,0,0.05) 0%, ${hexToRgba(cfg.bannerOverlayColor || '#08434A', 0.78)} 100%)` }}
-          />
-          <div className="pe-modal__banner-content">
-            <span className="pe-modal__banner-tag">{cfg.tag}</span>
-            <h2 className="pe-modal__banner-heading">{cfg.bannerHeading}</h2>
-            <p className="pe-modal__banner-sub">{cfg.bannerSubheading}</p>
+            className="pe-modal__banner-square"
+            style={cfg.bannerUrl ? { backgroundImage: `url(${cfg.bannerUrl})` } : undefined}
+          >
+            {cfg.bannerUrl && (
+              <div
+                className="pe-modal__banner-overlay"
+                style={{ background: `linear-gradient(180deg, rgba(0,0,0,0.10) 0%, ${hexToRgba(cfg.bannerOverlayColor || '#08434A', 0.55)} 100%)` }}
+              />
+            )}
+            <div className="pe-modal__banner-content">
+              <span className="pe-modal__banner-tag">{cfg.tag}</span>
+              <h2 className="pe-modal__banner-heading">{cfg.bannerHeading}</h2>
+              <p className="pe-modal__banner-sub">{cfg.bannerSubheading}</p>
+            </div>
           </div>
         </aside>
 
@@ -164,38 +205,117 @@ export default function PopupEnquiry() {
                   <path d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h2>{cfg.successTitle.replace('{name}', form.name.split(' ')[0] || 'traveller')}</h2>
+              <h2>{cfg.successTitle.replace('{name}', (form.firstName || form.name).split(' ')[0] || 'traveller')}</h2>
               <p>
                 {cfg.successMessage}
-                {form.phone && <> <br /><strong>{form.phone}</strong></>}
+                {form.phone && <> <br /><strong>{cfg.countryCode || '+91'} {form.phone}</strong></>}
               </p>
               <button className="pe-modal__btn" onClick={done}>Done</button>
             </div>
           ) : (
             <form className="pe-modal__form" onSubmit={submit}>
               <header className="pe-modal__header">
-                <span className="pe-modal__tag">{cfg.tag}</span>
-                <h2 id="pe-title">{cfg.title}</h2>
-                <p>{cfg.subtitle}</p>
+                <h2 id="pe-title" className="pe-modal__title">{cfg.title}</h2>
+                {cfg.subtitle && <p className="pe-modal__subtitle">{cfg.subtitle}</p>}
               </header>
 
               <div className="pe-modal__grid">
-                {fields.destination && (
-                  <label className="pe-modal__field pe-modal__field--wide">
-                    <span>Where do you want to travel? *</span>
+                {/* Name row */}
+                {fields.firstName && (
+                  <label className="pe-modal__field">
                     <input
                       type="text"
-                      placeholder="e.g. Bali, Maldives, Kashmir…"
-                      value={form.destination}
-                      onChange={(e) => set('destination', e.target.value)}
+                      placeholder="First Name *"
+                      value={form.firstName}
+                      onChange={(e) => set('firstName', e.target.value)}
+                      required
+                    />
+                  </label>
+                )}
+                {fields.lastName && (
+                  <label className="pe-modal__field">
+                    <input
+                      type="text"
+                      placeholder="Last Name"
+                      value={form.lastName}
+                      onChange={(e) => set('lastName', e.target.value)}
+                    />
+                  </label>
+                )}
+                {fields.name && !fields.firstName && !fields.lastName && (
+                  <label className="pe-modal__field pe-modal__field--wide">
+                    <input
+                      type="text"
+                      placeholder="Full Name *"
+                      value={form.name}
+                      onChange={(e) => set('name', e.target.value)}
                       required
                     />
                   </label>
                 )}
 
+                {/* Email + Phone row */}
+                {fields.email && (
+                  <label className="pe-modal__field">
+                    <input
+                      type="email"
+                      placeholder="Email"
+                      value={form.email}
+                      onChange={(e) => set('email', e.target.value)}
+                      required
+                    />
+                  </label>
+                )}
+                {fields.phone && (
+                  <label className="pe-modal__field pe-modal__field--phone">
+                    <span className="pe-modal__cc">{cfg.countryCode || '+91'}</span>
+                    <input
+                      type="tel"
+                      placeholder="98xxx xxxxx"
+                      value={form.phone}
+                      onChange={(e) => set('phone', e.target.value)}
+                      required
+                    />
+                  </label>
+                )}
+
+                {/* Trip preference */}
+                {fields.tripPreference && (
+                  <label className="pe-modal__field pe-modal__field--wide">
+                    <span className="pe-modal__label">What kind of trip do you prefer? *</span>
+                    <select
+                      value={form.tripPreference}
+                      onChange={(e) => set('tripPreference', e.target.value)}
+                      required
+                    >
+                      <option value="">Select a category</option>
+                      {(cfg.tripPreferenceOptions || []).map((opt) => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  </label>
+                )}
+
+                {/* Destination */}
+                {fields.destination && (
+                  <label className="pe-modal__field pe-modal__field--wide">
+                    <span className="pe-modal__label">Where do you want to go?</span>
+                    <select
+                      value={form.destination}
+                      onChange={(e) => set('destination', e.target.value)}
+                    >
+                      <option value="">Select a location</option>
+                      {(cfg.destinationOptions || []).map((opt) => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  </label>
+                )}
+
+                {/* Optional extras */}
                 {fields.travelDate && (
                   <label className="pe-modal__field">
-                    <span>When are you planning?</span>
+                    <span className="pe-modal__label">When are you planning?</span>
                     <input
                       type="date"
                       min={todayISO()}
@@ -204,10 +324,9 @@ export default function PopupEnquiry() {
                     />
                   </label>
                 )}
-
                 {fields.travellers && (
                   <label className="pe-modal__field">
-                    <span>How many travellers?</span>
+                    <span className="pe-modal__label">How many travellers?</span>
                     <select value={form.travellers} onChange={(e) => set('travellers', e.target.value)}>
                       <option>1 Adult</option>
                       <option>2 Adults</option>
@@ -218,25 +337,9 @@ export default function PopupEnquiry() {
                     </select>
                   </label>
                 )}
-
-                {fields.tripType && (
-                  <label className="pe-modal__field">
-                    <span>Trip type</span>
-                    <select value={form.tripType} onChange={(e) => set('tripType', e.target.value)}>
-                      <option>Family Holiday</option>
-                      <option>Honeymoon</option>
-                      <option>Couple Getaway</option>
-                      <option>Adventure</option>
-                      <option>Beach &amp; Leisure</option>
-                      <option>Pilgrimage</option>
-                      <option>Group / Friends</option>
-                    </select>
-                  </label>
-                )}
-
                 {fields.budget && (
                   <label className="pe-modal__field">
-                    <span>Budget per person</span>
+                    <span className="pe-modal__label">Budget per person</span>
                     <select value={form.budget} onChange={(e) => set('budget', e.target.value)}>
                       <option>Under ₹25k</option>
                       <option>₹25k – ₹50k</option>
@@ -247,55 +350,27 @@ export default function PopupEnquiry() {
                     </select>
                   </label>
                 )}
-
-                {fields.name && (
-                  <label className="pe-modal__field">
-                    <span>Your Name *</span>
-                    <input
-                      type="text"
-                      placeholder="Full name"
-                      value={form.name}
-                      onChange={(e) => set('name', e.target.value)}
-                      required
-                    />
-                  </label>
-                )}
-
-                {fields.phone && (
-                  <label className="pe-modal__field">
-                    <span>Phone *</span>
-                    <input
-                      type="tel"
-                      placeholder="+91 98xxx xxxxx"
-                      value={form.phone}
-                      onChange={(e) => set('phone', e.target.value)}
-                      required
-                    />
-                  </label>
-                )}
-
-                {fields.email && (
-                  <label className="pe-modal__field pe-modal__field--wide">
-                    <span>Email *</span>
-                    <input
-                      type="email"
-                      placeholder="you@example.com"
-                      value={form.email}
-                      onChange={(e) => set('email', e.target.value)}
-                      required
-                    />
-                  </label>
-                )}
-
                 {fields.message && (
                   <label className="pe-modal__field pe-modal__field--wide">
-                    <span>Anything specific you'd like? (optional)</span>
+                    <span className="pe-modal__label">Anything specific? (optional)</span>
                     <textarea
                       rows="2"
-                      placeholder="Hotel preferences, must-see places, food preferences…"
+                      placeholder="Hotel preferences, must-see places…"
                       value={form.message}
                       onChange={(e) => set('message', e.target.value)}
                     />
+                  </label>
+                )}
+
+                {/* Marketing consent */}
+                {fields.marketingConsent && (
+                  <label className="pe-modal__consent pe-modal__field--wide">
+                    <input
+                      type="checkbox"
+                      checked={!!form.marketingConsent}
+                      onChange={(e) => set('marketingConsent', e.target.checked)}
+                    />
+                    <span>{cfg.marketingConsentLabel}</span>
                   </label>
                 )}
               </div>
@@ -303,7 +378,6 @@ export default function PopupEnquiry() {
               {error && <div className="pe-modal__error">{error}</div>}
 
               <div className="pe-modal__actions">
-                <button type="button" className="pe-modal__btn pe-modal__btn--ghost" onClick={close}>Maybe later</button>
                 <button type="submit" className="pe-modal__btn" disabled={busy}>
                   {busy ? 'Sending…' : cfg.cta}
                 </button>
