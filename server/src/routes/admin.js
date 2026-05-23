@@ -15,6 +15,7 @@ import HomeSection from '../models/HomeSection.js'
 import PopupConfig from '../models/PopupConfig.js'
 import HeroSlide from '../models/HeroSlide.js'
 import PromoBanner, { BANNER_SLOTS } from '../models/PromoBanner.js'
+import SearchSection from '../models/SearchSection.js'
 import { dbReady } from '../store.js'
 
 const router = Router()
@@ -429,6 +430,32 @@ router.put('/popup-config', requireAdmin, async (req, res, next) => {
     if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
     const { _id, singleton, createdAt, updatedAt, ...patch } = req.body || {}
     const updated = await PopupConfig.findOneAndUpdate(
+      { singleton: 'main' },
+      { $set: { ...patch, singleton: 'main' } },
+      { new: true, upsert: true, setDefaultsOnInsert: true }
+    )
+    res.json(updated)
+  } catch (e) { next(e) }
+})
+
+// ---------- Search Section (singleton: header copy, categories, popular destinations) ----------
+router.get('/search-section', requireAdmin, async (_req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const doc = await SearchSection.findOneAndUpdate(
+      { singleton: 'main' },
+      { $setOnInsert: { singleton: 'main' } },
+      { new: true, upsert: true, setDefaultsOnInsert: true }
+    )
+    res.json(doc)
+  } catch (e) { next(e) }
+})
+
+router.put('/search-section', requireAdmin, async (req, res, next) => {
+  try {
+    if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
+    const { _id, singleton, createdAt, updatedAt, ...patch } = req.body || {}
+    const updated = await SearchSection.findOneAndUpdate(
       { singleton: 'main' },
       { $set: { ...patch, singleton: 'main' } },
       { new: true, upsert: true, setDefaultsOnInsert: true }

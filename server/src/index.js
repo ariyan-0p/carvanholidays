@@ -19,6 +19,7 @@ import homeSectionsRouter from './routes/homeSections.js'
 import popupConfigRouter from './routes/popupConfig.js'
 import heroRouter from './routes/hero.js'
 import bannersRouter from './routes/banners.js'
+import searchSectionRouter from './routes/searchSection.js'
 import { seedIfEmpty } from './seed.js'
 
 const app = express()
@@ -50,6 +51,7 @@ app.use('/api/home-sections', homeSectionsRouter)
 app.use('/api/popup-config', popupConfigRouter)
 app.use('/api/hero', heroRouter)
 app.use('/api/banners', bannersRouter)
+app.use('/api/search-section', searchSectionRouter)
 app.use('/api/admin', adminRouter)
 
 app.use((err, _req, res, _next) => {

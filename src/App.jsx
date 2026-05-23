@@ -37,6 +37,7 @@ import AdminBlogsList from './admin/AdminBlogsList'
 import AdminBlogForm from './admin/AdminBlogForm'
 import AdminHomepageLayout from './admin/AdminHomepageLayout'
 import AdminPopupConfig from './admin/AdminPopupConfig'
+import AdminSearchSection from './admin/AdminSearchSection'
 import AdminHeroList from './admin/AdminHeroList'
 import AdminHeroForm from './admin/AdminHeroForm'
 import AdminBannersList from './admin/AdminBannersList'
@@ -46,6 +47,7 @@ import './App.css'
 function App() {
   const { pathname } = useLocation()
   const isAdmin = pathname.startsWith('/admin')
+  const isHome = pathname === '/'
 
   return (
     <AdminAuthProvider>
@@ -55,7 +57,7 @@ function App() {
         {!isAdmin && <AnnouncementBar />}
         {!isAdmin && <ScrollProgress />}
         {!isAdmin && <Navbar />}
-        {!isAdmin && <SubNav />}
+        {!isAdmin && !isHome && <SubNav />}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/packages" element={<PackagesPage />} />
@@ -93,6 +95,7 @@ function App() {
             <Route path="blogs/:id/edit" element={<AdminBlogForm />} />
             <Route path="homepage" element={<AdminHomepageLayout />} />
             <Route path="popup" element={<AdminPopupConfig />} />
+            <Route path="search-section" element={<AdminSearchSection />} />
             <Route path="hero" element={<AdminHeroList />} />
             <Route path="hero/new" element={<AdminHeroForm />} />
             <Route path="hero/:id/edit" element={<AdminHeroForm />} />

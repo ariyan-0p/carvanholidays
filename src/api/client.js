@@ -224,4 +224,13 @@ export const adminGetPopupConfig = () =>
 export const adminUpdatePopupConfig = (data) =>
   api.put('/admin/popup-config', data).then(r => r.data)
 
+export const fetchSearchSection = () =>
+  api.get('/search-section').then(r => r.data)
+
+export const adminGetSearchSection = () =>
+  api.get('/admin/search-section').then(r => r.data)
+
+export const adminUpdateSearchSection = (data) =>
+  api.put('/admin/search-section', data).then(r => r.data)
+
 export default api
