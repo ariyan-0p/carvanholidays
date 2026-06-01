@@ -45,6 +45,59 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  isolation: isolate;
+}
+
+/* Fallback styling when no admin image is uploaded — make the column
+   feel intentional with a deep brand gradient + glowing orbs + a
+   subtle brand-mark watermark. */
+.pe-modal__banner:not(.has-image) {
+  background:
+    radial-gradient(120% 90% at 0% 0%, rgba(168, 245, 124, 0.18), transparent 55%),
+    radial-gradient(110% 80% at 100% 100%, rgba(18, 184, 74, 0.22), transparent 55%),
+    linear-gradient(160deg, #0d6a72 0%, #0a4f57 45%, #08434A 100%);
+}
+.pe-modal__banner-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(28px);
+  z-index: 0;
+  pointer-events: none;
+  animation: pe-orb 9s ease-in-out infinite alternate;
+}
+.pe-modal__banner-orb--a {
+  width: 180px; height: 180px;
+  top: -40px; left: -40px;
+  background: radial-gradient(circle, rgba(168, 245, 124, 0.55), transparent 70%);
+}
+.pe-modal__banner-orb--b {
+  width: 220px; height: 220px;
+  bottom: -60px; right: -50px;
+  background: radial-gradient(circle, rgba(18, 184, 74, 0.45), transparent 70%);
+  animation-delay: 2s;
+  animation-duration: 11s;
+}
+.pe-modal__banner-orb--c {
+  width: 140px; height: 140px;
+  top: 40%; left: 40%;
+  background: radial-gradient(circle, rgba(116, 143, 156, 0.4), transparent 70%);
+  animation-delay: 4s;
+  animation-duration: 13s;
+}
+@keyframes pe-orb {
+  0%   { transform: translate3d(0,0,0) scale(1);   opacity: 0.7; }
+  100% { transform: translate3d(20px,-14px,0) scale(1.12); opacity: 1; }
+}
+.pe-modal__banner-watermark {
+  position: absolute;
+  right: -60px;
+  top: 30%;
+  width: 320px;
+  height: auto;
+  opacity: 0.06;
+  pointer-events: none;
+  z-index: 0;
+  transform: rotate(-12deg);
 }
 .pe-modal__banner-square {
   position: relative;
@@ -73,7 +126,7 @@
 .pe-modal__banner-content {
   position: relative;
   padding: var(--sp-6) var(--sp-6) var(--sp-7);
-  z-index: 1;
+  z-index: 2;
 }
 .pe-modal__banner-tag {
   display: inline-block;
@@ -91,19 +144,22 @@
   -webkit-backdrop-filter: blur(6px);
 }
 .pe-modal__banner-heading {
-  font-size: 30px;
-  font-weight: 900;
-  margin: 0 0 8px;
-  line-height: 1.08;
+  font-family: var(--font-display, var(--font));
+  font-size: 32px;
+  font-weight: 500;
+  font-style: italic;
+  margin: 0 0 10px;
+  line-height: 1.05;
   letter-spacing: -0.02em;
-  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.25);
+  color: #fff;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.35);
 }
 .pe-modal__banner-sub {
   font-size: 14px;
   margin: 0;
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.92);
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.22);
+  color: rgba(255, 255, 255, 0.94);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.3);
 }
 
 /* Right form panel */

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { submitEnquiry, fetchPopupConfig } from '../api/client'
+import brandMark from '../assets/brand-mark-inverted.png'
 import './PopupEnquiry.css'
 
 const todayISO = () => new Date().toISOString().slice(0, 10)
@@ -79,24 +80,13 @@ export default function PopupEnquiry() {
       .catch(() => setCfg(FALLBACK_CFG))
   }, [])
 
-  // Open once per browser session, after `intervalSeconds`. Respects:
-  //   - admin "active" toggle
-  //   - admin "showAfterSubmit" (else suppressed after a successful submit)
-  //   - user dismissal (clicking close / overlay / Esc) — won't auto-reopen
   useEffect(() => {
     if (!cfg) return
     if (cfg.active === false) return
     if (submittedOnce && !cfg.showAfterSubmit) return
-    try {
-      if (sessionStorage.getItem('ch_popup_dismissed') === '1') return
-      if (sessionStorage.getItem('ch_popup_shown') === '1') return
-    } catch { /* noop */ }
     const ms = Math.max(15, Number(cfg.intervalSeconds) || 45) * 1000
-    const id = setTimeout(() => {
-      setOpen(true)
-      try { sessionStorage.setItem('ch_popup_shown', '1') } catch { /* noop */ }
-    }, ms)
-    return () => clearTimeout(id)
+    const id = setInterval(() => setOpen((prev) => prev || true), ms)
+    return () => clearInterval(id)
   }, [cfg, submittedOnce])
 
   useEffect(() => {
@@ -115,10 +105,7 @@ export default function PopupEnquiry() {
 
   const fields = cfg.fields || FALLBACK_CFG.fields
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }))
-  const close = () => {
-    setOpen(false)
-    try { sessionStorage.setItem('ch_popup_dismissed', '1') } catch { /* noop */ }
-  }
+  const close = () => setOpen(false)
 
   const fullName = () => {
     if (fields.firstName || fields.lastName) {
@@ -189,9 +176,24 @@ export default function PopupEnquiry() {
           style={{
             background: cfg.bannerUrl
               ? (cfg.bannerOverlayColor || '#08434A')
-              : `linear-gradient(160deg, #12B84A 0%, ${cfg.bannerOverlayColor || '#08434A'} 70%)`,
+              : undefined, // gradient handled in CSS
           }}
         >
+          {/* Decorative layers shown only when there's no admin-supplied image */}
+          {!cfg.bannerUrl && (
+            <>
+              <span className="pe-modal__banner-orb pe-modal__banner-orb--a" aria-hidden="true" />
+              <span className="pe-modal__banner-orb pe-modal__banner-orb--b" aria-hidden="true" />
+              <span className="pe-modal__banner-orb pe-modal__banner-orb--c" aria-hidden="true" />
+              <img
+                src={brandMark}
+                alt=""
+                aria-hidden="true"
+                className="pe-modal__banner-watermark"
+              />
+            </>
+          )}
+
           <div
             className="pe-modal__banner-square"
             style={cfg.bannerUrl ? { backgroundImage: `url(${cfg.bannerUrl})` } : undefined}
