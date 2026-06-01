@@ -106,6 +106,7 @@ export default function PopupEnquiry() {
   const fields = cfg.fields || FALLBACK_CFG.fields
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }))
   const close = () => setOpen(false)
+  const hasBanner = !!(cfg.bannerUrl && String(cfg.bannerUrl).trim())
 
   const fullName = () => {
     if (fields.firstName || fields.lastName) {
@@ -164,56 +165,49 @@ export default function PopupEnquiry() {
 
   return (
     <div className="pe-modal" role="dialog" aria-modal="true" aria-labelledby="pe-title" onClick={close}>
-      <div className="pe-modal__panel" onClick={(e) => e.stopPropagation()}>
+      <div className={`pe-modal__panel ${hasBanner ? '' : 'pe-modal__panel--no-banner'}`} onClick={(e) => e.stopPropagation()}>
         <button className="pe-modal__close" onClick={close} aria-label="Close">×</button>
 
-        {/* Left banner — outer column stretches to form height. When an image
-            is uploaded it sits as a 1:1 square at the top; below the square the
-            same overlay colour continues so there's no visible seam. With no
-            image, the full column shows a single seamless gradient. */}
-        <aside
-          className={`pe-modal__banner ${cfg.bannerUrl ? 'has-image' : ''}`}
-          style={{
-            background: cfg.bannerUrl
-              ? (cfg.bannerOverlayColor || '#08434A')
-              : undefined, // gradient handled in CSS
-          }}
-        >
-          {/* Decorative layers shown only when there's no admin-supplied image */}
-          {!cfg.bannerUrl && (
-            <>
-              <span className="pe-modal__banner-orb pe-modal__banner-orb--a" aria-hidden="true" />
-              <span className="pe-modal__banner-orb pe-modal__banner-orb--b" aria-hidden="true" />
-              <span className="pe-modal__banner-orb pe-modal__banner-orb--c" aria-hidden="true" />
-              <img
-                src={brandMark}
-                alt=""
-                aria-hidden="true"
-                className="pe-modal__banner-watermark"
-              />
-            </>
-          )}
-
-          <div
-            className="pe-modal__banner-square"
-            style={cfg.bannerUrl ? { backgroundImage: `url(${cfg.bannerUrl})` } : undefined}
+        {/* Left banner — only rendered when an admin image is provided.
+            Without an image, the form takes the full panel width and gets a
+            compact branded header band instead — much cleaner than an empty
+            decorative column. */}
+        {hasBanner && (
+          <aside
+            className="pe-modal__banner has-image"
+            style={{ background: cfg.bannerOverlayColor || '#08434A' }}
           >
-            {cfg.bannerUrl && (
+            <div
+              className="pe-modal__banner-square"
+              style={{ backgroundImage: `url(${cfg.bannerUrl})` }}
+            >
               <div
                 className="pe-modal__banner-overlay"
                 style={{ background: `linear-gradient(180deg, rgba(0,0,0,0.10) 0%, ${hexToRgba(cfg.bannerOverlayColor || '#08434A', 0.55)} 100%)` }}
               />
-            )}
-            <div className="pe-modal__banner-content">
-              <span className="pe-modal__banner-tag">{cfg.tag}</span>
-              <h2 className="pe-modal__banner-heading">{cfg.bannerHeading}</h2>
-              <p className="pe-modal__banner-sub">{cfg.bannerSubheading}</p>
+              <div className="pe-modal__banner-content">
+                <span className="pe-modal__banner-tag">{cfg.tag}</span>
+                <h2 className="pe-modal__banner-heading">{cfg.bannerHeading}</h2>
+                <p className="pe-modal__banner-sub">{cfg.bannerSubheading}</p>
+              </div>
             </div>
-          </div>
-        </aside>
+          </aside>
+        )}
 
-        {/* Right form */}
+        {/* Right (or full-width when no banner) form */}
         <div className="pe-modal__right">
+          {!hasBanner && !submitted && (cfg.tag || cfg.bannerHeading) && (
+            <div
+              className="pe-modal__hero"
+              style={{
+                background: `linear-gradient(135deg, #12B84A 0%, ${cfg.bannerOverlayColor || '#08434A'} 100%)`,
+              }}
+            >
+              <img src={brandMark} alt="" aria-hidden="true" className="pe-modal__hero-mark" />
+              {cfg.tag && <span className="pe-modal__hero-tag">{cfg.tag}</span>}
+              {cfg.bannerHeading && <h3 className="pe-modal__hero-heading">{cfg.bannerHeading}</h3>}
+            </div>
+          )}
           {submitted ? (
             <div className="pe-modal__success">
               <div className="pe-modal__success-icon">
