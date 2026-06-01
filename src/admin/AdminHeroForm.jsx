@@ -57,6 +57,7 @@ export default function AdminHeroForm() {
   const [uploading, setUploading] = useState(null) // 'media' | 'poster' | 'card' | null
   const [progress, setProgress] = useState(0)
   const [err, setErr] = useState(null)
+  const [dimWarn, setDimWarn] = useState(null) // { w, h, kind }
 
   const mediaInput = useRef(null)
   const posterInput = useRef(null)
@@ -91,9 +92,42 @@ export default function AdminHeroForm() {
     }
   }
 
+  // Read the natural pixel dimensions of an image File (returns null for video/other)
+  const readImageSize = (file) =>
+    new Promise((resolve) => {
+      if (!file || !file.type?.startsWith('image/')) return resolve(null)
+      const url = URL.createObjectURL(file)
+      const img = new Image()
+      img.onload = () => {
+        resolve({ w: img.naturalWidth, h: img.naturalHeight })
+        URL.revokeObjectURL(url)
+      }
+      img.onerror = () => { resolve(null); URL.revokeObjectURL(url) }
+      img.src = url
+    })
+
   const handleUpload = async (files, target) => {
     if (!files || files.length === 0) return
-    setUploading(target); setProgress(0); setErr(null)
+    setUploading(target); setProgress(0); setErr(null); setDimWarn(null)
+
+    // Pre-flight: check dimensions of the file the user picked. Hero
+    // background + poster should be 1920x1080 (16:9). Side cards 400x600 (2:3).
+    if (target !== 'card') {
+      const dims = await readImageSize(files[0])
+      if (dims) {
+        const want = { w: 1920, h: 1080, label: '1920 × 1080 (16:9)' }
+        const okRatio = Math.abs((dims.w / dims.h) - (16 / 9)) < 0.02
+        if (dims.w !== want.w || dims.h !== want.h) {
+          setDimWarn({
+            picked: `${dims.w} × ${dims.h}`,
+            want: want.label,
+            okRatio,
+            target,
+          })
+        }
+      }
+    }
+
     try {
       const { urls } = await adminUploadHeroMedia(files, (e) => {
         if (e.total) setProgress(Math.round((e.loaded / e.total) * 100))
@@ -207,6 +241,27 @@ export default function AdminHeroForm() {
               👉 Use a free online tool like <b>iloveimg.com/resize-image</b> or <b>squoosh.app</b> to resize/crop your image to <b>1920 × 1080 (16:9)</b> before uploading.
             </div>
           </div>
+
+          {dimWarn && (
+            <div
+              style={{
+                marginTop: 10,
+                padding: '10px 12px',
+                borderRadius: 6,
+                border: '1px solid #f5c66c',
+                background: '#fff7e0',
+                color: '#7c5a00',
+                fontSize: 13,
+                lineHeight: 1.55,
+              }}
+            >
+              <strong>⚠️ Wrong size — recommend re-exporting.</strong><br />
+              You uploaded a <b>{dimWarn.picked} px</b> image, but the hero expects exactly <b>{dimWarn.want}</b>.
+              {' '}{dimWarn.okRatio
+                ? <>The aspect ratio is correct, so it should look fine after resizing, but for crisp display please upload at the exact size.</>
+                : <>Aspect ratio is <b>different</b> from 16:9, so the image will be cropped or letterboxed. Use <b>iloveimg.com/resize-image</b> or <b>squoosh.app</b> to crop to 1920 × 1080 and re-upload.</>}
+            </div>
+          )}
 
           {form.mediaUrl ? (
             <div className="admin__hero-media-preview">
