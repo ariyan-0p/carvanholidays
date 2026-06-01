@@ -14,6 +14,12 @@ const heroSlideSchema = new mongoose.Schema(
     slug:        { type: String, default: '', trim: true }, // for "Explore" CTA -> /packages/:slug
     ctaText:     { type: String, default: 'Explore', trim: true },
     cards:       { type: [String], default: [] }, // up to 3 side images
+    // How to fit the background image/video inside the hero box.
+    //   'cover'   = fill the area (may crop) — best for 1920x1080 (16:9) media
+    //   'contain' = show the entire image (letterbox) — best for non-16:9 media
+    fitMode:     { type: String, enum: ['cover', 'contain'], default: 'cover' },
+    // CSS background-position value, e.g. 'center', 'top', '50% 30%'
+    focusPoint:  { type: String, default: 'center', trim: true },
     order:       { type: Number, default: 0, index: true },
     active:      { type: Boolean, default: true, index: true },
   },

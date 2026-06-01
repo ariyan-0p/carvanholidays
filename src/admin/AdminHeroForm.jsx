@@ -21,6 +21,8 @@ const EMPTY = {
   slug: '',
   ctaText: 'Explore',
   cards: [],
+  fitMode: 'cover',
+  focusPoint: 'center',
   order: 0,
   active: true,
 }
@@ -247,6 +249,66 @@ export default function AdminHeroForm() {
             onChange={(e) => handleUpload(e.target.files, 'media')}
           />
         </div>
+
+        {/* === Image fit + focus point — visible only after media uploaded === */}
+        {form.mediaUrl && (
+          <div className="admin__form-section">
+            <label className="admin__label">How should the image fit?</label>
+            <p className="admin__help">
+              Pick <b>Fill</b> for 1920×1080 (16:9) media — it covers the whole hero area and may crop the edges.
+              Pick <b>Show full image</b> for non-16:9 media (banner, poster, square) so the entire image is visible (small bars may appear on the sides).
+            </p>
+            <div className="admin__form-grid">
+              <label className="admin__field admin__field--inline">
+                <input
+                  type="radio"
+                  name="fitMode"
+                  value="cover"
+                  checked={form.fitMode !== 'contain'}
+                  onChange={() => {
+                    set('fitMode', 'cover')
+                    if (slideId) autoPersist({ fitMode: 'cover' })
+                  }}
+                />
+                <span><b>Fill</b> — cover the area (may crop)</span>
+              </label>
+              <label className="admin__field admin__field--inline">
+                <input
+                  type="radio"
+                  name="fitMode"
+                  value="contain"
+                  checked={form.fitMode === 'contain'}
+                  onChange={() => {
+                    set('fitMode', 'contain')
+                    if (slideId) autoPersist({ fitMode: 'contain' })
+                  }}
+                />
+                <span><b>Show full image</b> — fit inside (no crop)</span>
+              </label>
+              <label className="admin__field">
+                <span>Focus point (when cropping)</span>
+                <select
+                  value={form.focusPoint || 'center'}
+                  onChange={(e) => {
+                    set('focusPoint', e.target.value)
+                    if (slideId) autoPersist({ focusPoint: e.target.value })
+                  }}
+                  disabled={form.fitMode === 'contain'}
+                >
+                  <option value="center">Center (default)</option>
+                  <option value="top">Top</option>
+                  <option value="bottom">Bottom</option>
+                  <option value="left">Left</option>
+                  <option value="right">Right</option>
+                  <option value="top left">Top-left</option>
+                  <option value="top right">Top-right</option>
+                  <option value="bottom left">Bottom-left</option>
+                  <option value="bottom right">Bottom-right</option>
+                </select>
+              </label>
+            </div>
+          </div>
+        )}
 
         {/* === Video poster === */}
         {form.kind === 'video' && (

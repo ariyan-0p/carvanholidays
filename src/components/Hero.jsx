@@ -182,15 +182,28 @@ export default function Hero() {
                 playsInline
                 autoPlay
                 preload={isActive ? 'auto' : 'metadata'}
+                style={{
+                  objectFit: s.fitMode === 'contain' ? 'contain' : 'cover',
+                  objectPosition: s.focusPoint || 'center',
+                  background: s.fitMode === 'contain' ? '#06363c' : undefined,
+                }}
               />
             </div>
           )
         }
+        const fit = s.fitMode === 'contain' ? 'contain' : 'cover'
+        const pos = s.focusPoint || 'center'
         return (
           <div
             key={s._id || i}
-            className={`hero__bg ${isActive ? 'hero__bg--active' : ''}`}
-            style={{ backgroundImage: `url(${resolveUrl(s.mediaUrl)})` }}
+            className={`hero__bg hero__bg--${fit} ${isActive ? 'hero__bg--active' : ''}`}
+            style={{
+              backgroundImage: `url(${resolveUrl(s.mediaUrl)})`,
+              backgroundSize: fit,
+              backgroundPosition: pos,
+              backgroundRepeat: 'no-repeat',
+              backgroundColor: fit === 'contain' ? '#06363c' : undefined,
+            }}
           />
         )
       })}
