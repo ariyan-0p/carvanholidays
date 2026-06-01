@@ -112,8 +112,12 @@
   justify-content: flex-end;
   overflow: hidden;
 }
+/* When an admin image is uploaded, let it fill the FULL banner column
+   (matches the form's height) instead of being forced into a tiny
+   square at the top — much better treatment for any aspect ratio. */
 .pe-modal__banner.has-image .pe-modal__banner-square {
-  aspect-ratio: 1 / 1;
+  flex: 1 1 auto;
+  min-height: 360px;
   background-size: cover;
   background-position: center;
 }
