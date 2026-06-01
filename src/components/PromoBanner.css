@@ -1,26 +1,28 @@
 .promo-banner {
-  padding: var(--sp-10) var(--sp-8);
+  /* Edge-to-edge: no side padding, no max-width on the wrapper. Only
+     vertical breathing room between this section and the shelves
+     above / below. */
+  padding: var(--sp-10) 0;
   background: var(--white);
 }
 
 .promo-banner__container {
   position: relative;
-  max-width: 1320px;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
 }
 
 .promo-banner__media-wrap {
   display: block;
   position: relative;
-  border-radius: 6px;
+  border-radius: 0;          /* full-bleed banner has no rounded corners */
   overflow: hidden;
-  box-shadow: var(--shadow-md);
+  box-shadow: none;          /* no shadow needed when banner touches the edges */
   isolation: isolate;
-  transition: transform 0.6s var(--ease-out), box-shadow 0.6s var(--ease-out);
+  transition: transform 0.6s var(--ease-out);
 }
 .promo-banner__media-wrap:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg);
+  transform: none;
 }
 .promo-banner__media-wrap::after {
   content: '';
@@ -79,7 +81,7 @@
 }
 
 @media (max-width: 900px) {
-  .promo-banner { padding: var(--sp-6) var(--sp-5); }
+  .promo-banner { padding: var(--sp-6) 0; }
 }
 
 @media (max-width: 720px) {
