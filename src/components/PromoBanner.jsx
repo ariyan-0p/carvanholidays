@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { fetchBanners } from '../api/client'
-import { useReveal } from '../hooks/useReveal'
 import './PromoBanner.css'
 
 const ROTATE_MS = 6000
@@ -36,13 +35,13 @@ function BannerLink({ banner, children }) {
 export default function PromoBanner({ slot }) {
   const [items, setItems] = useState([])
   const [idx, setIdx] = useState(0)
-  const [ref, visible] = useReveal()
+  const [err, setErr] = useState(null)
 
   useEffect(() => {
     let mounted = true
     fetchBanners(slot)
       .then((list) => mounted && setItems(Array.isArray(list) ? list : []))
-      .catch(() => {})
+      .catch((e) => mounted && setErr(e?.message || 'load failed'))
     return () => { mounted = false }
   }, [slot])
 
@@ -54,14 +53,15 @@ export default function PromoBanner({ slot }) {
     return () => clearInterval(t)
   }, [items.length])
 
+  if (err) {
+    // Surface load errors to the console rather than rendering nothing silently
+    console.warn(`[PromoBanner:${slot}]`, err)
+  }
   if (!items.length) return null
   const current = items[idx % items.length]
 
   return (
-    <section
-      ref={ref}
-      className={`promo-banner reveal ${visible ? 'is-visible' : ''}`}
-    >
+    <section className="promo-banner" data-slot={slot}>
       <div className="promo-banner__container">
         <BannerLink banner={current}>
           <picture>
