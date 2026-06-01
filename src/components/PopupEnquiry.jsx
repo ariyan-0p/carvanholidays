@@ -168,33 +168,8 @@ export default function PopupEnquiry() {
       <div className={`pe-modal__panel ${hasBanner ? '' : 'pe-modal__panel--no-banner'}`} onClick={(e) => e.stopPropagation()}>
         <button className="pe-modal__close" onClick={close} aria-label="Close">×</button>
 
-        {/* Left banner — only rendered when an admin image is provided.
-            Without an image, the form takes the full panel width and gets a
-            compact branded header band instead — much cleaner than an empty
-            decorative column. */}
-        {hasBanner && (
-          <aside
-            className="pe-modal__banner has-image"
-            style={{ background: cfg.bannerOverlayColor || '#08434A' }}
-          >
-            <div
-              className="pe-modal__banner-square"
-              style={{ backgroundImage: `url(${cfg.bannerUrl})` }}
-            >
-              <div
-                className="pe-modal__banner-overlay"
-                style={{ background: `linear-gradient(180deg, rgba(0,0,0,0.10) 0%, ${hexToRgba(cfg.bannerOverlayColor || '#08434A', 0.55)} 100%)` }}
-              />
-              <div className="pe-modal__banner-content">
-                <span className="pe-modal__banner-tag">{cfg.tag}</span>
-                <h2 className="pe-modal__banner-heading">{cfg.bannerHeading}</h2>
-                <p className="pe-modal__banner-sub">{cfg.bannerSubheading}</p>
-              </div>
-            </div>
-          </aside>
-        )}
-
-        {/* Right (or full-width when no banner) form */}
+        {/* Form column — renders first so it lands in grid column 1 (left).
+            On panels with no banner image, takes the full width. */}
         <div className="pe-modal__right">
           {!hasBanner && !submitted && (cfg.tag || cfg.bannerHeading) && (
             <div
@@ -397,6 +372,31 @@ export default function PopupEnquiry() {
             </form>
           )}
         </div>
+
+        {/* Banner image column — rendered AFTER the form so it lands in
+            grid column 2 (right). Only rendered when admin uploads an image;
+            otherwise the panel collapses to a single column (form only). */}
+        {hasBanner && (
+          <aside
+            className="pe-modal__banner has-image"
+            style={{ background: cfg.bannerOverlayColor || '#08434A' }}
+          >
+            <div
+              className="pe-modal__banner-square"
+              style={{ backgroundImage: `url(${cfg.bannerUrl})` }}
+            >
+              <div
+                className="pe-modal__banner-overlay"
+                style={{ background: `linear-gradient(180deg, rgba(0,0,0,0.10) 0%, ${hexToRgba(cfg.bannerOverlayColor || '#08434A', 0.55)} 100%)` }}
+              />
+              <div className="pe-modal__banner-content">
+                <span className="pe-modal__banner-tag">{cfg.tag}</span>
+                <h2 className="pe-modal__banner-heading">{cfg.bannerHeading}</h2>
+                <p className="pe-modal__banner-sub">{cfg.bannerSubheading}</p>
+              </div>
+            </div>
+          </aside>
+        )}
       </div>
     </div>
   )

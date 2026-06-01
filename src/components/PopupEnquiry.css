@@ -33,8 +33,6 @@
   /* Form on the left, banner image on the right */
   grid-template-columns: 1fr 320px;
 }
-.pe-modal__panel > .pe-modal__right  { grid-column: 1; }
-.pe-modal__panel > .pe-modal__banner { grid-column: 2; }
 
 /* No admin banner image -> form takes the full panel width. */
 .pe-modal__panel--no-banner {
@@ -447,12 +445,9 @@
   line-height: 1.6;
 }
 
-/* Stack the two-column layout once the modal can no longer fit it.
-   On narrow screens, put the image ABOVE the form (typical mobile UX). */
+/* Stack the two-column layout once the modal can no longer fit it. */
 @media (max-width: 760px) {
   .pe-modal__panel { grid-template-columns: 1fr; max-width: 540px; }
-  .pe-modal__panel > .pe-modal__banner { grid-column: 1; grid-row: 1; }
-  .pe-modal__panel > .pe-modal__right  { grid-column: 1; grid-row: 2; }
   .pe-modal__banner-square { aspect-ratio: 16 / 9; min-height: 0; }
   .pe-modal__banner-content { padding: var(--sp-4) var(--sp-5) var(--sp-5); }
   .pe-modal__banner-heading { font-size: 22px; }
