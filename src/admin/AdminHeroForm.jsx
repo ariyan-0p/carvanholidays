@@ -23,6 +23,7 @@ const EMPTY = {
   cards: [],
   fitMode: 'cover',
   focusPoint: 'center',
+  showOverlay: true,
   order: 0,
   active: true,
 }
@@ -497,6 +498,23 @@ export default function AdminHeroForm() {
             <label className="admin__field admin__field--inline">
               <input type="checkbox" checked={!!form.active} onChange={e => set('active', e.target.checked)} />
               <span>Show on website</span>
+            </label>
+            <label className="admin__field admin__field--inline admin__field--wide">
+              <input
+                type="checkbox"
+                checked={form.showOverlay !== false}
+                onChange={e => {
+                  set('showOverlay', e.target.checked)
+                  if (slideId) autoPersist({ showOverlay: e.target.checked })
+                }}
+              />
+              <span>
+                <b>Show dark overlay on image</b>
+                <span style={{ display: 'block', fontSize: 12, color: '#475569', fontWeight: 400, marginTop: 2 }}>
+                  Adds a soft dark-teal gradient over the image so the hero title and buttons stay readable.
+                  Turn off for slides where the image is already well-composed or has its own dark area for text.
+                </span>
+              </span>
             </label>
           </div>
         </div>

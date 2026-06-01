@@ -20,6 +20,10 @@ const heroSlideSchema = new mongoose.Schema(
     fitMode:     { type: String, enum: ['cover', 'contain'], default: 'cover' },
     // CSS background-position value, e.g. 'center', 'top', '50% 30%'
     focusPoint:  { type: String, default: 'center', trim: true },
+    // Dark teal gradient placed over the media for text contrast. Turn off
+    // for slides where the image is already well-composed and shouldn't be
+    // darkened (e.g. a hero already designed with text/branding baked in).
+    showOverlay: { type: Boolean, default: true },
     order:       { type: Number, default: 0, index: true },
     active:      { type: Boolean, default: true, index: true },
   },
