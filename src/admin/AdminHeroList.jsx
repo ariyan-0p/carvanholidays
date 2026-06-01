@@ -55,14 +55,20 @@ export default function AdminHeroList() {
         </div>
       </header>
 
-      <div className="admin__form-section">
-        <strong>Recommended media sizes</strong>
-        <ul style={{ margin: '8px 0 0 18px', lineHeight: 1.7, fontSize: 14, color: '#475569' }}>
-          <li><b>Image background:</b> 1920 × 1080 px · <b>aspect ratio 16:9</b> (landscape) · JPG/PNG · ≤ 2 MB</li>
-          <li><b>Video background:</b> 1920 × 1080 px · <b>aspect ratio 16:9</b> (landscape) · MP4 (H.264) · 8–15 sec · ≤ 20 MB ideal (80 MB max)</li>
-          <li><b>Video poster (optional):</b> 1920 × 1080 px · <b>aspect ratio 16:9</b> · JPG — shown while the video loads</li>
-          <li><b>Side cards (optional, up to 3):</b> 400 × 600 px · <b>aspect ratio 2:3</b> (portrait) · JPG · ≤ 500 KB each</li>
+      <div className="admin__form-section" style={{ background: '#eef9f0', border: '1px solid #b8e6c1' }}>
+        <strong style={{ color: '#0a5560', fontSize: 15 }}>📐 Required media sizes</strong>
+        <p style={{ margin: '6px 0 10px', color: '#0a5560', fontSize: 13 }}>
+          The hero area on the public site is <b>16:9 landscape</b>. To avoid cropping or letterbox bars, please match these exactly:
+        </p>
+        <ul style={{ margin: '0 0 0 18px', lineHeight: 1.8, fontSize: 14, color: '#0a5560' }}>
+          <li><b>Image background</b> — <b>1920 × 1080 px</b> · aspect ratio <b>16:9</b> · JPG/PNG · ≤ 2 MB</li>
+          <li><b>Video background</b> — <b>1920 × 1080 px</b> · aspect ratio <b>16:9</b> · MP4 (H.264) · 8–15 sec · ≤ 20 MB</li>
+          <li><b>Video poster</b> (optional) — <b>1920 × 1080 px</b> · aspect ratio <b>16:9</b> · JPG</li>
+          <li><b>Side cards</b> (optional, up to 3) — <b>400 × 600 px</b> · aspect ratio <b>2:3 portrait</b> · JPG · ≤ 500 KB each</li>
         </ul>
+        <p style={{ margin: '10px 0 0', fontSize: 12, color: '#475569' }}>
+          Need to resize? Try <b>iloveimg.com/resize-image</b> or <b>squoosh.app</b> — both are free, no signup needed.
+        </p>
       </div>
 
       {loading && <div className="admin__state">Loading…</div>}

@@ -27,11 +27,14 @@ const EMPTY = {
   active: true,
 }
 
+// IMPORTANT: the hero box on the public site is 16:9 (the area below the
+// nav bars, roughly 100vh - 178px on desktop). Match this exactly to avoid
+// any cropping or letterboxing.
 const SIZES = {
-  image:  '1920 × 1080 px · aspect ratio 16:9 (landscape) · JPG/PNG · ≤ 2 MB',
-  video:  '1920 × 1080 px · aspect ratio 16:9 (landscape) · MP4 (H.264) · 8–15 sec · ≤ 20 MB ideal (80 MB max)',
-  poster: '1920 × 1080 px · aspect ratio 16:9 · JPG (shown while the video loads)',
-  card:   '400 × 600 px · aspect ratio 2:3 (portrait) · JPG · ≤ 500 KB each',
+  image:  'EXACT SIZE: 1920 × 1080 px  ·  ASPECT RATIO: 16:9 (landscape)  ·  JPG/PNG  ·  ≤ 2 MB',
+  video:  'EXACT SIZE: 1920 × 1080 px  ·  ASPECT RATIO: 16:9 (landscape)  ·  MP4 (H.264)  ·  8–15 sec  ·  ≤ 20 MB ideal (80 MB max)',
+  poster: 'EXACT SIZE: 1920 × 1080 px  ·  ASPECT RATIO: 16:9  ·  JPG (used while the video loads)',
+  card:   'EXACT SIZE: 400 × 600 px  ·  ASPECT RATIO: 2:3 (portrait)  ·  JPG  ·  ≤ 500 KB each',
 }
 
 const mediaSrc = (u) => (u && u.startsWith('/uploads/') ? u : u)
@@ -197,9 +200,13 @@ export default function AdminHeroForm() {
         {/* === Background media === */}
         <div className="admin__form-section">
           <label className="admin__label">Background media (image or video) *</label>
-          <p className="admin__help">
-            <b>Recommended:</b> Images → {SIZES.image}. Videos → {SIZES.video}.
-          </p>
+          <div className="admin__help" style={{ background: '#eef9f0', border: '1px solid #b8e6c1', padding: '10px 12px', borderRadius: 6, color: '#0a5560', lineHeight: 1.6 }}>
+            <div><b>📐 For images:</b><br />{SIZES.image}</div>
+            <div style={{ marginTop: 8 }}><b>🎬 For videos:</b><br />{SIZES.video}</div>
+            <div style={{ marginTop: 8, fontSize: 12, color: '#475569' }}>
+              👉 Use a free online tool like <b>iloveimg.com/resize-image</b> or <b>squoosh.app</b> to resize/crop your image to <b>1920 × 1080 (16:9)</b> before uploading.
+            </div>
+          </div>
 
           {form.mediaUrl ? (
             <div className="admin__hero-media-preview">

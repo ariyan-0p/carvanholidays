@@ -2,24 +2,29 @@
    HERO SECTION
    =========================== */
 
-/* Total height of the fixed/sticky bars stacked above the hero:
-   AnnouncementBar (--annbar-h, dynamic) + Navbar (92px desktop) + SubNav (48px).
-   We offset the hero by that amount so the image never bleeds behind them. */
+/* Height of fixed/sticky bars stacked above the hero. The hero itself is
+   anchored at the top of the page (full 100vh) so no white gap appears
+   behind the fixed navbar — but the BACKGROUND image is offset down by
+   this amount so the image only fills the visible region below the bars. */
 .hero {
   --hero-top-offset: calc(var(--annbar-h, 0px) + 92px + 48px);
   position: relative;
-  height: calc(100vh - var(--hero-top-offset));
-  min-height: 520px;
-  margin-top: var(--hero-top-offset);
+  height: 100vh;
+  min-height: 600px;
+  padding-top: var(--hero-top-offset);
+  box-sizing: border-box;
   overflow: hidden;
   display: flex;
   align-items: center;
 }
 
-/* Background images */
+/* Background images — fill only the visible hero region (below the bars) */
 .hero__bg {
   position: absolute;
-  inset: 0;
+  top: var(--hero-top-offset);
+  left: 0;
+  right: 0;
+  bottom: 0;
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -31,10 +36,15 @@
   will-change: transform, opacity;
 }
 
-/* Background video */
+/* Background video — same offset so video never bleeds behind navbar */
 .hero__bg--video {
   background: #08434a;
   overflow: hidden;
+  top: var(--hero-top-offset);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  inset: auto;
 }
 .hero__bg--video video {
   position: absolute;
@@ -58,10 +68,13 @@
   to   { transform: scale(1.02); } /* stay slightly overscaled to avoid sub-pixel edge bleed */
 }
 
-/* Overlay: dark gradient from left */
+/* Overlay: dark gradient — sits over the image, not behind the navbar */
 .hero__overlay {
   position: absolute;
-  inset: 0;
+  top: var(--hero-top-offset);
+  left: 0;
+  right: 0;
+  bottom: 0;
   background:
     linear-gradient(180deg, rgba(8, 67, 74, 0.45) 0%, rgba(8, 67, 74, 0.10) 25%, rgba(8, 67, 74, 0.55) 100%),
     linear-gradient(105deg, rgba(8, 67, 74, 0.78) 0%, rgba(8, 67, 74, 0.40) 55%, rgba(8, 67, 74, 0.05) 100%);
@@ -75,7 +88,7 @@
   pointer-events: none;
 }
 
-/* Content wrapper */
+/* Content wrapper — sits inside the padded hero area, below the fixed bars */
 .hero__content {
   position: relative;
   z-index: 2;
