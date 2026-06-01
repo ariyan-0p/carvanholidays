@@ -79,13 +79,24 @@ export default function PopupEnquiry() {
       .catch(() => setCfg(FALLBACK_CFG))
   }, [])
 
+  // Open once per browser session, after `intervalSeconds`. Respects:
+  //   - admin "active" toggle
+  //   - admin "showAfterSubmit" (else suppressed after a successful submit)
+  //   - user dismissal (clicking close / overlay / Esc) — won't auto-reopen
   useEffect(() => {
     if (!cfg) return
     if (cfg.active === false) return
     if (submittedOnce && !cfg.showAfterSubmit) return
+    try {
+      if (sessionStorage.getItem('ch_popup_dismissed') === '1') return
+      if (sessionStorage.getItem('ch_popup_shown') === '1') return
+    } catch { /* noop */ }
     const ms = Math.max(15, Number(cfg.intervalSeconds) || 45) * 1000
-    const id = setInterval(() => setOpen((prev) => prev || true), ms)
-    return () => clearInterval(id)
+    const id = setTimeout(() => {
+      setOpen(true)
+      try { sessionStorage.setItem('ch_popup_shown', '1') } catch { /* noop */ }
+    }, ms)
+    return () => clearTimeout(id)
   }, [cfg, submittedOnce])
 
   useEffect(() => {
@@ -104,7 +115,10 @@ export default function PopupEnquiry() {
 
   const fields = cfg.fields || FALLBACK_CFG.fields
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }))
-  const close = () => setOpen(false)
+  const close = () => {
+    setOpen(false)
+    try { sessionStorage.setItem('ch_popup_dismissed', '1') } catch { /* noop */ }
+  }
 
   const fullName = () => {
     if (fields.firstName || fields.lastName) {
