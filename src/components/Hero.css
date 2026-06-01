@@ -2,10 +2,15 @@
    HERO SECTION
    =========================== */
 
+/* Total height of the fixed/sticky bars stacked above the hero:
+   AnnouncementBar (--annbar-h, dynamic) + Navbar (92px desktop) + SubNav (48px).
+   We offset the hero by that amount so the image never bleeds behind them. */
 .hero {
+  --hero-top-offset: calc(var(--annbar-h, 0px) + 92px + 48px);
   position: relative;
-  height: 100vh;
-  min-height: 600px;
+  height: calc(100vh - var(--hero-top-offset));
+  min-height: 520px;
+  margin-top: var(--hero-top-offset);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -78,7 +83,8 @@
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 var(--sp-8);
-  padding-top: 92px; /* navbar height */
+  /* Hero is already pushed below the fixed bars via margin-top on .hero,
+     so the content no longer needs its own padding-top offset. */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -399,8 +405,15 @@
   .hero__text { max-width: 100%; }
 }
 
+/* SubNav is hidden under 900px, so drop it from the offset there. */
+@media (max-width: 900px) {
+  .hero { --hero-top-offset: calc(var(--annbar-h, 0px) + 92px); }
+}
+
 @media (max-width: 768px) {
-  .hero__content { padding: 0 var(--sp-5); padding-top: 72px; }
+  /* Navbar shrinks to 76px on mobile (see Navbar.css). */
+  .hero { --hero-top-offset: calc(var(--annbar-h, 0px) + 76px); }
+  .hero__content { padding: 0 var(--sp-5); }
   .hero__title { letter-spacing: -1px; }
   .hero__dots { left: var(--sp-5); }
   .hero__scroll-hint { display: none; }
