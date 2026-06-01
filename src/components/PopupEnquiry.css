@@ -24,8 +24,8 @@
   background: var(--white);
   border-radius: 16px;
   width: 100%;
-  max-width: 1040px;
-  max-height: 88vh;
+  max-width: 840px;
+  max-height: 92vh;
   overflow: hidden;
   box-shadow: 0 32px 80px rgba(8, 67, 74, 0.4);
   animation: pe-slide 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -37,7 +37,7 @@
 /* No admin banner image -> form takes the full panel width. */
 .pe-modal__panel--no-banner {
   grid-template-columns: 1fr;
-  max-width: 520px;
+  max-width: 460px;
 }
 
 /* Left banner column — stretches to form height. When an image is uploaded,
@@ -114,12 +114,12 @@
   justify-content: flex-end;
   overflow: hidden;
 }
-/* When an admin image is uploaded, fill the FULL banner column with it.
-   background-size: cover crops to fit nicely — the column is now half the
-   panel width (~520px) which gives the image plenty of room. */
+/* When an admin image is uploaded, lock the banner column to a strict
+   3:4 portrait aspect ratio. The image fills the column with cover
+   cropping; the form column on the other side stretches to match. */
 .pe-modal__banner.has-image .pe-modal__banner-square {
   flex: 1 1 auto;
-  min-height: 480px;
+  aspect-ratio: 3 / 4;
   background-size: cover;
   background-position: center;
 }
@@ -260,27 +260,28 @@
 }
 .pe-modal__close:hover { background: var(--teal); color: var(--white); transform: rotate(90deg); }
 
-.pe-modal__form { padding: var(--sp-6) var(--sp-6) var(--sp-5); }
+.pe-modal__form { padding: var(--sp-5) var(--sp-5) var(--sp-4); }
 
-.pe-modal__header { margin-bottom: var(--sp-5); }
+.pe-modal__header { margin-bottom: var(--sp-4); }
 .pe-modal__title {
-  font-size: 22px;
+  font-size: 19px;
   font-weight: 800;
   color: var(--teal);
-  margin: 0 0 6px;
+  margin: 0 0 4px;
   letter-spacing: -0.015em;
+  line-height: 1.2;
 }
 .pe-modal__subtitle {
   margin: 0;
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-muted);
-  line-height: 1.5;
+  line-height: 1.45;
 }
 
 .pe-modal__grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 9px;
 }
 .pe-modal__field { display: flex; flex-direction: column; gap: 5px; }
 .pe-modal__field--wide { grid-column: 1 / -1; }
@@ -297,11 +298,11 @@
 .pe-modal__field select,
 .pe-modal__field textarea {
   width: 100%;
-  padding: 11px 14px;
+  padding: 9px 12px;
   border: 1.5px solid var(--border);
-  border-radius: 10px;
+  border-radius: 8px;
   font-family: var(--font);
-  font-size: 14px;
+  font-size: 13px;
   color: var(--teal);
   background: var(--white);
   outline: none;
@@ -356,9 +357,9 @@
   cursor: pointer;
 }
 .pe-modal__consent span {
-  font-size: 12px;
+  font-size: 11.5px;
   color: rgba(8, 67, 74, 0.78);
-  line-height: 1.45;
+  line-height: 1.4;
   font-weight: 500;
   letter-spacing: 0;
   text-transform: none;
@@ -379,24 +380,24 @@
   display: flex;
   justify-content: center;
   gap: var(--sp-3);
-  margin-top: var(--sp-5);
+  margin-top: var(--sp-4);
 }
 .pe-modal__btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 12px 32px;
+  padding: 10px 26px;
   background: linear-gradient(180deg, #2563eb 0%, #1e40af 100%);
   color: var(--white);
   border: none;
-  border-radius: 10px;
-  font-size: 15px;
+  border-radius: 8px;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   transition: filter 0.25s ease, transform 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 6px 20px -8px rgba(37, 99, 235, 0.55);
-  min-width: 200px;
+  min-width: 180px;
 }
 .pe-modal__btn:hover { filter: brightness(1.08); transform: translateY(-1px); box-shadow: 0 10px 24px -10px rgba(37, 99, 235, 0.65); }
 .pe-modal__btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
@@ -410,10 +411,10 @@
 
 .pe-modal__legal {
   margin: var(--sp-3) 0 0;
-  font-size: 11px;
+  font-size: 10.5px;
   color: var(--text-muted);
   text-align: center;
-  line-height: 1.5;
+  line-height: 1.45;
 }
 
 .pe-modal__success {
