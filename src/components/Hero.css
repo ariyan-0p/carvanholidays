@@ -7,7 +7,11 @@
    behind the fixed navbar — but the BACKGROUND image is offset down by
    this amount so the image only fills the visible region below the bars. */
 .hero {
-  --hero-top-offset: calc(var(--annbar-h, 0px) + 92px + 48px);
+  /* All three height vars are published live by the matching components:
+     --annbar-h (AnnouncementBar), --nav-h (Navbar), --subnav-h (SubNav).
+     Each is 0px when the component isn't mounted or is hidden by a media
+     query, so this offset is always exactly right. */
+  --hero-top-offset: calc(var(--annbar-h, 0px) + var(--nav-h, 92px) + var(--subnav-h, 0px));
   position: relative;
   height: 100vh;
   min-height: 600px;
@@ -418,14 +422,7 @@
   .hero__text { max-width: 100%; }
 }
 
-/* SubNav is hidden under 900px, so drop it from the offset there. */
-@media (max-width: 900px) {
-  .hero { --hero-top-offset: calc(var(--annbar-h, 0px) + 92px); }
-}
-
 @media (max-width: 768px) {
-  /* Navbar shrinks to 76px on mobile (see Navbar.css). */
-  .hero { --hero-top-offset: calc(var(--annbar-h, 0px) + 76px); }
   .hero__content { padding: 0 var(--sp-5); }
   .hero__title { letter-spacing: -1px; }
   .hero__dots { left: var(--sp-5); }

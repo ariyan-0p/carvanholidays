@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import logo from '../assets/logotransparent.PNG'
 import './Navbar.css'
@@ -14,6 +14,7 @@ const navLinks = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const navRef = useRef(null)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60)
@@ -21,8 +22,27 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  // Publish the navbar's rendered height as --nav-h so layout-aware
+  // components (e.g. the hero) can offset by the exact pixel value,
+  // automatically picking up the mobile breakpoint change.
+  useEffect(() => {
+    const el = navRef.current
+    const update = () => {
+      const h = el ? el.offsetHeight : 0
+      document.documentElement.style.setProperty('--nav-h', `${h}px`)
+    }
+    update()
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(update) : null
+    if (ro && el) ro.observe(el)
+    window.addEventListener('resize', update)
+    return () => {
+      window.removeEventListener('resize', update)
+      if (ro) ro.disconnect()
+    }
+  }, [])
+
   return (
-    <nav className={`navbar ${scrolled ? 'navbar--scrolled' : ''}`}>
+    <nav ref={navRef} className={`navbar ${scrolled ? 'navbar--scrolled' : ''}`}>
       <div className="navbar__inner">
         <Link to="/" className="navbar__logo" onClick={() => setMenuOpen(false)}>
           <img src={logo} alt="Carvaan Holidays" />

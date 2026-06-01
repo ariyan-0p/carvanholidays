@@ -101,6 +101,26 @@ export default function SubNav() {
     }
   }, [])
 
+  // Expose the SubNav's rendered height as --subnav-h so layout-aware
+  // sections (like the hero) can offset by exactly the right amount,
+  // regardless of whether the responsive media query has hidden the bar.
+  useEffect(() => {
+    const el = ref.current
+    const update = () => {
+      const h = el && getComputedStyle(el).display !== 'none' ? el.offsetHeight : 0
+      document.documentElement.style.setProperty('--subnav-h', `${h}px`)
+    }
+    update()
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(update) : null
+    if (ro && el) ro.observe(el)
+    window.addEventListener('resize', update)
+    return () => {
+      window.removeEventListener('resize', update)
+      if (ro) ro.disconnect()
+      document.documentElement.style.setProperty('--subnav-h', '0px')
+    }
+  }, [])
+
   return (
     <div className="subnav" ref={ref}>
       <div className="subnav__inner">
