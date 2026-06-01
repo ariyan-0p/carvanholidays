@@ -5,6 +5,7 @@ import {
   adminCreateHeroSlide,
   adminUpdateHeroSlide,
   adminUploadHeroMedia,
+  adminDeleteHeroSlide,
 } from '../api/client'
 
 const EMPTY = {
@@ -34,13 +35,20 @@ const SIZES = {
 const mediaSrc = (u) => (u && u.startsWith('/uploads/') ? u : u)
 
 export default function AdminHeroForm() {
-  const { id } = useParams()
-  const isEdit = !!id
+  const { id: routeId } = useParams()
+  const initialIsEdit = !!routeId
+
   const nav = useNavigate()
 
   const [form, setForm] = useState(EMPTY)
-  const [loading, setLoading] = useState(isEdit)
+  // `slideId` may become populated mid-session if we auto-create after the
+  // first upload, so we no longer derive isEdit only from the route param.
+  const [slideId, setSlideId] = useState(routeId || null)
+  const isEdit = !!slideId
+  const [loading, setLoading] = useState(initialIsEdit)
   const [busy, setBusy] = useState(false)
+  const [autoSaving, setAutoSaving] = useState(false)
+  const [autoSavedAt, setAutoSavedAt] = useState(null)
   const [uploading, setUploading] = useState(null) // 'media' | 'poster' | 'card' | null
   const [progress, setProgress] = useState(0)
   const [err, setErr] = useState(null)
@@ -50,18 +58,33 @@ export default function AdminHeroForm() {
   const cardInput = useRef(null)
 
   useEffect(() => {
-    if (!isEdit) return
+    if (!routeId) return
     adminListHeroSlides()
       .then((list) => {
-        const found = list.find(x => x._id === id)
+        const found = list.find(x => x._id === routeId)
         if (found) setForm({ ...EMPTY, ...found, cards: Array.isArray(found.cards) ? found.cards : [] })
         else setErr('Slide not found')
       })
       .catch(e => setErr(e?.response?.data?.error || e.message))
       .finally(() => setLoading(false))
-  }, [id, isEdit])
+  }, [routeId])
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
+
+  // Auto-save: when we already have a slideId, persist a patch to the server
+  // immediately so the public hero stays in sync as the admin edits.
+  const autoPersist = async (patch) => {
+    if (!slideId) return
+    setAutoSaving(true); setErr(null)
+    try {
+      await adminUpdateHeroSlide(slideId, patch)
+      setAutoSavedAt(Date.now())
+    } catch (e) {
+      setErr(e?.response?.data?.error || e.message || 'Auto-save failed')
+    } finally {
+      setAutoSaving(false)
+    }
+  }
 
   const handleUpload = async (files, target) => {
     if (!files || files.length === 0) return
@@ -71,13 +94,41 @@ export default function AdminHeroForm() {
         if (e.total) setProgress(Math.round((e.loaded / e.total) * 100))
       })
       if (!urls?.length) throw new Error('Upload failed')
+
+      let nextForm
       if (target === 'media') {
         const isVideo = /\.(mp4|webm|mov|m4v)$/i.test(urls[0])
-        setForm(f => ({ ...f, mediaUrl: urls[0], kind: isVideo ? 'video' : 'image' }))
+        nextForm = { ...form, mediaUrl: urls[0], kind: isVideo ? 'video' : 'image' }
       } else if (target === 'poster') {
-        set('posterUrl', urls[0])
-      } else if (target === 'card') {
-        setForm(f => ({ ...f, cards: [...(f.cards || []), ...urls].slice(0, 3) }))
+        nextForm = { ...form, posterUrl: urls[0] }
+      } else {
+        nextForm = { ...form, cards: [...(form.cards || []), ...urls].slice(0, 3) }
+      }
+      setForm(nextForm)
+
+      // If this is the FIRST upload on a brand-new slide, create the DB
+      // record immediately. From now on uploading or editing fields auto-saves
+      // — so the hero updates on the live site without the admin having to
+      // click "Save" again.
+      if (target === 'media' && !slideId && nextForm.mediaUrl) {
+        try {
+          const created = await adminCreateHeroSlide(nextForm)
+          setSlideId(created._id)
+          setAutoSavedAt(Date.now())
+          // Update URL so refreshing keeps you in edit mode for this slide.
+          window.history.replaceState({}, '', `/admin/hero/${created._id}/edit`)
+        } catch (e) {
+          setErr(e?.response?.data?.error || e.message || 'Could not create slide')
+        }
+      } else if (slideId) {
+        // Subsequent uploads (poster, cards, replacing media) — push the patch
+        // to the existing record straight away.
+        const patch = target === 'media'
+          ? { mediaUrl: nextForm.mediaUrl, kind: nextForm.kind }
+          : target === 'poster'
+            ? { posterUrl: nextForm.posterUrl }
+            : { cards: nextForm.cards }
+        autoPersist(patch)
       }
     } catch (e) {
       setErr(e?.response?.data?.error || e.message || 'Upload failed')
@@ -87,7 +138,9 @@ export default function AdminHeroForm() {
   }
 
   const removeCard = (idx) => {
-    setForm(f => ({ ...f, cards: (f.cards || []).filter((_, i) => i !== idx) }))
+    const nextCards = (form.cards || []).filter((_, i) => i !== idx)
+    setForm(f => ({ ...f, cards: nextCards }))
+    if (slideId) autoPersist({ cards: nextCards })
   }
 
   const submit = async (e) => {
@@ -95,7 +148,7 @@ export default function AdminHeroForm() {
     if (!form.mediaUrl) return setErr('Please upload a background image or video.')
     setBusy(true)
     try {
-      if (isEdit) await adminUpdateHeroSlide(id, form)
+      if (slideId) await adminUpdateHeroSlide(slideId, form)
       else await adminCreateHeroSlide(form)
       nav('/admin/hero')
     } catch (er) {
@@ -114,7 +167,29 @@ export default function AdminHeroForm() {
           <h1>{isEdit ? 'Edit Hero Slide' : 'New Hero Slide'}</h1>
           <p className="admin__page-sub">Background can be an image or a short looping video. Side cards and text are optional.</p>
         </div>
+        {slideId && (
+          <div className="admin__header-actions" style={{ fontSize: 12, color: autoSaving ? '#0a5560' : '#12B84A', fontWeight: 600 }}>
+            {autoSaving
+              ? '● Saving…'
+              : autoSavedAt
+                ? '✓ Live on website'
+                : '✓ Live on website'}
+          </div>
+        )}
       </header>
+
+      {!slideId && (
+        <div
+          className="admin__form-section"
+          style={{ background: '#fff8e1', border: '1px solid #f5d27a', color: '#7c5a00' }}
+        >
+          <strong>📸 Upload your image or video below.</strong>
+          <p className="admin__help" style={{ color: '#7c5a00', margin: '4px 0 0' }}>
+            As soon as you upload the background media, this slide will go live on the homepage hero automatically.
+            You can then fill in the text fields and they'll auto-save.
+          </p>
+        </div>
+      )}
 
       <form className="admin__form" onSubmit={submit}>
         {/* === Background media === */}
@@ -133,7 +208,25 @@ export default function AdminHeroForm() {
               )}
               <div className="admin__hero-media-actions">
                 <button type="button" className="admin__btn" onClick={() => mediaInput.current?.click()}>Replace</button>
-                <button type="button" className="admin__btn admin__btn--danger" onClick={() => set('mediaUrl', '')}>Remove</button>
+                <button
+                  type="button"
+                  className="admin__btn admin__btn--danger"
+                  onClick={async () => {
+                    if (slideId) {
+                      if (!confirm('Remove this slide from the website?')) return
+                      try {
+                        await adminDeleteHeroSlide(slideId)
+                        nav('/admin/hero')
+                      } catch (e) {
+                        setErr(e?.response?.data?.error || e.message)
+                      }
+                    } else {
+                      set('mediaUrl', '')
+                    }
+                  }}
+                >
+                  Remove
+                </button>
               </div>
             </div>
           ) : (
