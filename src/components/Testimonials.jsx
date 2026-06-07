@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { fetchTestimonials } from '../api/client'
 import './Testimonials.css'
 
@@ -76,11 +76,68 @@ function TestimonialCard({ t }) {
   const isPhoto = t.kind === 'photo' && t.mediaUrl
   const isMessage = !isVideo && !isPhoto
 
+  const videoRef = useRef(null)
+  const [muted, setMuted] = useState(true)
+
+  // Auto-play / pause as the reel enters / leaves the viewport (Instagram style)
+  useEffect(() => {
+    const v = videoRef.current
+    if (!v || !isVideo) return
+    if (typeof IntersectionObserver === 'undefined') return
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            const p = v.play()
+            if (p && typeof p.catch === 'function') p.catch(() => {})
+          } else {
+            v.pause()
+          }
+        })
+      },
+      { threshold: 0.55 }
+    )
+    io.observe(v)
+    return () => io.disconnect()
+  }, [isVideo])
+
+  const toggleMute = (e) => {
+    e.stopPropagation()
+    setMuted((m) => !m)
+  }
+
   return (
-    <div className="review-card">
+    <div className={`review-card ${isVideo ? 'review-card--reel' : ''}`}>
       {isVideo && (
-        <div className="review-card__media">
-          <video src={t.mediaUrl} poster={t.posterUrl || undefined} controls preload="metadata" playsInline />
+        <div className="review-card__media review-card__media--reel">
+          <video
+            ref={videoRef}
+            src={t.mediaUrl}
+            poster={t.posterUrl || undefined}
+            muted={muted}
+            loop
+            playsInline
+            preload="metadata"
+          />
+          <button
+            type="button"
+            className="review-card__mute"
+            onClick={toggleMute}
+            aria-label={muted ? 'Unmute video' : 'Mute video'}
+          >
+            {muted ? (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+                <line x1="23" y1="9" x2="17" y2="15"/>
+                <line x1="17" y1="9" x2="23" y2="15"/>
+              </svg>
+            ) : (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+                <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/>
+              </svg>
+            )}
+          </button>
         </div>
       )}
       {isPhoto && (

@@ -73,7 +73,9 @@ export default function PromoBanner({ slot }) {
               src={current.imageUrl}
               alt={current.title || ''}
               className="promo-banner__img"
-              loading="lazy"
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
             />
           </picture>
         </BannerLink>
