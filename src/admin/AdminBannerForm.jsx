@@ -36,9 +36,26 @@ export default function AdminBannerForm() {
   const [uploading, setUploading] = useState(null)
   const [progress, setProgress] = useState(0)
   const [err, setErr] = useState(null)
+  const [dimWarn, setDimWarn] = useState(null) // { picked, target, okRatio }
 
   const desktopInput = useRef(null)
   const mobileInput = useRef(null)
+
+  // Required dimensions per upload target — single source of truth.
+  const REQUIRED = {
+    desktop: { w: 1920, h: 520, ratio: 1920 / 520, label: '1920 × 520 px (3.7 : 1)' },
+    mobile:  { w: 1080, h: 1080, ratio: 1, label: '1080 × 1080 px (1 : 1)' },
+  }
+
+  const readImageSize = (file) =>
+    new Promise((resolve) => {
+      if (!file || !file.type?.startsWith('image/')) return resolve(null)
+      const url = URL.createObjectURL(file)
+      const img = new Image()
+      img.onload = () => { resolve({ w: img.naturalWidth, h: img.naturalHeight }); URL.revokeObjectURL(url) }
+      img.onerror = () => { resolve(null); URL.revokeObjectURL(url) }
+      img.src = url
+    })
 
   useEffect(() => {
     if (!isEdit) return
@@ -56,7 +73,22 @@ export default function AdminBannerForm() {
 
   const handleUpload = async (files, target) => {
     if (!files || files.length === 0) return
-    setUploading(target); setProgress(0); setErr(null)
+    setUploading(target); setProgress(0); setErr(null); setDimWarn(null)
+
+    const dims = await readImageSize(files[0])
+    if (dims) {
+      const want = REQUIRED[target]
+      const okRatio = Math.abs((dims.w / dims.h) - want.ratio) < 0.03
+      if (dims.w !== want.w || dims.h !== want.h) {
+        setDimWarn({
+          picked: `${dims.w} × ${dims.h}`,
+          want: want.label,
+          okRatio,
+          target,
+        })
+      }
+    }
+
     try {
       const { urls } = await adminUploadHeroMedia(files, (e) => {
         if (e.total) setProgress(Math.round((e.loaded / e.total) * 100))
@@ -113,10 +145,18 @@ export default function AdminBannerForm() {
         {/* Desktop image */}
         <div className="admin__form-section">
           <label className="admin__label">Desktop banner image *</label>
-          <p className="admin__help">
-            <b>Recommended:</b> 1920 × 520 px · <b>aspect ratio ≈ 3.7 : 1</b> (wide letterbox) · JPG/PNG · ≤ 500 KB.
-            Slimmer ratios (e.g. 1920 × 480 = 4:1) also work — the banner fills the full width with the image cropped to fit.
-          </p>
+          <div className="admin__help" style={{ background: '#eef9f0', border: '1px solid #b8e6c1', padding: '10px 12px', borderRadius: 6, color: '#0a5560' }}>
+            <b>📐 EXACT SIZE: 1920 × 520 px</b> &nbsp;·&nbsp; Aspect ratio <b>3.7 : 1</b> (wide letterbox) &nbsp;·&nbsp; JPG/PNG &nbsp;·&nbsp; ≤ 500 KB
+            <div style={{ marginTop: 6, fontSize: 12, color: '#475569' }}>
+              Use <b>iloveimg.com/resize-image</b> or <b>squoosh.app</b> to crop your image to exactly 1920 × 520 before uploading.
+            </div>
+          </div>
+          {dimWarn && dimWarn.target === 'desktop' && (
+            <div style={{ marginTop: 10, padding: '10px 12px', borderRadius: 6, border: '1px solid #f5c66c', background: '#fff7e0', color: '#7c5a00', fontSize: 13 }}>
+              <strong>⚠️ Wrong size.</strong> You uploaded <b>{dimWarn.picked} px</b> but the desktop banner expects exactly <b>{dimWarn.want}</b>.
+              {' '}{dimWarn.okRatio ? 'Ratio is correct — just resize.' : 'Ratio is different — will be cropped. Please crop to 1920 × 520 and re-upload.'}
+            </div>
+          )}
           {form.imageUrl ? (
             <div className="admin__hero-media-preview" style={{ aspectRatio: '1920 / 520' }}>
               <img src={mediaSrc(form.imageUrl)} alt="banner" />
@@ -147,10 +187,18 @@ export default function AdminBannerForm() {
         {/* Mobile image */}
         <div className="admin__form-section">
           <label className="admin__label">Mobile banner image (optional)</label>
-          <p className="admin__help">
-            <b>Recommended:</b> 800 × 800 px · <b>aspect ratio 1 : 1</b> (square) · JPG · ≤ 300 KB.
-            A taller 800 × 1000 px (<b>4 : 5</b> portrait) also works. If not set, the desktop image is used on phones (cropped to a square).
-          </p>
+          <div className="admin__help" style={{ background: '#eef9f0', border: '1px solid #b8e6c1', padding: '10px 12px', borderRadius: 6, color: '#0a5560' }}>
+            <b>📐 EXACT SIZE: 1080 × 1080 px</b> &nbsp;·&nbsp; Aspect ratio <b>1 : 1</b> (square) &nbsp;·&nbsp; JPG &nbsp;·&nbsp; ≤ 300 KB
+            <div style={{ marginTop: 6, fontSize: 12, color: '#475569' }}>
+              Skip this and your desktop image will be used (cropped to a square on phones).
+            </div>
+          </div>
+          {dimWarn && dimWarn.target === 'mobile' && (
+            <div style={{ marginTop: 10, padding: '10px 12px', borderRadius: 6, border: '1px solid #f5c66c', background: '#fff7e0', color: '#7c5a00', fontSize: 13 }}>
+              <strong>⚠️ Wrong size.</strong> You uploaded <b>{dimWarn.picked} px</b> but the mobile banner expects exactly <b>{dimWarn.want}</b>.
+              {' '}{dimWarn.okRatio ? 'Ratio is correct — just resize.' : 'Ratio is different — will be cropped. Please crop to 1080 × 1080 and re-upload.'}
+            </div>
+          )}
           {form.mobileImageUrl ? (
             <div className="admin__hero-media-preview admin__hero-media-preview--small" style={{ aspectRatio: '1 / 1' }}>
               <img src={mediaSrc(form.mobileImageUrl)} alt="mobile banner" />

@@ -69,13 +69,18 @@ export default function AdminBannersList() {
         </div>
       </header>
 
-      <div className="admin__form-section">
-        <strong>Recommended banner sizes</strong>
-        <ul style={{ margin: '8px 0 0 18px', lineHeight: 1.7, fontSize: 14, color: '#475569' }}>
-          <li><b>Desktop banner:</b> 1920 × 520 px · <b>aspect ratio ≈ 3.7 : 1</b> (wide letterbox) · JPG/PNG · ≤ 500 KB</li>
-          <li><b>Mobile banner (optional):</b> 800 × 800 px · <b>aspect ratio 1 : 1</b> (square) — or 800 × 1000 px (<b>4 : 5</b>) · JPG · ≤ 300 KB</li>
-          <li>Keep important text away from the very edges — banners are slightly cropped on smaller screens.</li>
+      <div className="admin__form-section" style={{ background: '#eef9f0', border: '1px solid #b8e6c1' }}>
+        <strong style={{ color: '#0a5560', fontSize: 15 }}>📐 EXACT required banner sizes</strong>
+        <p style={{ margin: '6px 0 10px', color: '#0a5560', fontSize: 13 }}>
+          Banners render edge-to-edge. Upload at these exact pixel sizes for a pixel-perfect fit on every screen with no cropping.
+        </p>
+        <ul style={{ margin: '0 0 0 18px', lineHeight: 1.9, fontSize: 14, color: '#0a5560' }}>
+          <li><b>Desktop banner</b> — <b>1920 × 520 px</b> · aspect ratio <b>3.7 : 1</b> · JPG/PNG · ≤ 500 KB</li>
+          <li><b>Mobile banner</b> (optional) — <b>1080 × 1080 px</b> · aspect ratio <b>1 : 1</b> · JPG · ≤ 300 KB</li>
         </ul>
+        <p style={{ margin: '10px 0 0', fontSize: 12, color: '#475569' }}>
+          Resize with <b>iloveimg.com/resize-image</b> or <b>squoosh.app</b> — free, no signup. Keep important text away from the edges (cropped slightly on narrow screens).
+        </p>
       </div>
 
       {loading && <div className="admin__state">Loading…</div>}
