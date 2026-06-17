@@ -1,5 +1,239 @@
 /* ==========================================
-   SHARED STYLES FOR INNER PAGES
+   PACKAGES (VIEW ALL) PAGE — editorial
+   ========================================== */
+.pkgs-page {
+  --pp-top-offset: calc(var(--annbar-h, 0px) + var(--nav-h, 92px) + var(--subnav-h, 0px));
+  min-height: 100vh;
+  background: var(--off-white);
+  padding-top: var(--pp-top-offset);
+}
+
+/* Hero band */
+.pkgs-page__hero {
+  position: relative;
+  isolation: isolate;
+  padding: var(--sp-20) var(--sp-8) var(--sp-12);
+  background:
+    radial-gradient(900px 500px at 90% 0%, rgba(168, 245, 124, 0.10), transparent 60%),
+    radial-gradient(700px 500px at 0% 100%, rgba(116, 143, 156, 0.08), transparent 60%),
+    linear-gradient(180deg, #08434A 0%, #0a5560 100%);
+  color: var(--white);
+  overflow: hidden;
+}
+.pkgs-page__hero-aurora {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(50% 40% at 30% 30%, rgba(168, 245, 124, 0.18), transparent 60%),
+    radial-gradient(40% 35% at 70% 70%, rgba(255, 255, 255, 0.08), transparent 60%);
+  filter: blur(60px);
+  animation: pkgs-aurora 14s ease-in-out infinite alternate;
+  z-index: 0;
+  pointer-events: none;
+}
+@keyframes pkgs-aurora {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  100% { transform: translate3d(30px, -20px, 0) scale(1.1); }
+}
+.pkgs-page__hero-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 1320px;
+  margin: 0 auto;
+}
+.pkgs-page__eyebrow {
+  color: var(--green-accent);
+  opacity: 1;
+}
+.pkgs-page__eyebrow::before {
+  background: var(--green-accent);
+}
+.pkgs-page__title {
+  font-family: var(--font-display);
+  font-size: clamp(38px, 5vw, 64px);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--white);
+  margin: 0 0 var(--sp-4);
+}
+.pkgs-page__title em {
+  font-style: italic;
+  color: var(--green-accent);
+  font-weight: 400;
+}
+.pkgs-page__subtitle {
+  font-size: 16px;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.78);
+  max-width: 60ch;
+  margin: 0;
+}
+
+/* Body */
+.pkgs-page__body {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: var(--sp-10) var(--sp-8) var(--sp-24);
+}
+
+/* === Filter strip === */
+.pkgs-filter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+  background: var(--white);
+  border: 1px solid rgba(8, 67, 74, 0.06);
+  border-radius: 4px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--sp-6);
+  position: sticky;
+  top: calc(var(--annbar-h, 0px) + var(--nav-h, 92px) + var(--subnav-h, 0px) + 12px);
+  z-index: 5;
+  backdrop-filter: blur(8px);
+}
+
+.pkgs-filter__search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--off-white);
+  border: 1px solid rgba(8, 67, 74, 0.08);
+  border-radius: var(--r-full);
+  transition: border-color 0.3s var(--ease-out), background 0.3s var(--ease-out);
+}
+.pkgs-filter__search:focus-within {
+  border-color: var(--teal);
+  background: var(--white);
+}
+.pkgs-filter__search svg { color: var(--teal); opacity: 0.55; flex-shrink: 0; }
+.pkgs-filter__search input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font);
+  font-size: 14px;
+  color: var(--teal);
+  letter-spacing: 0.2px;
+}
+.pkgs-filter__search input::placeholder { color: rgba(8, 67, 74, 0.4); }
+.pkgs-filter__clear {
+  background: rgba(8, 67, 74, 0.08);
+  border: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  color: var(--teal);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.25s ease;
+}
+.pkgs-filter__clear:hover { background: rgba(8, 67, 74, 0.18); }
+
+.pkgs-filter__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.pkgs-chip {
+  padding: 9px 18px;
+  border: 1px solid rgba(8, 67, 74, 0.12);
+  background: var(--white);
+  color: var(--teal);
+  font-family: var(--font);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  border-radius: var(--r-full);
+  cursor: pointer;
+  transition: background 0.35s var(--ease-out), color 0.35s var(--ease-out), border-color 0.35s var(--ease-out);
+}
+.pkgs-chip:hover { border-color: var(--teal); }
+.pkgs-chip.is-active {
+  background: var(--teal);
+  color: var(--white);
+  border-color: var(--teal);
+}
+
+/* Count strip */
+.pkgs-page__count {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-5);
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.pkgs-page__reset {
+  background: none;
+  border: none;
+  color: var(--teal);
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: var(--r-full);
+  transition: background 0.25s ease;
+}
+.pkgs-page__reset:hover { background: rgba(8, 67, 74, 0.05); }
+.pkgs-page__reset--solo {
+  margin-top: var(--sp-5);
+  border: 1px solid var(--teal);
+  padding: 10px 22px;
+}
+
+/* Empty / error state */
+.pkgs-page__empty {
+  text-align: center;
+  padding: var(--sp-20) var(--sp-6);
+  background: var(--white);
+  border: 1px dashed rgba(8, 67, 74, 0.15);
+  border-radius: 6px;
+}
+.pkgs-page__empty-icon {
+  font-size: 42px;
+  margin-bottom: var(--sp-4);
+  opacity: 0.7;
+}
+.pkgs-page__empty h2 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--teal);
+  margin: 0 0 var(--sp-3);
+  letter-spacing: -0.01em;
+}
+.pkgs-page__empty p {
+  font-size: 14px;
+  color: var(--text-muted);
+  max-width: 50ch;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .pkgs-page__hero { padding: var(--sp-12) var(--sp-5) var(--sp-8); }
+  .pkgs-page__body { padding: var(--sp-6) var(--sp-5) var(--sp-16); }
+  .pkgs-page__count { flex-wrap: wrap; }
+}
+
+/* ==========================================
+   SHARED STYLES FOR INNER PAGES (legacy)
    ========================================== */
 
 .page {
