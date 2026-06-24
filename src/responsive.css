@@ -192,7 +192,6 @@ img, video { max-width: 100%; height: auto; }
   .enq__detail { grid-template-columns: 1fr !important; }
   .enq__detail-row td { display: block !important; padding: var(--sp-3) 0 !important; }
   .enq__detail-row td::before { display: none !important; }
-}
 
   /* ---- TESTIMONIALS (Reels) ---- */
   .testimonials__grid { grid-template-columns: 1fr !important; gap: var(--sp-5) !important; }
@@ -267,7 +266,7 @@ img, video { max-width: 100%; height: auto; }
   /* ---- TOUCH TARGETS ---- */
   .annbar__dot { width: 8px !important; height: 8px !important; }
   .pe-modal__close { width: 38px !important; height: 38px !important; }
-}
+} /* /@media (max-width: 768px) */
 
 /* === Small phones (≤ 480px) === */
 @media (max-width: 480px) {
