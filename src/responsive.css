@@ -15,19 +15,31 @@ img, video { max-width: 100%; height: auto; }
 
 /* === Phone & below (≤ 768px) === */
 @media (max-width: 768px) {
-  /* ---- HERO ---- */
-  .hero { min-height: 540px; height: auto; padding: 110px 0 60px; }
+  /* ---- HERO ----
+     Don't fight Hero.css's --hero-top-offset; just tune the inside. */
+  .hero { min-height: 520px; }
   .hero__title {
-    font-size: clamp(36px, 9vw, 52px) !important;
+    font-size: clamp(42px, 11vw, 60px) !important;
     letter-spacing: -1px !important;
-    line-height: 1.05 !important;
+    line-height: 1.02 !important;
   }
-  .hero__subtitle { font-size: 16px !important; }
-  .hero__desc { font-size: 14px !important; max-width: 100% !important; }
-  .hero__cta-row { gap: 10px !important; }
-  .hero__btn, .hero__btn-ghost { padding: 12px 22px !important; font-size: 14px !important; }
+  .hero__subtitle { font-size: 13px !important; letter-spacing: 2.4px !important; }
+  .hero__desc {
+    font-size: 14px !important;
+    max-width: 100% !important;
+    line-height: 1.6 !important;
+  }
+  .hero__cta-row { gap: 10px !important; flex-direction: column; align-items: stretch; }
+  .hero__btn, .hero__btn-ghost {
+    padding: 14px 22px !important;
+    font-size: 11px !important;
+    justify-content: center;
+    width: 100%;
+  }
   .hero__meta { flex-wrap: wrap; gap: 10px !important; }
   .hero__dots { display: none !important; }
+  .hero__scroll-hint { display: none !important; }
+  .hero__cards { display: none !important; }
 
   /* ---- SECTION SPACING ---- */
   .pkgs, .region, .fcities, .why, .offers, .testimonials, .trust-strip,
@@ -182,13 +194,89 @@ img, video { max-width: 100%; height: auto; }
   .enq__detail-row td::before { display: none !important; }
 }
 
+  /* ---- TESTIMONIALS (Reels) ---- */
+  .testimonials__grid { grid-template-columns: 1fr !important; gap: var(--sp-5) !important; }
+  .review-card { max-width: 420px; margin: 0 auto; }
+  .review-card__media--reel { max-height: 70vh; }
+  .review-card__body { padding: var(--sp-4) var(--sp-5) !important; }
+  .review-card:not(:has(.review-card__media)) .review-card__text { font-size: 17px !important; }
+  .review-card__mute { width: 40px !important; height: 40px !important; }
+  .testimonials__badge {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--sp-2) !important;
+    padding: var(--sp-5) var(--sp-6) !important;
+    max-width: 100% !important;
+  }
+
+  /* ---- PROMO BANNER ---- */
+  .promo-banner__img { aspect-ratio: 4 / 3 !important; }
+  .promo-banner__dot { width: 22px !important; height: 4px !important; }
+  .promo-banner__dot.is-active { width: 32px !important; }
+  .promo-banner__dots { bottom: 10px !important; gap: 6px !important; }
+
+  /* ---- POPUP (compact 1-column stack) ---- */
+  .pe-modal { padding: var(--sp-3) !important; }
+  .pe-modal__panel { max-width: 100% !important; max-height: 92vh !important; }
+  .pe-modal__banner-square { aspect-ratio: 4 / 3 !important; }
+  .pe-modal__banner-heading { font-size: 22px !important; }
+  .pe-modal__form { padding: var(--sp-4) !important; }
+  .pe-modal__title { font-size: 18px !important; }
+  .pe-modal__grid { grid-template-columns: 1fr !important; gap: 8px !important; }
+  .pe-modal__btn { width: 100%; min-width: 0 !important; }
+  .pe-modal__hero-heading { font-size: 22px !important; }
+
+  /* ---- /packages (View All) ---- */
+  .pkgs-page__hero { padding: var(--sp-10) var(--sp-5) var(--sp-6) !important; }
+  .pkgs-page__title { font-size: clamp(28px, 9vw, 40px) !important; }
+  .pkgs-page__subtitle { font-size: 14px !important; }
+  .pkgs-page__body { padding: var(--sp-5) var(--sp-4) var(--sp-12) !important; }
+  .pkgs-filter {
+    padding: var(--sp-3) !important;
+    gap: var(--sp-3) !important;
+    /* not sticky on mobile — saves vertical space */
+    position: static !important;
+  }
+  .pkgs-filter__chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .pkgs-filter__chips::-webkit-scrollbar { display: none; }
+  .pkgs-chip { flex-shrink: 0; }
+  .pkgs-page__count { font-size: 12px !important; }
+  .pkgs-page__empty { padding: var(--sp-12) var(--sp-4) !important; }
+  .pkgs-page__empty h2 { font-size: 22px !important; }
+
+  /* ---- SubNav (already hidden under 900px, kept as a safety net) ---- */
+  .subnav { display: none !important; }
+
+  /* ---- ANNOUNCEMENT BAR ---- */
+  .annbar { font-size: 10px !important; letter-spacing: 2px !important; padding: 0 var(--sp-3); }
+  .annbar__item::before, .annbar__item::after { width: 12px !important; }
+
+  /* ---- NAVBAR ---- */
+  .navbar__logo img { height: 44px !important; }
+  .navbar__inner { padding: 0 var(--sp-4) !important; }
+
+  /* ---- SCROLL PROGRESS (slightly thicker for visibility) ---- */
+  .scroll-progress { height: 3px !important; }
+
+  /* ---- TOUCH TARGETS ---- */
+  .annbar__dot { width: 8px !important; height: 8px !important; }
+  .pe-modal__close { width: 38px !important; height: 38px !important; }
+}
+
 /* === Small phones (≤ 480px) === */
 @media (max-width: 480px) {
   /* Tighter type & padding */
-  .hero__label { font-size: 11px !important; padding: 4px 10px !important; }
-  .hero__title { font-size: 34px !important; }
-  .hero__subtitle { font-size: 14px !important; }
-  .hero__desc { font-size: 13px !important; }
+  .hero__label { font-size: 10px !important; padding: 0 !important; letter-spacing: 2.2px !important; }
+  .hero__title { font-size: 44px !important; letter-spacing: -1px !important; }
+  .hero__subtitle { font-size: 12px !important; }
+  .hero__desc { font-size: 13px !important; line-height: 1.55 !important; }
+  .hero__duration, .hero__price { font-size: 12px !important; }
 
   .pkgs, .region, .fcities { padding-top: var(--sp-10); padding-bottom: var(--sp-10); }
 
@@ -206,11 +294,50 @@ img, video { max-width: 100%; height: auto; }
   .ct-modal__panel { max-height: 96vh !important; }
   .ct-modal__form { padding: var(--sp-5) !important; }
   .ct-modal__header h2 { font-size: 20px !important; }
+
+  /* === Repeat key tightening for the new components at narrow widths === */
+  .pkgs-page__title { font-size: 30px !important; line-height: 1.05 !important; }
+  .pkgs-page__hero { padding: var(--sp-8) var(--sp-4) var(--sp-5) !important; }
+  .pkgs-page__body { padding: var(--sp-4) var(--sp-3) var(--sp-10) !important; }
+  .pkgs-chip { padding: 8px 14px !important; font-size: 10px !important; letter-spacing: 1.4px !important; }
+  .pkgs-filter__search { padding: 10px 12px !important; }
+  .pkgs-filter__search input { font-size: 13px !important; }
+
+  .pe-modal__panel { border-radius: 12px !important; }
+  .pe-modal__title { font-size: 17px !important; }
+  .pe-modal__subtitle { font-size: 12px !important; }
+  .pe-modal__hero { padding: var(--sp-4) var(--sp-4) var(--sp-3) !important; }
+  .pe-modal__hero-heading { font-size: 19px !important; }
+  .pe-modal__close { top: 8px !important; right: 8px !important; width: 34px !important; height: 34px !important; }
+
+  .promo-banner__img { aspect-ratio: 1 / 1 !important; }
+
+  .review-card__media--reel { max-height: 75vh; }
+  .review-card:not(:has(.review-card__media)) .review-card__text { font-size: 16px !important; }
+
+  /* Preloader plane shouldn't dominate */
+  .preloader__brand { bottom: 8% !important; }
+  .preloader__title { font-size: 28px !important; }
 }
 
 /* === Touch targets — make buttons & links comfortable to tap === */
 @media (hover: none) and (pointer: coarse) {
   a, button, [role="button"] { min-height: 40px; }
   .pkg__cta, .search__tag, .cities-chip, .region__toggle-btn,
-  .footer__link, .navbar__link, .admin__btn { min-height: 40px; align-items: center; }
+  .footer__link, .navbar__link, .admin__btn,
+  .pkgs-chip, .promo-banner__dot, .annbar__dot,
+  .pe-modal__close, .pe-modal__btn,
+  .review-card__mute, .hero__btn, .hero__btn-ghost { min-height: 40px; align-items: center; }
+  /* Carousel dots get a generous tap area without growing the visible dot */
+  .promo-banner__dot, .annbar__dot, .hero__dot { padding: 14px 0 !important; background-clip: content-box !important; }
+}
+
+/* === Suppress heavy decorative motion on small screens for perf === */
+@media (max-width: 768px) {
+  .reveal { transition: opacity 0.5s ease, transform 0.5s ease !important; filter: none !important; }
+  /* Kill the decorative GPU work, but DON'T hide the card itself */
+  .glow-on-hover::before, .pkg__sheen { display: none !important; }
+  .pkg--tilt { transform: none !important; }
+  .pkg--tilt:hover { transform: translateY(-3px) !important; }
+  .preloader__contrail, .preloader__grid { display: none !important; }
 }
