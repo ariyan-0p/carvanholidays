@@ -8,7 +8,7 @@
   left: 0;
   right: 0;
   z-index: 1000;
-  background: rgba(8, 67, 74, 0.92);
+  background: rgba(13, 59, 64, 0.92);
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
   border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -16,8 +16,8 @@
 }
 
 .navbar--scrolled {
-  background: rgba(8, 67, 74, 0.98);
-  box-shadow: 0 4px 24px rgba(8, 67, 74, 0.28);
+  background: rgba(13, 59, 64, 0.98);
+  box-shadow: 0 4px 24px rgba(13, 59, 64, 0.28);
   border-bottom-color: rgba(255,255,255,0.1);
 }
 
@@ -222,8 +222,8 @@
   bottom: 0;
   width: min(420px, 92vw);
   background:
-    radial-gradient(80% 60% at 100% 0%, rgba(168, 245, 124, 0.10), transparent 60%),
-    linear-gradient(180deg, #08434A 0%, #0a5560 100%);
+    radial-gradient(80% 60% at 100% 0%, rgba(99, 214, 10, 0.10), transparent 60%),
+    linear-gradient(180deg, #0D3B40 0%, #0a5560 100%);
   color: var(--white);
   display: flex;
   flex-direction: column;
@@ -241,7 +241,7 @@
 .mnav__head {
   position: sticky;
   top: 0;
-  background: linear-gradient(180deg, rgba(8, 67, 74, 0.95) 0%, rgba(8, 67, 74, 0.7) 100%);
+  background: linear-gradient(180deg, rgba(13, 59, 64, 0.95) 0%, rgba(13, 59, 64, 0.7) 100%);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   display: flex;
@@ -308,12 +308,12 @@
   transition: transform 0.35s var(--ease-out), opacity 0.35s var(--ease-out);
 }
 .mnav__link:active {
-  background: rgba(168, 245, 124, 0.10);
+  background: rgba(99, 214, 10, 0.10);
   padding-left: 24px;
 }
 .mnav__link:active svg { opacity: 1; transform: translateX(4px); }
 .mnav__link--active {
-  background: rgba(168, 245, 124, 0.08);
+  background: rgba(99, 214, 10, 0.08);
   color: var(--green-accent);
 }
 .mnav__link--active svg { opacity: 1; color: var(--green-accent); }
@@ -364,7 +364,7 @@
   transition-delay: calc(var(--i, 0) * 60ms + 150ms);
 }
 .mnav__quick-tile:active {
-  background: rgba(168, 245, 124, 0.12);
+  background: rgba(99, 214, 10, 0.12);
   transform: scale(0.97);
 }
 .mnav__quick-emoji {
@@ -401,7 +401,7 @@
 .mnav__cta--call {
   background: var(--green-accent);
   color: var(--teal);
-  box-shadow: 0 6px 18px -6px rgba(168, 245, 124, 0.55);
+  box-shadow: 0 6px 18px -6px rgba(99, 214, 10, 0.55);
 }
 .mnav__cta:active { transform: scale(0.96); filter: brightness(0.95); }
 

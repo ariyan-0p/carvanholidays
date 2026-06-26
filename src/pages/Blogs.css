@@ -1,7 +1,7 @@
 /* ===========================
    BLOG LIST + DETAIL
    =========================== */
-.blogs__hero { background: linear-gradient(135deg, #08434A 0%, #126668 100%); color: #fff; }
+.blogs__hero { background: linear-gradient(135deg, #0D3B40 0%, #126668 100%); color: #fff; }
 .blogs__hero h1 { color: #fff; }
 .blogs__hero p { color: rgba(255,255,255,0.78); max-width: 640px; margin: 8px auto 0; }
 
@@ -30,12 +30,12 @@
   text-decoration: none;
   color: inherit;
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-  box-shadow: 0 2px 6px rgba(8, 67, 74, 0.04);
+  box-shadow: 0 2px 6px rgba(13, 59, 64, 0.04);
 }
 .blog-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 18px 40px rgba(8, 67, 74, 0.14);
-  border-color: rgba(18, 184, 74, 0.25);
+  box-shadow: 0 18px 40px rgba(13, 59, 64, 0.14);
+  border-color: rgba(99, 214, 10, 0.25);
 }
 
 .blog-card__media {
@@ -129,7 +129,7 @@
   z-index: 1;
   background: var(--white);
   border-radius: var(--r-lg);
-  box-shadow: 0 -10px 30px rgba(8, 67, 74, 0.06);
+  box-shadow: 0 -10px 30px rgba(13, 59, 64, 0.06);
 }
 
 .blog-article__head { margin-bottom: var(--sp-6); }
@@ -140,7 +140,7 @@
   letter-spacing: 1px;
   text-transform: uppercase;
   color: var(--green-strong);
-  background: rgba(18, 184, 74, 0.1);
+  background: rgba(99, 214, 10, 0.1);
   padding: 4px 10px;
   border-radius: var(--r-full);
 }

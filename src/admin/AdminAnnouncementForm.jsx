@@ -9,7 +9,7 @@ import {
 const EMPTY = {
   text: '',
   link: '',
-  bgColor: '#12B84A',
+  bgColor: '#63D60A',
   textColor: '#ffffff',
   animation: 'marquee',
   order: 0,
@@ -17,8 +17,8 @@ const EMPTY = {
 }
 
 const PRESETS = [
-  { label: 'Green', bg: '#12B84A', fg: '#ffffff' },
-  { label: 'Teal', bg: '#08434A', fg: '#ffffff' },
+  { label: 'Green', bg: '#63D60A', fg: '#ffffff' },
+  { label: 'Teal', bg: '#0D3B40', fg: '#ffffff' },
   { label: 'Amber', bg: '#f59e0b', fg: '#1f1f1f' },
   { label: 'Rose', bg: '#ec4899', fg: '#ffffff' },
   { label: 'Royal', bg: '#2563eb', fg: '#ffffff' },

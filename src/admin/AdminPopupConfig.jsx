@@ -138,7 +138,7 @@ export default function AdminPopupConfig() {
             </label>
             <label className="admin__field">
               <span>Banner overlay color</span>
-              <input type="color" value={cfg.bannerOverlayColor || '#08434A'} onChange={(e) => set('bannerOverlayColor', e.target.value)} />
+              <input type="color" value={cfg.bannerOverlayColor || '#0D3B40'} onChange={(e) => set('bannerOverlayColor', e.target.value)} />
             </label>
           </div>
         </section>
@@ -296,10 +296,10 @@ export default function AdminPopupConfig() {
 }
 
 function PopupPreview({ cfg }) {
-  const overlay = cfg.bannerOverlayColor || '#08434A'
+  const overlay = cfg.bannerOverlayColor || '#0D3B40'
   const bg = cfg.bannerUrl
     ? { backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.05) 0%, ${overlay}cc 100%), url(${cfg.bannerUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
-    : { background: `linear-gradient(135deg, ${overlay} 0%, #12B84A 130%)` }
+    : { background: `linear-gradient(135deg, ${overlay} 0%, #63D60A 130%)` }
   return (
     <div className="admin__popup-preview">
       <aside className="admin__popup-preview-banner" style={bg}>

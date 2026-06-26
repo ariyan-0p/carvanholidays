@@ -10,7 +10,7 @@ const offers = [
     code: 'EARLYBIRD20',
     image: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=900&q=80',
     expiry: 'Valid till 31 May 2026',
-    color: '#08434A',
+    color: '#0D3B40',
   },
   {
     id: 2,
@@ -32,7 +32,7 @@ const offers = [
     code: 'LOVE5K',
     image: 'https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=900&q=80',
     expiry: 'No expiry',
-    color: '#08434A',
+    color: '#0D3B40',
   },
 ]
 

@@ -69,7 +69,7 @@ export default function Preloader() {
             <linearGradient id="planeGrad" x1="0" y1="0" x2="1" y2="1">
               <stop offset="0%"  stopColor="#FFFFFF" />
               <stop offset="55%" stopColor="#E7FFD5" />
-              <stop offset="100%" stopColor="#A8F57C" />
+              <stop offset="100%" stopColor="#63D60A" />
             </linearGradient>
             <filter id="planeGlow" x="-50%" y="-50%" width="200%" height="200%">
               <feGaussianBlur stdDeviation="0.6" result="b" />

@@ -25,7 +25,7 @@ const FALLBACK_CFG = {
   bannerUrl: '',
   bannerHeading: 'Up to 30% off',
   bannerSubheading: 'On hand-picked holiday packages this season',
-  bannerOverlayColor: '#08434A',
+  bannerOverlayColor: '#0D3B40',
   tag: 'Limited-time offer',
   title: 'Plan Your Next Trip',
   subtitle: "Tell us a few quick details and our travel expert will share a custom quote — free, no obligation.",
@@ -175,7 +175,7 @@ export default function PopupEnquiry() {
             <div
               className="pe-modal__hero"
               style={{
-                background: `linear-gradient(135deg, #12B84A 0%, ${cfg.bannerOverlayColor || '#08434A'} 100%)`,
+                background: `linear-gradient(135deg, #63D60A 0%, ${cfg.bannerOverlayColor || '#0D3B40'} 100%)`,
               }}
             >
               <img src={brandMark} alt="" aria-hidden="true" className="pe-modal__hero-mark" />
@@ -379,7 +379,7 @@ export default function PopupEnquiry() {
         {hasBanner && (
           <aside
             className="pe-modal__banner has-image"
-            style={{ background: cfg.bannerOverlayColor || '#08434A' }}
+            style={{ background: cfg.bannerOverlayColor || '#0D3B40' }}
           >
             <div
               className="pe-modal__banner-square"
@@ -387,7 +387,7 @@ export default function PopupEnquiry() {
             >
               <div
                 className="pe-modal__banner-overlay"
-                style={{ background: `linear-gradient(180deg, rgba(0,0,0,0.10) 0%, ${hexToRgba(cfg.bannerOverlayColor || '#08434A', 0.55)} 100%)` }}
+                style={{ background: `linear-gradient(180deg, rgba(0,0,0,0.10) 0%, ${hexToRgba(cfg.bannerOverlayColor || '#0D3B40', 0.55)} 100%)` }}
               />
               <div className="pe-modal__banner-content">
                 <span className="pe-modal__banner-tag">{cfg.tag}</span>
@@ -403,9 +403,9 @@ export default function PopupEnquiry() {
 }
 
 function hexToRgba(hex, alpha) {
-  if (!hex || typeof hex !== 'string') return `rgba(8, 67, 74, ${alpha})`
+  if (!hex || typeof hex !== 'string') return `rgba(13, 59, 64, ${alpha})`
   const m = hex.replace('#', '').match(/.{1,2}/g)
-  if (!m || m.length < 3) return `rgba(8, 67, 74, ${alpha})`
+  if (!m || m.length < 3) return `rgba(13, 59, 64, ${alpha})`
   const [r, g, b] = m.slice(0, 3).map((h) => parseInt(h, 16))
   return `rgba(${r}, ${g}, ${b}, ${alpha})`
 }

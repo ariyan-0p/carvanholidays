@@ -37,7 +37,7 @@ export default function AnnouncementBar() {
   if (!ready || items.length === 0) return null
 
   const current = items[idx % items.length]
-  const bg = current.bgColor || '#12B84A'
+  const bg = current.bgColor || '#63D60A'
   const fg = current.textColor || '#ffffff'
 
   const renderItem = (a) => (

@@ -208,7 +208,7 @@ export default function AdminHeroForm() {
           <p className="admin__page-sub">Background can be an image or a short looping video. Side cards and text are optional.</p>
         </div>
         {slideId && (
-          <div className="admin__header-actions" style={{ fontSize: 12, color: autoSaving ? '#0a5560' : '#12B84A', fontWeight: 600 }}>
+          <div className="admin__header-actions" style={{ fontSize: 12, color: autoSaving ? '#0a5560' : '#63D60A', fontWeight: 600 }}>
             {autoSaving
               ? '● Saving…'
               : autoSavedAt
