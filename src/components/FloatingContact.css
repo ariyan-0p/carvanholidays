@@ -1,0 +1,71 @@
+.fc {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+  transition: opacity 0.45s var(--ease-out), transform 0.45s var(--ease-out);
+}
+.fc--visible {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.fc__btn {
+  width: 54px;
+  height: 54px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--white);
+  text-decoration: none;
+  transition: transform 0.3s var(--ease-out), filter 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+.fc__btn:active { transform: scale(0.92); filter: brightness(0.95); }
+
+.fc__btn--wa {
+  background: linear-gradient(180deg, #25D366 0%, #128C7E 100%);
+  box-shadow: 0 10px 24px -8px rgba(37, 211, 102, 0.55), 0 4px 10px rgba(0, 0, 0, 0.18);
+}
+.fc__btn--call {
+  background: var(--teal);
+  color: var(--green-accent);
+  box-shadow: 0 10px 24px -8px rgba(8, 67, 74, 0.45), 0 4px 10px rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(168, 245, 124, 0.4);
+}
+
+/* Pulsing ring on the WhatsApp button — subtle attention without being noisy */
+.fc__btn--wa::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid rgba(37, 211, 102, 0.45);
+  opacity: 0;
+  animation: fc-pulse 2.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  pointer-events: none;
+}
+.fc__btn { position: relative; }
+@keyframes fc-pulse {
+  0%   { transform: scale(0.92); opacity: 0.6; }
+  100% { transform: scale(1.25); opacity: 0; }
+}
+
+/* Hide on desktop — sticky CTAs are unnecessary there */
+@media (min-width: 769px) {
+  .fc { display: none; }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .fc__btn--wa::after { animation: none; }
+  .fc { transition: none; }
+}

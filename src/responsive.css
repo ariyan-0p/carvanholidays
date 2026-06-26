@@ -52,8 +52,36 @@ img, video { max-width: 100%; height: auto; }
   .pkgs__subtitle, .fcities__subtitle, .region__subtitle,
   .section-subtitle { font-size: 14px !important; }
 
-  /* ---- CARDS / GRIDS ---- */
-  .pkgs__grid { grid-template-columns: 1fr !important; gap: var(--sp-5); }
+  /* ---- CARDS / GRIDS ----
+     Switch package + destination shelves to horizontal scroll-snap on phones
+     (JustWravel-style swipeable rail). Container padding is removed so cards
+     extend to the edges; first/last get an inset via :first-child margin. */
+  .pkgs__grid,
+  .destinations__grid,
+  .fcities__grid {
+    display: flex !important;
+    grid-template-columns: none !important;
+    gap: var(--sp-4) !important;
+    overflow-x: auto;
+    overflow-y: visible;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* bleed past the section's padding so cards reach the screen edges */
+    margin: 0 calc(-1 * var(--sp-5));
+    padding: var(--sp-2) var(--sp-5) var(--sp-3);
+  }
+  .pkgs__grid::-webkit-scrollbar,
+  .destinations__grid::-webkit-scrollbar,
+  .fcities__grid::-webkit-scrollbar { display: none; }
+
+  .pkgs__grid > *,
+  .destinations__grid > *,
+  .fcities__grid > * {
+    flex: 0 0 78%;
+    max-width: 320px;
+    scroll-snap-align: start;
+  }
   .pkg__title { font-size: 17px !important; }
   .pkg__price { font-size: 19px !important; }
   .pkg__media { aspect-ratio: 16 / 11; }

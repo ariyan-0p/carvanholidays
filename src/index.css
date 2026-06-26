@@ -66,6 +66,13 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%; /* iOS shouldn't auto-resize text on rotate */
+}
+
+body {
+  -webkit-tap-highlight-color: transparent; /* No grey flash on tap */
+  -webkit-overflow-scrolling: touch;        /* Momentum scrolling on iOS */
+  touch-action: manipulation;               /* Skip the 300ms tap delay */
 }
 
 body {
