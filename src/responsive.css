@@ -221,9 +221,26 @@ img, video { max-width: 100%; height: auto; }
   .enq__detail-row td { display: block !important; padding: var(--sp-3) 0 !important; }
   .enq__detail-row td::before { display: none !important; }
 
-  /* ---- TESTIMONIALS (Reels) ---- */
-  .testimonials__grid { grid-template-columns: 1fr !important; gap: var(--sp-5) !important; }
-  .review-card { max-width: 420px; margin: 0 auto; }
+  /* ---- TESTIMONIALS (Reels) — horizontal swipeable rail like the other shelves ---- */
+  .testimonials__grid {
+    display: flex !important;
+    grid-template-columns: none !important;
+    gap: var(--sp-4) !important;
+    overflow-x: auto;
+    overflow-y: visible;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin: 0 calc(-1 * var(--sp-5));
+    padding: var(--sp-2) var(--sp-5) var(--sp-3) !important;
+  }
+  .testimonials__grid::-webkit-scrollbar { display: none; }
+  .testimonials__grid > .review-card {
+    flex: 0 0 78%;
+    max-width: 320px;
+    margin: 0 !important;
+    scroll-snap-align: start;
+  }
   .review-card__media--reel { max-height: 70vh; }
   .review-card__body { padding: var(--sp-4) var(--sp-5) !important; }
   .review-card .review-card__text { font-size: 17px !important; }
