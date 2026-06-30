@@ -14,9 +14,18 @@ const api = axios.create({
   timeout: 20000,
 })
 
+// Routes that involve uploading a file/blob (multipart) deserve a much
+// longer ceiling than the chatty JSON default — 80MB videos over a flaky
+// mobile connection can easily take a couple of minutes.
+const UPLOAD_PATHS = ['/admin/upload', '/admin/media', '/admin/hero-upload']
+
 api.interceptors.request.use((config) => {
   const t = getToken()
   if (t) config.headers.Authorization = `Bearer ${t}`
+  const url = config.url || ''
+  if (UPLOAD_PATHS.some((p) => url.includes(p))) {
+    config.timeout = 5 * 60 * 1000 // 5 minutes for media uploads
+  }
   return config
 })
 
