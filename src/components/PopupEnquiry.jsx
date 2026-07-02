@@ -47,10 +47,13 @@ const FALLBACK_CFG = {
   intervalSeconds: 45,
   active: true,
   showAfterSubmit: false,
+  // Minimum-viable form — First Name, Last Name, Email, Phone, Destination.
+  // Everything else stays available in the admin, but hidden by default.
   fields: {
     firstName: true, lastName: true, name: false,
     email: true, phone: true,
-    tripPreference: true, destination: true, marketingConsent: true,
+    destination: true,
+    tripPreference: false, marketingConsent: false,
     travelDate: false, travellers: false, tripType: false, budget: false, message: false,
   },
 }
