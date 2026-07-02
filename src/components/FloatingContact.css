@@ -1,8 +1,10 @@
 .fc {
   position: fixed;
   right: 16px;
-  bottom: 16px;
+  /* Sit above the mobile bottom bar when it's visible */
+  bottom: calc(16px + var(--mbar-h, 0px));
   z-index: 900;
+  transition: bottom 0.45s var(--ease-out), opacity 0.45s var(--ease-out), transform 0.45s var(--ease-out);
   display: flex;
   flex-direction: column;
   gap: 12px;

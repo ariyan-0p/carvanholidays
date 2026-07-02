@@ -1,0 +1,88 @@
+/* ============================================================
+   MOBILE BOTTOM ACTION BAR (JustWravel-style)
+   ============================================================ */
+.mbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 950;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 0;
+  padding: 8px 6px calc(8px + env(safe-area-inset-bottom, 0px));
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border-top: 1px solid rgba(13, 59, 64, 0.08);
+  box-shadow: 0 -6px 20px rgba(13, 59, 64, 0.08);
+  transform: translateY(120%);
+  transition: transform 0.45s var(--ease-out);
+  pointer-events: none;
+}
+.mbar--visible {
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.mbar__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 6px 4px;
+  border-radius: 12px;
+  color: var(--teal);
+  text-decoration: none;
+  font-family: var(--font);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  transition: background 0.3s var(--ease-out), color 0.3s var(--ease-out), transform 0.25s var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+.mbar__item svg {
+  transition: transform 0.3s var(--ease-out);
+}
+.mbar__item:active {
+  transform: scale(0.94);
+  background: rgba(13, 59, 64, 0.05);
+}
+.mbar__item:active svg {
+  transform: translateY(-1px);
+}
+.mbar__item.is-active {
+  color: var(--teal);
+  background: rgba(99, 214, 10, 0.14);
+}
+.mbar__item.is-active svg {
+  color: var(--teal);
+}
+
+/* WhatsApp — brand green pill in the strip */
+.mbar__item--wa {
+  color: #128C7E;
+}
+.mbar__item--wa svg { color: #25D366; }
+.mbar__item--wa:active { background: rgba(37, 211, 102, 0.10); }
+
+/* Call — solid brand-lime pill for maximum visibility */
+.mbar__item--call {
+  background: var(--lime);
+  color: var(--teal);
+  margin: 0 4px;
+  box-shadow: 0 4px 14px -6px rgba(99, 214, 10, 0.55);
+}
+.mbar__item--call svg { color: var(--teal); }
+.mbar__item--call:active { background: var(--lime); filter: brightness(0.94); }
+
+/* Only for phone — bottom bar is unnecessary on desktop */
+@media (min-width: 769px) {
+  .mbar { display: none; }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .mbar, .mbar__item { transition: none !important; }
+}

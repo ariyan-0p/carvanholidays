@@ -137,7 +137,10 @@ img, video { max-width: 100%; height: auto; }
   .search__summary { font-size: 12px !important; }
   .search__popular { padding: var(--sp-3) var(--sp-4) !important; }
 
-  /* ---- FOOTER ---- */
+  /* ---- FOOTER ----
+     Extra bottom padding so the sticky bottom bar doesn't cover the
+     "powered by" credit line on the last scroll. */
+  .footer { padding-bottom: calc(var(--mbar-h, 64px) + 8px); }
   .footer__inner { grid-template-columns: 1fr !important; gap: var(--sp-6) !important; padding: var(--sp-8) var(--sp-5) !important; }
   .footer__brand { text-align: center; }
   .footer__contact, .footer__socials { justify-content: center; }
