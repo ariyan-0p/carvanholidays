@@ -12,11 +12,62 @@
   margin-bottom: var(--sp-10);
 }
 
-.insta__grid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: var(--sp-4);
+/* Rail wrapper — positions the desktop nav arrows on top of the strip */
+.insta__rail-wrap {
+  position: relative;
 }
+
+/* Horizontal slider (desktop + mobile).
+   Cards flow left-to-right, snap to start, scroll bar hidden. */
+.insta__grid {
+  display: flex;
+  gap: var(--sp-4);
+  overflow-x: auto;
+  overflow-y: visible;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: var(--sp-2) 4px var(--sp-3);
+  /* Bleed slightly past the container so first/last cards touch the padding edge cleanly */
+  margin: 0 -4px;
+}
+.insta__grid::-webkit-scrollbar { display: none; }
+
+.insta__grid > .insta-card {
+  flex: 0 0 auto;
+  width: 240px;              /* fixed rail card width on desktop */
+  scroll-snap-align: start;
+}
+
+/* Prev / next arrows — desktop only */
+.insta__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 4;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(13, 59, 64, 0.10);
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--teal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 22px -6px rgba(13, 59, 64, 0.18);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: background 0.3s var(--ease-out), transform 0.3s var(--ease-out), opacity 0.3s var(--ease-out);
+}
+.insta__arrow:hover:not(:disabled) {
+  background: var(--teal);
+  color: var(--white);
+  transform: translateY(-50%) scale(1.06);
+}
+.insta__arrow:disabled { opacity: 0; pointer-events: none; }
+.insta__arrow--prev { left: -10px; }
+.insta__arrow--next { right: -10px; }
 
 /* Card */
 .insta-card {
@@ -160,11 +211,18 @@
   box-shadow: 0 18px 40px rgba(221, 42, 123, 0.42);
 }
 
-/* Responsive */
-@media (max-width: 1100px) {
-  .insta__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+/* Responsive — same rail everywhere, just tighter and hide the arrows on phone */
+@media (max-width: 900px) {
+  .insta__grid > .insta-card { width: 200px; }
 }
 @media (max-width: 720px) {
   .insta { padding: var(--sp-12) var(--sp-5); }
-  .insta__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-3); }
+  .insta__grid {
+    gap: var(--sp-3);
+    /* Bleed to viewport edges on mobile for JustWravel-style feel */
+    margin: 0 calc(-1 * var(--sp-5));
+    padding: var(--sp-2) var(--sp-5) var(--sp-3);
+  }
+  .insta__grid > .insta-card { width: 62vw; max-width: 240px; }
+  .insta__arrow { display: none; }
 }
