@@ -20,6 +20,10 @@ import Blogs from './pages/Blogs'
 import BlogDetail from './pages/BlogDetail'
 import CarRentals from './pages/CarRentals'
 import NotFound from './pages/NotFound'
+import Terms from './pages/Terms'
+import Privacy from './pages/Privacy'
+import RefundCancellation from './pages/RefundCancellation'
+import TransactionFlow from './pages/TransactionFlow'
 import { AdminAuthProvider, RequireAdmin } from './admin/AdminAuth'
 import AdminLogin from './admin/AdminLogin'
 import AdminLayout from './admin/AdminLayout'
@@ -71,6 +75,12 @@ function App() {
           <Route path="/blog" element={<Blogs />} />
           <Route path="/blog/:slug" element={<BlogDetail />} />
           <Route path="/car-rentals" element={<CarRentals />} />
+
+          {/* Legal / compliance pages required by payment gateways */}
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/refund-cancellation" element={<RefundCancellation />} />
+          <Route path="/transaction-flow" element={<TransactionFlow />} />
 
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<RequireAdmin><AdminLayout /></RequireAdmin>}>

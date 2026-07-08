@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { sendContact } from '../api/client'
+import { COMPANY } from '../config/legal'
 import './pages.css'
 
 export default function Contact() {
@@ -39,16 +40,22 @@ export default function Contact() {
         <div className="contact__grid">
           <div className="contact__info">
             <div>
-              <h3>Office</h3>
-              <p>Carvaan Holidays<br />Connaught Place, New Delhi<br />India 110001</p>
+              <h3>Registered office</h3>
+              <p>
+                <strong>{COMPANY.legalName}</strong><br />
+                {COMPANY.address}
+              </p>
             </div>
             <div>
               <h3>Phone</h3>
-              <p>+91 91319 78160<br />Mon – Sat, 10 AM – 7 PM</p>
+              <p>
+                <a href={`tel:${COMPANY.phone}`}>{COMPANY.phone}</a><br />
+                Mon – Sat, 10 AM – 7 PM
+              </p>
             </div>
             <div>
               <h3>Email</h3>
-              <p>info@carvaanholidays.com</p>
+              <p><a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a></p>
             </div>
           </div>
 

@@ -28,10 +28,10 @@ const footerLinks = {
   ],
   Support: [
     { label: 'Contact Us', to: '/contact' },
-    { label: 'FAQ', to: '#' },
-    { label: 'Track Booking', to: '#' },
-    { label: 'Cancellation Policy', to: '#' },
-    { label: 'Terms & Privacy', to: '#' },
+    { label: 'Terms & Conditions', to: '/terms' },
+    { label: 'Privacy Policy', to: '/privacy' },
+    { label: 'Refund & Cancellation', to: '/refund-cancellation' },
+    { label: 'Booking / Transaction Flow', to: '/transaction-flow' },
   ],
 }
 
@@ -150,9 +150,10 @@ export default function Footer() {
         <div className="footer__bottom-inner">
           <span>© {new Date().getFullYear()} Carvaan Holidays. All rights reserved.</span>
           <span className="footer__bottom-links">
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Use</a>
-            <a href="#">Sitemap</a>
+            <Link to="/privacy">Privacy Policy</Link>
+            <Link to="/terms">Terms &amp; Conditions</Link>
+            <Link to="/refund-cancellation">Refund &amp; Cancellation</Link>
+            <Link to="/transaction-flow">Booking Flow</Link>
           </span>
         </div>
         <div className="footer__credit">
