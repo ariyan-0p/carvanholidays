@@ -17,7 +17,7 @@ export const COMPANY = {
    * Use HTML line breaks via multiple JSX <br /> in components; for
    * plain-text usage the commas keep it readable.
    */
-  address: 'Connaught Place, New Delhi, Delhi 110001, India',
+  address: 'Shop No. G-3, Plot No. 12, HDB Arcade, Dursanchar Nagar, Shahpura, Bhopal, Madhya Pradesh — 462026, India',
 
   /** GST registration number, once available. Leave blank if not yet. */
   gstin: '',
@@ -30,7 +30,7 @@ export const COMPANY = {
   email: 'info@carvaanholidays.com',
 
   /** Jurisdiction city for legal disputes — usually where the business is registered. */
-  jurisdiction: 'New Delhi',
+  jurisdiction: 'Bhopal, Madhya Pradesh',
 
   /** Bump this whenever any policy changes so users see the fresh date. */
   policiesUpdated: 'June 2026',
