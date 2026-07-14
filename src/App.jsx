@@ -24,6 +24,7 @@ import Terms from './pages/Terms'
 import Privacy from './pages/Privacy'
 import RefundCancellation from './pages/RefundCancellation'
 import TransactionFlow from './pages/TransactionFlow'
+import PaymentResult from './pages/PaymentResult'
 import { AdminAuthProvider, RequireAdmin } from './admin/AdminAuth'
 import AdminLogin from './admin/AdminLogin'
 import AdminLayout from './admin/AdminLayout'
@@ -81,6 +82,7 @@ function App() {
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/refund-cancellation" element={<RefundCancellation />} />
           <Route path="/transaction-flow" element={<TransactionFlow />} />
+          <Route path="/payment-result" element={<PaymentResult />} />
 
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<RequireAdmin><AdminLayout /></RequireAdmin>}>

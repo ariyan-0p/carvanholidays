@@ -1,0 +1,150 @@
+/* ---- Advance payment summary on the Booking form ---- */
+.pay-summary {
+  background: linear-gradient(135deg, rgba(99, 214, 10, 0.08) 0%, rgba(13, 59, 64, 0.04) 100%);
+  border: 1px solid rgba(13, 59, 64, 0.10);
+  border-left: 3px solid var(--lime);
+  border-radius: 8px;
+  padding: var(--sp-4) var(--sp-5);
+  margin-top: var(--sp-2);
+}
+.pay-summary__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  font-size: 14px;
+  color: var(--charcoal);
+  padding: 4px 0;
+}
+.pay-summary__row--accent {
+  border-top: 1px dashed rgba(13, 59, 64, 0.15);
+  margin-top: 6px;
+  padding-top: 10px;
+  font-size: 15px;
+  color: var(--teal);
+}
+.pay-summary__row--accent strong {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--teal);
+}
+.pay-summary__note {
+  margin: var(--sp-3) 0 0;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+.pay-summary__note a { color: var(--teal); text-decoration: underline; text-underline-offset: 2px; }
+
+.booking-form__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  margin-top: var(--sp-2);
+}
+.book-box__btn--pay {
+  background: var(--brand-gradient);
+  font-size: 15px;
+  padding: 15px 24px;
+}
+.book-box__btn--ghost {
+  background: transparent;
+  color: var(--teal);
+  border: 1.5px solid rgba(13, 59, 64, 0.2);
+  box-shadow: none;
+}
+.book-box__btn--ghost:hover { background: rgba(13, 59, 64, 0.05); }
+
+.booking-form__secure {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: var(--sp-3) 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.booking-form__secure svg { color: var(--green-strong); flex-shrink: 0; }
+
+/* ---- Payment result page ---- */
+.payres {
+  --pr-top: calc(var(--annbar-h, 0px) + var(--nav-h, 92px) + var(--subnav-h, 0px));
+  min-height: 100vh;
+  padding: calc(var(--pr-top) + var(--sp-12)) var(--sp-5) var(--sp-16);
+  background:
+    radial-gradient(700px 400px at 50% 0%, rgba(99, 214, 10, 0.06), transparent 60%),
+    var(--warm-white);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+.payres__card {
+  width: 100%;
+  max-width: 520px;
+  background: var(--white);
+  border: 1px solid rgba(13, 59, 64, 0.08);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  padding: var(--sp-10) var(--sp-8);
+  text-align: center;
+}
+.payres__icon {
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--sp-5);
+}
+.payres__icon.is-ok { background: rgba(99, 214, 10, 0.14); color: var(--green-strong); }
+.payres__icon.is-fail { background: rgba(220, 38, 38, 0.10); color: #dc2626; }
+.payres__title {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 4vw, 36px);
+  font-weight: 400;
+  color: var(--teal);
+  letter-spacing: -0.01em;
+  margin: 0 0 var(--sp-3);
+}
+.payres__title em { font-style: italic; color: var(--green-strong); }
+.payres__sub {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--charcoal);
+  margin: 0 auto var(--sp-6);
+  max-width: 44ch;
+}
+.payres__meta {
+  text-align: left;
+  background: var(--warm-white);
+  border: 1px solid var(--light-grey);
+  border-radius: 8px;
+  padding: var(--sp-4) var(--sp-5);
+  margin-bottom: var(--sp-6);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.payres__meta > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  font-size: 13px;
+}
+.payres__meta span { color: var(--text-muted); }
+.payres__meta strong { color: var(--teal); font-weight: 600; text-align: right; word-break: break-all; }
+.payres__actions {
+  display: flex;
+  gap: var(--sp-3);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+  .payres__card { padding: var(--sp-8) var(--sp-5); }
+  .payres__actions { flex-direction: column; }
+  .payres__actions .book-box__btn { width: 100%; }
+}

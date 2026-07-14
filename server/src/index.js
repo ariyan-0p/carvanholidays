@@ -20,6 +20,7 @@ import popupConfigRouter from './routes/popupConfig.js'
 import heroRouter from './routes/hero.js'
 import bannersRouter from './routes/banners.js'
 import searchSectionRouter from './routes/searchSection.js'
+import paymentRouter from './routes/payment.js'
 import { seedIfEmpty } from './seed.js'
 
 const app = express()
@@ -52,6 +53,7 @@ app.use('/api/popup-config', popupConfigRouter)
 app.use('/api/hero', heroRouter)
 app.use('/api/banners', bannersRouter)
 app.use('/api/search-section', searchSectionRouter)
+app.use('/api/payment', paymentRouter)
 app.use('/api/admin', adminRouter)
 
 app.use((err, _req, res, _next) => {

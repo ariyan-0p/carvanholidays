@@ -224,6 +224,16 @@ export const adminUpdateBanner = (id, data) =>
 export const adminDeleteBanner = (id) =>
   api.delete(`/admin/banners/${id}`).then(r => r.data)
 
+// ---------- Payments (ICICI Orange PG) ----------
+export const fetchPaymentConfig = () =>
+  api.get('/payment/config').then(r => r.data)
+
+export const initiatePayment = (payload) =>
+  api.post('/payment/initiate', payload).then(r => r.data)
+
+export const fetchPaymentStatus = (merchantTxnNo) =>
+  api.get(`/payment/status/${merchantTxnNo}`).then(r => r.data)
+
 export const fetchPopupConfig = () =>
   api.get('/popup-config').then(r => r.data)
 
