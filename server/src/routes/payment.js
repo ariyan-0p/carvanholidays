@@ -80,8 +80,6 @@ router.post('/initiate', async (req, res, next) => {
     const amountStr = amount.toFixed(2)
 
     const merchantTxnNo = makeTxnNo()
-    const [firstName, ...rest] = name.trim().split(/\s+/)
-    const lastName = rest.join(' ')
 
     await Payment.create({
       merchantTxnNo,
@@ -96,6 +94,9 @@ router.post('/initiate', async (req, res, next) => {
       env: cfg.env,
     })
 
+    // Field set + naming matches the ICICI UAT kit sample exactly so the
+    // secureHash (v1, computed inside initiateSale) lines up with what the PG
+    // recomputes on its side.
     const payload = {
       merchantId: cfg.merchantId,
       merchantTxnNo,
@@ -105,12 +106,11 @@ router.post('/initiate', async (req, res, next) => {
       transactionType: 'SALE',
       customerEmailID: email.trim(),
       customerMobileNo: phone.replace(/[^0-9]/g, '').slice(-10),
+      customerName: name.trim(),
       txnDate: txnDateIST(),
       returnURL: `${PUBLIC_BASE_URL}/api/payment/callback`,
-      customerData: [{ firstName, lastName, emailId: email.trim(), mobileNo: phone.replace(/[^0-9]/g, '').slice(-10) }],
-      udf1: slug,
-      udf2: pkg.title,
     }
+    if (cfg.aggregatorId) payload.aggregatorID = cfg.aggregatorId
 
     const { data } = await initiateSale(payload)
 

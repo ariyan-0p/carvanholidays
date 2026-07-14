@@ -12,9 +12,10 @@ import crypto from 'crypto'
  *       `securehash` HTTP request header.
  */
 
-const SECURE_KEY   = process.env.ICICI_SECURE_KEY || ''
-const MERCHANT_ID  = process.env.ICICI_MERCHANT_ID || ''
-const ENV          = (process.env.ICICI_ENV || 'uat').toLowerCase()
+const SECURE_KEY    = process.env.ICICI_SECURE_KEY || ''
+const MERCHANT_ID   = process.env.ICICI_MERCHANT_ID || ''
+const AGGREGATOR_ID = process.env.ICICI_AGGREGATOR_ID || ''
+const ENV           = (process.env.ICICI_ENV || 'uat').toLowerCase()
 
 const URLS = {
   uat: {
@@ -30,16 +31,29 @@ const URLS = {
 export const iciciConfig = () => ({
   env: ENV,
   merchantId: MERCHANT_ID,
+  aggregatorId: AGGREGATOR_ID,
   configured: Boolean(SECURE_KEY && MERCHANT_ID),
   urls: URLS[ENV] || URLS.uat,
 })
 
-/** Hash Calc v1 — for form-encoded requests and the browser callback. */
+/**
+ * Hash Calc v1 — used by ICICI Orange PG for the initiateSale request, the
+ * command (refund/status) APIs, AND the browser payment callback.
+ *
+ * Per the UAT kit worked example:
+ *   HashKey  = param names in ascending order
+ *   HashText = their VALUES concatenated in that same order (skip null/empty)
+ * then HMAC-SHA256 with the secure key, hex, lowercase.
+ *
+ * NOTE: sort must be plain code-unit ascending (default Array.sort), NOT
+ * localeCompare — the spec orders by ASCII where 'E' < 'M' < 'N' (uppercase
+ * mid-word letters in customerEmailID / customerMobileNo / customerName).
+ */
 export function hashV1(params, key = SECURE_KEY) {
   const concatenated = Object.keys(params)
     .filter((k) => k !== 'secureHash' && k !== 'securehash')
     .filter((k) => params[k] !== null && params[k] !== undefined && String(params[k]) !== '')
-    .sort((a, b) => a.localeCompare(b))
+    .sort()
     .map((k) => String(params[k]))
     .join('')
   return crypto.createHmac('sha256', key).update(concatenated, 'utf8').digest('hex').toLowerCase()
@@ -68,29 +82,31 @@ export function verifyCallbackHash(params) {
 }
 
 /**
- * Call initiateSale (server-to-server). `payload` is the plain JSON object of
- * sale parameters (without any hash). We minify it, compute v2 hash, and send
- * it in the `securehash` header.
- * Returns { ok, status, data } where data is the parsed JSON response.
+ * Call initiateSale (server-to-server).
+ *
+ * `params` is the plain object of sale parameters WITHOUT the hash. Per the
+ * UAT kit, ICICI Orange PG expects the `secureHash` (v1) to be a FIELD inside
+ * the JSON body (not an HTTP header). We compute it here, append it, and POST
+ * the JSON.
+ *
+ * Returns { ok, status, data, sentHash } where data is the parsed JSON response.
  */
-export async function initiateSale(payload) {
+export async function initiateSale(params) {
   const { urls } = iciciConfig()
-  const body = JSON.stringify(payload) // minified (no spaces) — required by spec
-  const securehash = hashV2(body)
+  const secureHash = hashV1(params)
+  const payload = { ...params, secureHash }
+  const body = JSON.stringify(payload)
 
   const res = await fetch(urls.initiateSale, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      securehash,
-    },
+    headers: { 'Content-Type': 'application/json' },
     body,
   })
 
   const text = await res.text()
   let data
   try { data = JSON.parse(text) } catch { data = { raw: text } }
-  return { ok: res.ok, status: res.status, data }
+  return { ok: res.ok, status: res.status, data, sentHash: secureHash }
 }
 
 /**
