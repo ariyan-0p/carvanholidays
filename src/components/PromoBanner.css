@@ -25,9 +25,8 @@
 .promo-banner__img {
   display: block;
   width: 100%;
-  height: auto;
-  aspect-ratio: 1920 / 520;
-  object-fit: cover;
+  height: auto;                  /* natural aspect ratio — full image, no crop */
+  object-fit: contain;
   background: var(--light-bg);   /* shows during the brief load to avoid a white flash */
 }
 
