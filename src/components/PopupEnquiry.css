@@ -114,12 +114,16 @@
   justify-content: flex-end;
   overflow: hidden;
 }
-/* When an admin image is uploaded, lock the banner column to a strict
-   3:4 portrait aspect ratio. The image fills the column with cover
-   cropping; the form column on the other side stretches to match. */
+/* When an admin image is uploaded, the image fills the banner column and
+   the FORM drives the panel height — so there's never empty space beside
+   a short form. The square is absolutely positioned to fill whatever
+   height the form column ends up being. */
+.pe-modal__banner.has-image {
+  min-height: 100%;
+}
 .pe-modal__banner.has-image .pe-modal__banner-square {
-  flex: 1 1 auto;
-  aspect-ratio: 3 / 4;
+  position: absolute;
+  inset: 0;
   background-size: cover;
   background-position: center;
 }
@@ -446,13 +450,14 @@
   line-height: 1.6;
 }
 
-/* Stack the two-column layout on narrower screens. */
-@media (max-width: 960px) {
-  .pe-modal__panel { grid-template-columns: 1fr; max-width: 540px; }
-  .pe-modal__banner-square { aspect-ratio: 16 / 9; min-height: 0; }
-  .pe-modal__banner-content { padding: var(--sp-4) var(--sp-5) var(--sp-5); }
-  .pe-modal__banner-heading { font-size: 22px; }
-  .pe-modal__banner-sub { font-size: 13px; }
+/* Phone / small tablet: drop the banner image entirely — just a clean,
+   compact form. No stacked image, no wasted height. */
+@media (max-width: 768px) {
+  .pe-modal__panel {
+    grid-template-columns: 1fr !important;
+    max-width: 440px;
+  }
+  .pe-modal__banner { display: none !important; }
 }
 
 @media (max-width: 600px) {

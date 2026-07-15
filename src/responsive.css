@@ -264,12 +264,11 @@ img, video { max-width: 100%; height: auto; }
   .promo-banner__dot.is-active { width: 32px !important; }
   .promo-banner__dots { bottom: 10px !important; gap: 6px !important; }
 
-  /* ---- POPUP (compact 1-column stack) ---- */
-  .pe-modal { padding: var(--sp-3) !important; }
-  .pe-modal__panel { max-width: 100% !important; max-height: 92vh !important; }
-  .pe-modal__banner-square { aspect-ratio: 4 / 3 !important; }
-  .pe-modal__banner-heading { font-size: 22px !important; }
-  .pe-modal__form { padding: var(--sp-4) !important; }
+  /* ---- POPUP (phone: form only, no banner image) ---- */
+  .pe-modal { padding: var(--sp-4) !important; }
+  .pe-modal__panel { grid-template-columns: 1fr !important; max-width: 440px !important; max-height: 92vh !important; }
+  .pe-modal__banner { display: none !important; }
+  .pe-modal__form { padding: var(--sp-5) var(--sp-4) !important; }
   .pe-modal__title { font-size: 18px !important; }
   .pe-modal__grid { grid-template-columns: 1fr !important; gap: 8px !important; }
   .pe-modal__btn { width: 100%; min-width: 0 !important; }
