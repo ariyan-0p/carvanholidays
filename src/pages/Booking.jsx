@@ -61,22 +61,34 @@ export default function Booking() {
     }
   }
 
-  // Pay advance online → redirect to ICICI hosted page
+  // Pay advance online → redirect to CCAvenue hosted page
   const payNow = async () => {
     setError(null)
     if (!validate()) return
     setPaying(true)
     try {
-      const { redirectUrl } = await initiatePayment({
+      const { postUrl, encRequest, accessCode } = await initiatePayment({
         slug,
         name: form.name, email: form.email, phone: form.phone,
         travellers: form.travellers, travelDate: form.travelDate,
         message: form.message,
       })
-      if (redirectUrl) {
-        window.location.href = redirectUrl   // hand off to ICICI Orange PG
+      if (postUrl && encRequest && accessCode) {
+        // Hand off to CCAvenue via a browser form POST (non-seamless redirect)
+        const f = document.createElement('form')
+        f.method = 'POST'
+        f.action = postUrl
+        const add = (n, v) => {
+          const i = document.createElement('input')
+          i.type = 'hidden'; i.name = n; i.value = v
+          f.appendChild(i)
+        }
+        add('encRequest', encRequest)
+        add('access_code', accessCode)
+        document.body.appendChild(f)
+        f.submit()
       } else {
-        setError('Could not start payment. Please try again or use "Request booking".')
+        setError('Could not start payment. Please try again or use "Request a callback".')
         setPaying(false)
       }
     } catch (err) {
@@ -179,7 +191,7 @@ export default function Booking() {
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
               </svg>
-              Payments are processed securely by ICICI Bank. We never see or store your card / UPI details.
+              Payments are processed securely by CCAvenue. We never see or store your card / UPI details.
             </p>
           )}
         </form>

@@ -4,33 +4,20 @@ import crypto from 'crypto'
 import Package from '../models/Package.js'
 import Payment from '../models/Payment.js'
 import { dbReady, memFindPackage } from '../store.js'
-import { iciciConfig, initiateSale, verifyCallbackHash, transactionStatus } from '../services/iciciPg.js'
+import { ccavenueConfig, encrypt, decrypt, buildRequest, parseResponse } from '../services/ccavenue.js'
 
 const router = Router()
 
-const PUBLIC_BASE_URL   = (process.env.PUBLIC_BASE_URL || 'https://carvaanholidays.com').replace(/\/$/, '')
-const CLIENT_ORIGIN     = (process.env.CLIENT_ORIGIN || 'https://carvaanholidays.com').replace(/\/$/, '')
-const ADVANCE_PERCENT   = Math.max(0, Math.min(100, Number(process.env.ICICI_ADVANCE_PERCENT || 25)))
+const PUBLIC_BASE_URL = (process.env.PUBLIC_BASE_URL || 'https://carvaanholidays.com').replace(/\/$/, '')
+const CLIENT_ORIGIN   = (process.env.CLIENT_ORIGIN || 'https://carvaanholidays.com').replace(/\/$/, '')
+const ADVANCE_PERCENT = Math.max(0, Math.min(100,
+  Number(process.env.PAYMENT_ADVANCE_PERCENT || process.env.ICICI_ADVANCE_PERCENT || 25)))
 
-// 20-char max, alphanumeric-only unique reference (spec requirement).
-function makeTxnNo() {
-  const ts = Date.now().toString(36)                 // ~8 chars
-  const rand = crypto.randomBytes(6).toString('hex') // 12 chars
-  return `CH${ts}${rand}`.replace(/[^a-zA-Z0-9]/g, '').slice(0, 20)
-}
-
-// YYYYMMDDHHMISS in IST
-function txnDateIST() {
-  const now = new Date(Date.now() + 5.5 * 60 * 60 * 1000) // shift to IST
-  const p = (n) => String(n).padStart(2, '0')
-  return (
-    now.getUTCFullYear().toString() +
-    p(now.getUTCMonth() + 1) +
-    p(now.getUTCDate()) +
-    p(now.getUTCHours()) +
-    p(now.getUTCMinutes()) +
-    p(now.getUTCSeconds())
-  )
+// CCAvenue order_id: alphanumeric, <= 30. Ours is ~20 alnum.
+function makeOrderId() {
+  const ts = Date.now().toString(36)
+  const rand = crypto.randomBytes(6).toString('hex')
+  return `CH${ts}${rand}`.replace(/[^a-zA-Z0-9]/g, '').slice(0, 28)
 }
 
 async function findPackage(slug) {
@@ -38,21 +25,23 @@ async function findPackage(slug) {
   return Package.findOne({ slug, active: true }).lean()
 }
 
-// GET /api/payment/config — lets the booking page know if online payment is live
+// GET /api/payment/config
 router.get('/config', (_req, res) => {
-  const cfg = iciciConfig()
+  const cfg = ccavenueConfig()
   res.json({
     enabled: cfg.configured,
     env: cfg.env,
+    gateway: 'ccavenue',
     advancePercent: ADVANCE_PERCENT,
     currency: 'INR',
   })
 })
 
 // POST /api/payment/initiate  { slug, name, email, phone, travellers, travelDate, message }
+// Returns { postUrl, encRequest, accessCode } — the client auto-submits a form to CCAvenue.
 router.post('/initiate', async (req, res, next) => {
   try {
-    const cfg = iciciConfig()
+    const cfg = ccavenueConfig()
     if (!cfg.configured) {
       return res.status(503).json({ error: 'Online payment is not configured yet. Please try the enquiry option.' })
     }
@@ -76,113 +65,105 @@ router.post('/initiate', async (req, res, next) => {
 
     const pct = ADVANCE_PERCENT
     const chargeable = pct > 0 && pct < 100 ? (price * pct) / 100 : price
-    const amount = Math.round(chargeable * 100) / 100 // 2 decimals
+    const amount = Math.round(chargeable * 100) / 100
     const amountStr = amount.toFixed(2)
 
-    const merchantTxnNo = makeTxnNo()
+    const orderId = makeOrderId()
 
     await Payment.create({
-      merchantTxnNo,
+      merchantTxnNo: orderId,
       packageSlug: slug,
       packageTitle: pkg.title,
       amount,
       packagePrice: price,
       advancePercent: pct,
-      currencyCode: '356',
+      currencyCode: 'INR',
       name, email, phone, travellers, travelDate, notes: message,
       status: 'INITIATED',
       env: cfg.env,
     })
 
-    // Field set + naming matches the ICICI UAT kit sample exactly so the
-    // secureHash (v1, computed inside initiateSale) lines up with what the PG
-    // recomputes on its side.
-    const payload = {
-      merchantId: cfg.merchantId,
-      merchantTxnNo,
+    const requestParams = {
+      merchant_id: cfg.merchantId,
+      order_id: orderId,
       amount: amountStr,
-      currencyCode: '356',
-      payType: '0',                       // Standard / redirection
-      transactionType: 'SALE',
-      customerEmailID: email.trim(),
-      customerMobileNo: phone.replace(/[^0-9]/g, '').slice(-10),
-      customerName: name.trim(),
-      txnDate: txnDateIST(),
-      returnURL: `${PUBLIC_BASE_URL}/api/payment/callback`,
-    }
-    if (cfg.aggregatorId) payload.aggregatorID = cfg.aggregatorId
-
-    const { data } = await initiateSale(payload)
-
-    // R1000 = initiation success
-    if (data?.responseCode === 'R1000' && data?.redirectURI && data?.tranCtx) {
-      await Payment.updateOne(
-        { merchantTxnNo },
-        { $set: { status: 'REDIRECTED', tranCtx: data.tranCtx, initiateResponse: data } }
-      )
-      return res.json({
-        ok: true,
-        merchantTxnNo,
-        // Client redirects the browser here (GET) per spec:
-        redirectUrl: `${data.redirectURI}?tranCtx=${encodeURIComponent(data.tranCtx)}`,
-      })
+      currency: 'INR',
+      redirect_url: `${PUBLIC_BASE_URL}/api/payment/callback`,
+      cancel_url: `${PUBLIC_BASE_URL}/api/payment/callback`,
+      language: 'EN',
+      billing_name: name.trim().slice(0, 60),
+      billing_email: email.trim(),
+      billing_tel: phone.replace(/[^0-9]/g, '').slice(-10),
+      merchant_param1: slug,
+      merchant_param2: (pkg.title || '').slice(0, 60),
     }
 
-    await Payment.updateOne(
-      { merchantTxnNo },
-      { $set: { status: 'FAILED', responseCode: data?.responseCode || '', respDescription: data?.responseDescription || data?.respDescription || 'Initiation failed', initiateResponse: data } }
-    )
-    return res.status(502).json({
-      error: data?.responseDescription || data?.respDescription || 'Could not start payment. Please try again.',
-      code: data?.responseCode || null,
+    const encRequest = encrypt(buildRequest(requestParams))
+
+    return res.json({
+      ok: true,
+      orderId,
+      postUrl: cfg.postUrl,
+      encRequest,
+      accessCode: cfg.accessCode,
     })
   } catch (e) {
     next(e)
   }
 })
 
-// POST /api/payment/callback — ICICI posts the payment result here (form-encoded).
-// Parse form bodies for this route specifically (global app uses express.json()).
+// POST /api/payment/callback — CCAvenue posts encResp here (form-encoded).
 router.post('/callback', express.urlencoded({ extended: true, limit: '1mb' }), async (req, res) => {
-  const params = req.body || {}
-  const merchantTxnNo = params.merchantTxnNo || ''
-  const verified = verifyCallbackHash(params)
-  const code = String(params.responseCode || '')
-  const isSuccess = verified && (code === '000' || code === '0000')
+  const encResp = req.body?.encResp || ''
+  let parsed = {}
+  let ok = false
+  let orderId = ''
 
   try {
-    if (dbReady() && merchantTxnNo) {
+    if (encResp) {
+      const decrypted = decrypt(encResp)
+      parsed = parseResponse(decrypted)
+      orderId = parsed.order_id || ''
+      ok = String(parsed.order_status || '').toLowerCase() === 'success'
+    }
+  } catch (e) {
+    console.error('CCAvenue callback decrypt failed:', e.message)
+  }
+
+  try {
+    if (dbReady() && orderId) {
+      const statusMap = { success: 'SUCCESS', aborted: 'CANCELLED', failure: 'FAILED', invalid: 'FAILED' }
+      const os = String(parsed.order_status || '').toLowerCase()
       await Payment.updateOne(
-        { merchantTxnNo },
+        { merchantTxnNo: orderId },
         {
           $set: {
-            status: isSuccess ? 'SUCCESS' : (verified ? 'FAILED' : 'FAILED'),
-            hashVerified: verified,
-            txnID: params.txnID || '',
-            paymentMode: params.paymentMode || '',
-            responseCode: code,
-            respDescription: params.respDescription || '',
-            paymentDateTime: params.paymentDateTime || '',
-            callbackParams: params,
+            status: statusMap[os] || 'FAILED',
+            hashVerified: true, // decryption success == authenticity (only we + CCAvenue hold the key)
+            txnID: parsed.tracking_id || '',
+            paymentMode: parsed.payment_mode || '',
+            responseCode: parsed.order_status || '',
+            respDescription: parsed.status_message || parsed.failure_message || '',
+            paymentDateTime: parsed.trans_date || '',
+            callbackParams: parsed,
           },
         }
       )
     }
   } catch (e) {
-    console.error('Payment callback DB update failed:', e.message)
+    console.error('CCAvenue callback DB update failed:', e.message)
   }
 
-  // Redirect the customer's browser to the result page on the site.
-  const status = isSuccess ? 'success' : (verified ? 'failed' : 'invalid')
-  const url = `${CLIENT_ORIGIN}/payment-result?status=${status}&txn=${encodeURIComponent(merchantTxnNo)}`
-  return res.redirect(303, url)
+  const os = String(parsed.order_status || '').toLowerCase()
+  const status = ok ? 'success' : (os === 'aborted' ? 'cancelled' : 'failed')
+  return res.redirect(303, `${CLIENT_ORIGIN}/payment-result?status=${status}&txn=${encodeURIComponent(orderId)}`)
 })
 
-// GET /api/payment/status/:merchantTxnNo — result page polls this
-router.get('/status/:merchantTxnNo', async (req, res, next) => {
+// GET /api/payment/status/:orderId — result page polls this
+router.get('/status/:orderId', async (req, res, next) => {
   try {
     if (!dbReady()) return res.status(503).json({ error: 'DB not connected' })
-    const pmt = await Payment.findOne({ merchantTxnNo: req.params.merchantTxnNo }).lean()
+    const pmt = await Payment.findOne({ merchantTxnNo: req.params.orderId }).lean()
     if (!pmt) return res.status(404).json({ error: 'Payment not found' })
     res.json({
       merchantTxnNo: pmt.merchantTxnNo,
