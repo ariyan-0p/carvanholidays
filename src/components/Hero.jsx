@@ -117,17 +117,31 @@ export default function Hero() {
     return () => clearTimeout(timer)
   }, [current, slides, goTo])
 
-  // Restart video when its slide becomes active
+  // Restart video when its slide becomes active.
+  // `muted` must be set on the element (not just the attribute) before play(),
+  // otherwise mobile browsers reject autoplay. We also retry on `canplay`
+  // because this effect can run before the video has buffered enough to start.
   useEffect(() => {
     const active = slides[current]
     if (!active || active.kind !== 'video') return
     const v = videoRefs.current[active._id]
-    if (v) {
-      try {
-        v.currentTime = 0
-        const p = v.play()
-        if (p && typeof p.catch === 'function') p.catch(() => {})
-      } catch { /* noop */ }
+    if (!v) return
+
+    v.muted = true
+    v.playsInline = true
+
+    const tryPlay = () => {
+      const p = v.play()
+      if (p && typeof p.catch === 'function') p.catch(() => {})
+    }
+
+    try { v.currentTime = 0 } catch { /* noop */ }
+    tryPlay()
+    v.addEventListener('canplay', tryPlay)
+    v.addEventListener('loadeddata', tryPlay)
+    return () => {
+      v.removeEventListener('canplay', tryPlay)
+      v.removeEventListener('loadeddata', tryPlay)
     }
   }, [current, slides])
 

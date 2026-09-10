@@ -40,7 +40,9 @@
   will-change: transform, opacity;
 }
 
-/* Background video — same offset so video never bleeds behind navbar */
+/* Background video — same offset so video never bleeds behind navbar.
+   NOTE: never add `inset` here — it's the shorthand for top/right/bottom/left
+   and would reset the offset below, collapsing this box to 0x0. */
 .hero__bg--video {
   background: #0D3B40;
   overflow: hidden;
@@ -48,7 +50,6 @@
   left: 0;
   right: 0;
   bottom: 0;
-  inset: auto;
 }
 .hero__bg--video video {
   position: absolute;
