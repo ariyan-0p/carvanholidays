@@ -20,7 +20,7 @@ export default function AnnouncementBar() {
   // Reserve space at the top of the page for the bar.
   useEffect(() => {
     const visible = ready && items.length > 0
-    const h = visible ? (window.matchMedia('(max-width: 600px)').matches ? '34px' : '38px') : '0px'
+    const h = visible ? (window.matchMedia('(max-width: 600px)').matches ? '24px' : '26px') : '0px'
     document.documentElement.style.setProperty('--annbar-h', h)
     return () => document.documentElement.style.setProperty('--annbar-h', '0px')
   }, [ready, items.length])

@@ -7,10 +7,10 @@
   left: 0;
   right: 0;
   width: 100%;
-  height: 38px;
-  font-size: 11px;
+  height: 26px;
+  font-size: 10.5px;
   font-weight: 500;
-  letter-spacing: 2.6px;
+  letter-spacing: 2.4px;
   text-transform: uppercase;
   display: flex;
   align-items: center;
@@ -80,7 +80,7 @@
 .annbar__item {
   display: inline-flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 .annbar__text {
   display: inline-block;
@@ -112,7 +112,7 @@
 /* Sparkle */
 .annbar__sparkle {
   display: inline-block;
-  font-size: 10px;
+  font-size: 9px;
   opacity: 0.85;
   animation: annbar-spin 5s ease-in-out infinite;
   filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.4));
@@ -133,8 +133,8 @@
   z-index: 3;
 }
 .annbar__dot {
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
   background: currentColor;
   opacity: 0.35;
@@ -146,7 +146,7 @@
 }
 
 @media (max-width: 600px) {
-  .annbar { height: 34px; font-size: 12.5px; }
+  .annbar { height: 24px; font-size: 10px; }
   .annbar__stage { padding: 0 var(--sp-3); }
   .annbar__dots { right: var(--sp-3); }
 }
