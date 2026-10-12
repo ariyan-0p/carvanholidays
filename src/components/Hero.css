@@ -85,6 +85,20 @@
     linear-gradient(105deg, rgba(13, 59, 64, 0.78) 0%, rgba(13, 59, 64, 0.40) 55%, rgba(13, 59, 64, 0.05) 100%);
   z-index: 1;
 }
+/* Video slides: footage should stay vivid — only a soft left-side scrim for the
+   text and a light top/bottom vignette for the navbar and scroll hint. */
+.hero__overlay--video {
+  background:
+    linear-gradient(180deg, rgba(13, 59, 64, 0.30) 0%, rgba(13, 59, 64, 0) 22%, rgba(13, 59, 64, 0) 70%, rgba(13, 59, 64, 0.38) 100%),
+    linear-gradient(100deg, rgba(13, 59, 64, 0.50) 0%, rgba(13, 59, 64, 0.18) 42%, rgba(13, 59, 64, 0) 70%);
+}
+.hero__overlay--video::after { background: none; }
+/* No title/description on the slide → nothing to protect, so keep it near-clear */
+.hero__overlay--bare {
+  background:
+    linear-gradient(180deg, rgba(13, 59, 64, 0.28) 0%, rgba(13, 59, 64, 0) 20%, rgba(13, 59, 64, 0) 72%, rgba(13, 59, 64, 0.32) 100%);
+}
+
 .hero__overlay::after {
   content: '';
   position: absolute;

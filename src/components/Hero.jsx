@@ -232,7 +232,15 @@ export default function Hero() {
 
       {/* Gradient overlay */}
       {/* Dark overlay — togglable per slide (defaults to on) */}
-      {slide?.showOverlay !== false && <div className="hero__overlay" />}
+      {slide?.showOverlay !== false && (
+        <div
+          className={[
+            'hero__overlay',
+            slide.kind === 'video' ? 'hero__overlay--video' : '',
+            !slide.destination && !slide.subtitle && !slide.description ? 'hero__overlay--bare' : '',
+          ].join(' ').trim()}
+        />
+      )}
 
       {/* Content */}
       <div className={`hero__content ${animating ? 'hero__content--exit' : 'hero__content--enter'}`}>
