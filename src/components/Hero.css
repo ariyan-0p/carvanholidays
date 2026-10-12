@@ -2,10 +2,8 @@
    HERO SECTION
    =========================== */
 
-/* Height of fixed/sticky bars stacked above the hero. The hero itself is
-   anchored at the top of the page (full 100vh) so no white gap appears
-   behind the fixed navbar — but the BACKGROUND image is offset down by
-   this amount so the image only fills the visible region below the bars. */
+/* The hero is a full 100vh block anchored at the top of the page. Its media runs
+   under the fixed bars; only the text content is pushed down by --hero-top-offset. */
 .hero {
   /* All three height vars are published live by the matching components:
      --annbar-h (AnnouncementBar), --nav-h (Navbar), --subnav-h (SubNav).
@@ -22,10 +20,11 @@
   align-items: center;
 }
 
-/* Background images — fill only the visible hero region (below the bars) */
+/* Background media fills the whole hero and runs UNDER the translucent navbar.
+   (Starting it exactly at the navbar's bottom edge left a thin visible seam.) */
 .hero__bg {
   position: absolute;
-  top: var(--hero-top-offset);
+  top: 0;
   left: 0;
   right: 0;
   bottom: 0;
@@ -46,7 +45,7 @@
 .hero__bg--video {
   background: #0D3B40;
   overflow: hidden;
-  top: var(--hero-top-offset);
+  top: 0;
   left: 0;
   right: 0;
   bottom: 0;
@@ -76,7 +75,7 @@
 /* Overlay: dark gradient — sits over the image, not behind the navbar */
 .hero__overlay {
   position: absolute;
-  top: var(--hero-top-offset);
+  top: 0;
   left: 0;
   right: 0;
   bottom: 0;
