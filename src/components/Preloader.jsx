@@ -4,6 +4,7 @@ import './Preloader.css'
 
 const MIN_DURATION = 3400 // ms — minimum time the preloader is visible
 const MAX_DURATION = 5200 // ms — hard cap
+const EXIT_MS = 1150 // ms — curtain lift (keep in sync with .preloader--exit transition)
 
 // x = horizontal position (%), s = size (vmin), t = travel time (s), d = delay (s)
 const CLOUDS = [
@@ -26,7 +27,12 @@ export default function Preloader() {
       const remaining = Math.max(0, MIN_DURATION - elapsed)
       setTimeout(() => {
         setExiting(true)
-        setTimeout(() => setVisible(false), 800)
+        // Tell the page the curtain is lifting so the hero entrance can start.
+        document.documentElement.dataset.intro = 'reveal'
+        setTimeout(() => {
+          document.documentElement.dataset.intro = 'done'
+          setVisible(false)
+        }, EXIT_MS)
       }, remaining)
     }
     if (document.readyState === 'complete') finish()

@@ -73,6 +73,14 @@ export default function Hero() {
   const [animating, setAnimating] = useState(false)
   const heroRef = useRef(null)
   const videoRefs = useRef({})
+  // True while the first-load entrance is playing (adds a longer start delay so
+  // it lines up with the preloader curtain). Not set when returning via nav.
+  const [intro, setIntro] = useState(() => document.documentElement.dataset.intro !== 'done')
+
+  useEffect(() => {
+    const t = setTimeout(() => setIntro(false), 5000)
+    return () => clearTimeout(t)
+  }, [])
 
   // Load dynamic slides from the API; fall back to defaults on error / empty.
   useEffect(() => {
@@ -177,7 +185,7 @@ export default function Hero() {
   const cards = Array.isArray(slide.cards) ? slide.cards : []
 
   return (
-    <section className="hero" ref={heroRef}>
+    <section className={`hero ${intro ? 'hero--intro' : ''}`} ref={heroRef}>
       {/* Background layers — one per slide */}
       {slides.map((s, i) => {
         const isActive = i === current
@@ -230,7 +238,15 @@ export default function Hero() {
       <div className={`hero__content ${animating ? 'hero__content--exit' : 'hero__content--enter'}`}>
         <div className="hero__text">
           {slide.label && <span className="hero__label">{slide.label}</span>}
-          {slide.destination && <h1 className="hero__title">{slide.destination}</h1>}
+          {slide.destination && (
+            <h1 className="hero__title" key={slide._id || current} aria-label={slide.destination}>
+              <span className="hero__title-mask" aria-hidden="true">
+                {Array.from(slide.destination).map((ch, i) => (
+                  <span key={i} className="hero__char" style={{ '--ci': i }}>{ch === ' ' ? ' ' : ch}</span>
+                ))}
+              </span>
+            </h1>
+          )}
           {slide.subtitle && <p className="hero__subtitle">{slide.subtitle}</p>}
           {slide.description && <p className="hero__desc">{slide.description}</p>}
           {(slide.duration || slide.price) && (
