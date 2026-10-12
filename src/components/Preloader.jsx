@@ -17,7 +17,6 @@ export default function Preloader() {
   // Play on every full page load / refresh.
   const [visible, setVisible] = useState(true)
   const [exiting, setExiting] = useState(false)
-  const [pct, setPct] = useState(0)
 
   useEffect(() => {
     if (!visible) return
@@ -37,20 +36,6 @@ export default function Preloader() {
       window.removeEventListener('load', finish)
       clearTimeout(cap)
     }
-  }, [visible])
-
-  // Eases 0 -> 100 across the minimum duration so the number matches the bar.
-  useEffect(() => {
-    if (!visible) return
-    let raf
-    const t0 = performance.now()
-    const tick = (now) => {
-      const t = Math.min(1, (now - t0) / MIN_DURATION)
-      setPct(Math.round((1 - Math.pow(1 - t, 3)) * 100))
-      if (t < 1) raf = requestAnimationFrame(tick)
-    }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
   }, [visible])
 
   useEffect(() => {
@@ -79,10 +64,6 @@ export default function Preloader() {
           <img className="preloader__logo" src={brandMark} alt="Carvaan Holidays" />
         </div>
         <p className="preloader__tagline">Travel the way <em>you imagine</em></p>
-        <div className="preloader__progress">
-          <div className="preloader__bar"><span className="preloader__bar-fill" /></div>
-          <span className="preloader__pct">{String(pct).padStart(2, '0')}</span>
-        </div>
       </div>
 
       {/* Airliner flying bottom -> top */}
