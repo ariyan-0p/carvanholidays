@@ -55,14 +55,14 @@ export const packages = [
     ],
     hotels: [],
     itinerary: [
-      { day: 1, title: 'Arrival at Leh Airport - Acclimatization', description: 'Group assembly at Leh airport, transfer to hotel, evening tour briefing and overnight rest for acclimatisation.' },
-      { day: 2, title: 'Leh Local Sightseeing', description: 'Sangam point, Gurudwara Pathar Sahib, Magnetic Hill, Hall of Fame and Shanti Stupa, with evening at leisure.' },
-      { day: 3, title: 'Leh to Nubra Valley via Khardung La', description: 'Drive over Khardung La to Hunder; optional Bactrian camel and ATV rides at the sand dunes.' },
-      { day: 4, title: 'Nubra to Pangong via Diskit Monastery', description: 'Visit the 100-ft Buddha at Diskit Monastery, then drive to Pangong Tso for a lakeside overnight stay.' },
-      { day: 5, title: 'Pangong to Hanle via Changthang Valley', description: 'Scenic drive through Chushul, Tsaga and Loma with a stop at Rezang La War Memorial; arrive in Hanle.' },
-      { day: 6, title: 'Hanle and Umling La Excursion', description: 'Ride to the world\'s highest motorable pass at Umling La (19,024 ft) and return to Hanle for stargazing.' },
-      { day: 7, title: 'Hanle to Leh via Chumathang', description: 'Return to Leh stopping at Chumathang hot springs, Shey Palace and Thiksey Monastery.' },
-      { day: 8, title: 'Departure from Leh', description: 'Breakfast and transfer to Leh airport for onward journey.' }
+      { day: 1, title: 'Arrival at Leh Airport - Acclimatization', description: 'Group assembly at Leh airport, transfer to hotel, evening tour briefing and overnight rest for acclimatisation.', location: 'Leh', meals: ['dinner'], stay: 'Hotel in Leh', activities: ['Airport pickup and transfer to hotel', 'Evening tour briefing', 'Rest and acclimatisation'] },
+      { day: 2, title: 'Leh Local Sightseeing', description: 'Sangam point, Gurudwara Pathar Sahib, Magnetic Hill, Hall of Fame and Shanti Stupa, with evening at leisure.', location: 'Leh', meals: ['breakfast', 'dinner'], stay: 'Hotel in Leh', activities: ['Sangam point, Gurudwara Pathar Sahib and Magnetic Hill', 'Hall of Fame and Shanti Stupa', 'Evening at leisure'] },
+      { day: 3, title: 'Leh to Nubra Valley via Khardung La', description: 'Drive over Khardung La to Hunder; optional Bactrian camel and ATV rides at the sand dunes.', location: 'Leh → Nubra Valley', meals: ['breakfast', 'dinner'], stay: 'Camp / hotel in Hunder, Nubra', activities: ['Drive over Khardung La (18,380 ft)', 'Optional Bactrian camel and ATV rides at the dunes'], image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1400&q=80' },
+      { day: 4, title: 'Nubra to Pangong via Diskit Monastery', description: 'Visit the 100-ft Buddha at Diskit Monastery, then drive to Pangong Tso for a lakeside overnight stay.', location: 'Nubra → Pangong Tso', meals: ['breakfast', 'dinner'], stay: 'Lakeside camp, Pangong Tso', activities: ['Visit the 100-ft Buddha at Diskit Monastery', 'Transfer to Pangong Tso', 'Sunset by the lake'] },
+      { day: 5, title: 'Pangong to Hanle via Changthang Valley', description: 'Scenic drive through Chushul, Tsaga and Loma with a stop at Rezang La War Memorial; arrive in Hanle.', location: 'Pangong → Hanle', meals: ['breakfast', 'dinner'], stay: 'Homestay / camp in Hanle', activities: ['Scenic drive via Chushul, Tsaga and Loma', 'Stop at Rezang La War Memorial'] },
+      { day: 6, title: 'Hanle and Umling La Excursion', description: 'Ride to the world\'s highest motorable pass at Umling La (19,024 ft) and return to Hanle for stargazing.', location: 'Hanle', meals: ['breakfast', 'lunch', 'dinner'], stay: 'Homestay / camp in Hanle', activities: ['Excursion to Umling La (19,024 ft), world\'s highest motorable pass', 'Stargazing at the Hanle Dark Sky Reserve'] },
+      { day: 7, title: 'Hanle to Leh via Chumathang', description: 'Return to Leh stopping at Chumathang hot springs, Shey Palace and Thiksey Monastery.', location: 'Hanle → Leh', meals: ['breakfast', 'dinner'], stay: 'Hotel in Leh', activities: ['Drive back via Chumathang hot springs', 'Shey Palace and Thiksey Monastery'] },
+      { day: 8, title: 'Departure from Leh', description: 'Breakfast and transfer to Leh airport for onward journey.', location: 'Leh', meals: ['breakfast'], activities: ['Transfer to Leh airport for onward journey'] }
     ],
     featured: false,
     active: true,

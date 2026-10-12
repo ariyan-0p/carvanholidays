@@ -1182,3 +1182,24 @@
   font-size: 11px;
   background: rgba(255,255,255,0.95);
 }
+
+
+/* Itinerary day editor */
+.admin__day {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border, #e6ecef);
+  border-radius: 12px;
+  background: #fff;
+}
+.admin__day-head { display: grid; grid-template-columns: 80px 1fr auto; gap: 8px; }
+.admin__day-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.admin__day label { display: grid; gap: 4px; font-size: 12px; font-weight: 600; color: #6b7d83; }
+.admin__day-meals { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; font-size: 13px; }
+.admin__day-meals > span { font-weight: 600; color: #6b7d83; font-size: 12px; }
+.admin__day .admin__check { display: inline-flex; flex-direction: row; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: inherit; }
+.admin__day-photo { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.admin__day-photo img { width: 96px; height: 56px; object-fit: cover; border-radius: 8px; }
+@media (max-width: 640px) { .admin__day-grid { grid-template-columns: 1fr; } }

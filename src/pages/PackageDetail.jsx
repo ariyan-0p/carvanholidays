@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { fetchPackage, fetchCity } from '../api/client'
+import ItineraryTimeline from '../components/ItineraryTimeline'
 import './pages.css'
 
 export default function PackageDetail() {
@@ -88,19 +89,9 @@ export default function PackageDetail() {
           )}
 
           {pkg.itinerary?.length > 0 && (
-            <section className="detail__section">
-              <h2 className="detail__h2">Itinerary</h2>
-              <ol className="itinerary">
-                {pkg.itinerary.map((d, i) => (
-                  <li key={i} className="itinerary__day">
-                    <div className="itinerary__num">Day {d.day}</div>
-                    <div className="itinerary__content">
-                      <h4>{d.title}</h4>
-                      <p>{d.description}</p>
-                    </div>
-                  </li>
-                ))}
-              </ol>
+            <section className="detail__section" id="itinerary">
+              <h2 className="detail__h2">Day-by-day itinerary</h2>
+              <ItineraryTimeline itinerary={pkg.itinerary} pkg={pkg} />
             </section>
           )}
 

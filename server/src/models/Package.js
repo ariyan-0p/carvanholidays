@@ -5,6 +5,11 @@ const itinerarySchema = new mongoose.Schema(
     day: Number,
     title: String,
     description: String,
+    location: String, // where the day happens, e.g. "Leh -> Nubra Valley"
+    meals: [String], // any of: breakfast, lunch, dinner
+    stay: String, // overnight hotel / camp, e.g. "Hotel Grand Dragon, Leh"
+    activities: [String], // transfers + things to do, one per line
+    image: String, // optional photo for the day
   },
   { _id: false }
 )

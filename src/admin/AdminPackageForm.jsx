@@ -73,13 +73,27 @@ export default function AdminPackageForm() {
     set('gallery', form.gallery.filter((_, idx) => idx !== i))
 
   const addItineraryRow = () =>
-    set('itinerary', [...form.itinerary, { day: form.itinerary.length + 1, title: '', description: '' }])
+    set('itinerary', [...form.itinerary, { day: form.itinerary.length + 1, title: '', description: '', location: '', meals: [], stay: '', activities: [], image: '' }])
   const updateItin = (i, key, value) => {
     const next = [...form.itinerary]
     next[i] = { ...next[i], [key]: key === 'day' ? Number(value) : value }
     set('itinerary', next)
   }
+  const toggleMeal = (i, meal) => {
+    const cur = form.itinerary[i].meals || []
+    updateItin(i, 'meals', cur.includes(meal) ? cur.filter(m => m !== meal) : [...cur, meal])
+  }
   const removeItin = (i) => set('itinerary', form.itinerary.filter((_, idx) => idx !== i))
+  const onUploadDayImage = async (i, e) => {
+    const files = Array.from(e.target.files || [])
+    if (!files.length) return
+    setUploading(true)
+    try {
+      const { urls } = await adminUploadImages(files)
+      updateItin(i, 'image', urls[0])
+    } catch (er) { setErr(er?.response?.data?.error || er.message) }
+    finally { setUploading(false); e.target.value = '' }
+  }
 
   const submit = async (e) => {
     e.preventDefault()
@@ -241,11 +255,46 @@ export default function AdminPackageForm() {
           <button type="button" className="admin__btn" onClick={addItineraryRow}>+ Add day</button>
         </div>
         {form.itinerary.map((it, i) => (
-          <div key={i} className="admin__itin-row">
-            <input type="number" value={it.day || ''} onChange={e => updateItin(i, 'day', e.target.value)} placeholder="Day" />
-            <input value={it.title || ''} onChange={e => updateItin(i, 'title', e.target.value)} placeholder="Title" />
-            <textarea rows="2" value={it.description || ''} onChange={e => updateItin(i, 'description', e.target.value)} placeholder="Description" />
-            <button type="button" className="admin__btn admin__btn--danger" onClick={() => removeItin(i)}>×</button>
+          <div key={i} className="admin__day">
+            <div className="admin__day-head">
+              <input className="admin__day-num" type="number" value={it.day || ''} onChange={e => updateItin(i, 'day', e.target.value)} placeholder="Day" />
+              <input value={it.title || ''} onChange={e => updateItin(i, 'title', e.target.value)} placeholder="Day title (e.g. Leh to Nubra Valley via Khardung La)" />
+              <button type="button" className="admin__btn admin__btn--danger" onClick={() => removeItin(i)}>×</button>
+            </div>
+            <textarea rows="3" value={it.description || ''} onChange={e => updateItin(i, 'description', e.target.value)} placeholder="Description of the day" />
+            <div className="admin__day-grid">
+              <label>Location / route
+                <input value={it.location || ''} onChange={e => updateItin(i, 'location', e.target.value)} placeholder="Leh → Nubra Valley" />
+              </label>
+              <label>Overnight stay
+                <input value={it.stay || ''} onChange={e => updateItin(i, 'stay', e.target.value)} placeholder="Hotel name, city" />
+              </label>
+            </div>
+            <div className="admin__day-meals">
+              <span>Meals included:</span>
+              {['breakfast', 'lunch', 'dinner'].map(m => (
+                <label key={m} className="admin__check">
+                  <input type="checkbox" checked={(it.meals || []).includes(m)} onChange={() => toggleMeal(i, m)} />
+                  {m[0].toUpperCase() + m.slice(1)}
+                </label>
+              ))}
+            </div>
+            <label>Transfers &amp; activities (one per line)
+              <textarea
+                rows="3"
+                value={arrToLines(it.activities)}
+                onChange={e => updateItin(i, 'activities', linesToArr(e.target.value))}
+                placeholder={'Airport pickup and transfer to hotel, Sightseeing: Shanti Stupa, Evening at leisure'}
+              />
+            </label>
+            <div className="admin__day-photo">
+              {it.image && <img src={it.image} alt="" />}
+              <label className="admin__btn">
+                {it.image ? 'Change day photo' : 'Add day photo'}
+                <input type="file" accept="image/*" hidden onChange={e => onUploadDayImage(i, e)} />
+              </label>
+              {it.image && <button type="button" className="admin__btn" onClick={() => updateItin(i, 'image', '')}>Remove photo</button>}
+            </div>
           </div>
         ))}
       </section>
