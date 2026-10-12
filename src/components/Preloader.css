@@ -65,8 +65,8 @@
   position: absolute;
   left: 50%;
   top: 0;
-  width: min(380px, 78vw);
-  margin-left: calc(min(380px, 78vw) / -2);
+  width: min(520px, 88vw);
+  margin-left: calc(min(520px, 88vw) / -2);
   z-index: 3;
   pointer-events: none;
   transform: translateY(112vh) scale(0.8);
