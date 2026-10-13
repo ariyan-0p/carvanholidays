@@ -48,6 +48,9 @@ import AdminHeroList from './admin/AdminHeroList'
 import AdminHeroForm from './admin/AdminHeroForm'
 import AdminBannersList from './admin/AdminBannersList'
 import AdminBannerForm from './admin/AdminBannerForm'
+import AdminItinerariesList from './admin/AdminItinerariesList'
+import AdminItineraryForm from './admin/AdminItineraryForm'
+import AdminItinerarySettings from './admin/AdminItinerarySettings'
 import './App.css'
 
 function App() {
@@ -112,6 +115,10 @@ function App() {
             <Route path="hero" element={<AdminHeroList />} />
             <Route path="hero/new" element={<AdminHeroForm />} />
             <Route path="hero/:id/edit" element={<AdminHeroForm />} />
+            <Route path="itineraries" element={<AdminItinerariesList />} />
+            <Route path="itineraries/new" element={<AdminItineraryForm />} />
+            <Route path="itineraries/settings" element={<AdminItinerarySettings />} />
+            <Route path="itineraries/:id/edit" element={<AdminItineraryForm />} />
             <Route path="banners" element={<AdminBannersList />} />
             <Route path="banners/new" element={<AdminBannerForm />} />
             <Route path="banners/:id/edit" element={<AdminBannerForm />} />

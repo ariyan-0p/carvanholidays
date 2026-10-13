@@ -253,3 +253,25 @@ export const adminUpdateSearchSection = (data) =>
   api.put('/admin/search-section', data).then(r => r.data)
 
 export default api
+
+
+// ---------- Itineraries / quotes (admin) ----------
+export const adminListItineraries = (params = {}) =>
+  api.get('/admin/itineraries', { params }).then(r => r.data)
+export const adminGetItinerary = (id) =>
+  api.get(`/admin/itineraries/${id}`).then(r => r.data)
+export const adminCreateItinerary = (data) =>
+  api.post('/admin/itineraries', data).then(r => r.data)
+export const adminUpdateItinerary = (id, data) =>
+  api.put(`/admin/itineraries/${id}`, data).then(r => r.data)
+export const adminDuplicateItinerary = (id, asTemplate = false) =>
+  api.post(`/admin/itineraries/${id}/duplicate`, null, { params: asTemplate ? { asTemplate: true } : {} }).then(r => r.data)
+export const adminItinerarySettings = () =>
+  api.get('/admin/itineraries/settings/current').then(r => r.data)
+export const adminSaveItinerarySettings = (data) =>
+  api.put('/admin/itineraries/settings/current', data).then(r => r.data)
+export const adminDeleteItinerary = (id) =>
+  api.delete(`/admin/itineraries/${id}`).then(r => r.data)
+// PDF generation takes a few seconds (headless Chromium), so allow plenty of time.
+export const adminItineraryPdf = (id) =>
+  api.get(`/admin/itineraries/${id}/pdf`, { responseType: 'blob', timeout: 90000 }).then(r => r.data)

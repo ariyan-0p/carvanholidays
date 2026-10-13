@@ -1,10 +1,11 @@
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAdminAuth } from './AdminAuth'
 import './admin.css'
 
 export default function AdminLayout() {
   const auth = useAdminAuth()
   const nav = useNavigate()
+  const { pathname } = useLocation()
 
   const logout = () => { auth.logout(); nav('/admin/login') }
 
@@ -18,6 +19,12 @@ export default function AdminLayout() {
         <nav className="admin__nav">
           <NavLink to="/admin/packages" className={({isActive}) => `admin__nav-link ${isActive ? 'is-active' : ''}`}>
             Packages
+          </NavLink>
+          <NavLink to="/admin/itineraries" className={({isActive}) => `admin__nav-link ${isActive && !pathname.endsWith('/itineraries/settings') ? 'is-active' : ''}`}>
+            Itineraries &amp; Quotes
+          </NavLink>
+          <NavLink to="/admin/itineraries/settings" className={({isActive}) => `admin__nav-link ${isActive ? 'is-active' : ''}`}>
+            Itinerary Settings
           </NavLink>
           <NavLink to="/admin/homepage" className={({isActive}) => `admin__nav-link ${isActive ? 'is-active' : ''}`}>
             Homepage Layout
