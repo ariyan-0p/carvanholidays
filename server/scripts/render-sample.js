@@ -2,7 +2,7 @@
 //   node scripts/render-sample.js [out.pdf] [teal|sand|midnight]
 import fs from 'fs'
 import { packages } from '../src/data/packages.seed.js'
-import { renderItineraryPdf } from '../src/services/itineraryPdf.js'
+import { renderItineraryPdf, closeBrowser } from '../src/services/itineraryPdf.js'
 import { DEFAULT_SETTINGS } from '../src/config/itineraryDefaults.js'
 
 const U = (id) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=900&q=75`
@@ -100,4 +100,5 @@ console.time('render')
 const payUrl = process.argv[5] === 'nopay' ? '' : 'https://carvaanholidays.com/pay/3f9c1a7e5b2d4f68a0c1b2d4'
 fs.writeFileSync(out, await renderItineraryPdf(sample, settings, { payUrl }))
 console.timeEnd('render')
+await closeBrowser()
 console.log('wrote', out)

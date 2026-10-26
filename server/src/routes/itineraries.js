@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import Itinerary from '../models/Itinerary.js'
 import { requireAdmin } from '../middleware/auth.js'
-import { renderItineraryPdf } from '../services/itineraryPdf.js'
+import { getItineraryPdfFile } from '../services/itineraryPdf.js'
 import { loadSettings, saveSettings } from '../services/itinerarySettings.js'
 import Payment from '../models/Payment.js'
 import { ccavenueConfig } from '../services/ccavenue.js'
@@ -16,17 +16,35 @@ const safeName = (it) =>
 
 const PUBLIC_BASE_URL = (process.env.PUBLIC_BASE_URL || 'https://carvaanholidays.com').replace(/\/$/, '')
 
+// Online pay link only when the gateway is configured and the itinerary is payable.
+const payUrlFor = (it) =>
+  ccavenueConfig().configured && !it.isTemplate && (it.currency || 'INR') === 'INR' && it.totalPrice
+    ? `${PUBLIC_BASE_URL}/pay/${it.shareToken}`
+    : ''
+
 const sendPdf = async (res, it) => {
   const settings = await loadSettings()
   // Online pay link only when the gateway is configured and the itinerary is payable.
-  const payUrl = ccavenueConfig().configured && !it.isTemplate && (it.currency || 'INR') === 'INR' && it.totalPrice
-    ? `${PUBLIC_BASE_URL}/pay/${it.shareToken}`
-    : ''
-  const buf = await renderItineraryPdf(it, settings, { payUrl })
-  res.setHeader('Content-Type', 'application/pdf')
+  const payUrl = payUrlFor(it)
+  const { file } = await getItineraryPdfFile(it, settings, { payUrl })
   res.setHeader('Content-Disposition', `inline; filename="${safeName(it)}.pdf"`)
-  res.setHeader('Content-Length', buf.length)
-  res.send(buf)
+  res.type('application/pdf')
+  // sendFile adds ETag + Range support, so phones can resume/stream and revalidate cheaply
+  res.sendFile(file, { headers: { 'Cache-Control': 'private, max-age=0, must-revalidate' } })
+}
+
+// Build the PDF in the background right after a save, so the first download is instant.
+const warmPdf = (id) => {
+  setImmediate(async () => {
+    try {
+      const it = await Itinerary.findById(id).lean()
+      if (!it || it.isTemplate) return
+      const settings = await loadSettings()
+      await getItineraryPdfFile(it, settings, { payUrl: payUrlFor(it) })
+    } catch (e) {
+      console.error('PDF warm-up failed:', e.message)
+    }
+  })
 }
 
 const escapeRe = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -88,7 +106,9 @@ const clean = (body = {}) => {
 
 adminItineraries.post('/', async (req, res, next) => {
   try {
-    res.status(201).json(await Itinerary.create(clean(req.body)))
+    const created = await Itinerary.create(clean(req.body))
+    warmPdf(created._id)
+    res.status(201).json(created)
   } catch (e) { next(e) }
 })
 
@@ -99,6 +119,7 @@ adminItineraries.put('/:id', async (req, res, next) => {
       runValidators: true,
     })
     if (!it) return res.status(404).json({ error: 'Itinerary not found' })
+    warmPdf(it._id)
     res.json(it)
   } catch (e) { next(e) }
 })

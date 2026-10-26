@@ -10,6 +10,7 @@
 // Every body section can be switched on/off per itinerary (itinerary.sections)
 // and empty sections are skipped automatically. Colours come from a theme.
 import fs from 'fs'
+import crypto from 'crypto'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import puppeteer from 'puppeteer'
@@ -1007,7 +1008,7 @@ const footerTemplate = (ref, name) => `
 async function pdfFrom(browser, html, opts = {}) {
   const page = await browser.newPage()
   try {
-    await page.setContent(html, { waitUntil: 'networkidle0', timeout: 45000 })
+    await page.setContent(html, { waitUntil: 'load', timeout: 45000 })
     await page.evaluate(() => document.fonts.ready)
     return await page.pdf({ printBackground: true, preferCSSPageSize: true, ...opts })
   } finally {
@@ -1015,37 +1016,124 @@ async function pdfFrom(browser, html, opts = {}) {
   }
 }
 
+/* ------------------------------------------------------------------ */
+/* one shared Chrome (starting it costs 1-2s per PDF otherwise)        */
+/* ------------------------------------------------------------------ */
+let browserPromise = null
+let idleTimer = null
+const IDLE_MS = 15 * 60 * 1000
+
+async function getBrowser() {
+  if (!browserPromise) {
+    browserPromise = puppeteer
+      .launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'] })
+      .then((b) => {
+        b.on('disconnected', () => { browserPromise = null })
+        return b
+      })
+      .catch((e) => { browserPromise = null; throw e })
+  }
+  const b = await browserPromise
+  clearTimeout(idleTimer)
+  idleTimer = setTimeout(() => { closeBrowser() }, IDLE_MS)
+  idleTimer.unref?.()
+  return b
+}
+
+export async function closeBrowser() {
+  clearTimeout(idleTimer)
+  const p = browserPromise
+  browserPromise = null
+  if (p) {
+    try { await (await p).close() } catch { /* already gone */ }
+  }
+}
+
+// at most two PDFs are built at the same time (keeps memory predictable)
+let active = 0
+const waiting = []
+const acquire = () => new Promise((resolve) => { if (active < 2) { active++; resolve() } else waiting.push(resolve) })
+const release = () => { const next = waiting.shift(); if (next) next(); else active-- }
+
 export async function renderItineraryPdf(it, settings = DEFAULT_SETTINGS, opts = {}) {
   const raw = typeof it.toObject === 'function' ? it.toObject() : it
   const D = resolveData(raw, settings)
   D.payUrl = opts.payUrl || ''
   D.imgs = await prepareImages(D)
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-  })
+  const [coverDoc, bodyDoc, backDoc] = await Promise.all([coverHtml(D), bodyHtml(D), backHtml(D)])
+
+  await acquire()
   try {
-    const [coverDoc, bodyDoc, backDoc] = await Promise.all([coverHtml(D), bodyHtml(D), backHtml(D)])
-    const [cover, body, back] = await Promise.all([
-      pdfFrom(browser, coverDoc),
-      pdfFrom(browser, bodyDoc, {
-        displayHeaderFooter: true,
-        headerTemplate: '<span></span>',
-        footerTemplate: footerTemplate(raw.ref, D.S.company?.name),
-      }),
-      pdfFrom(browser, backDoc),
-    ])
-    const out = await PDFDocument.create()
-    for (const buf of [cover, body, back]) {
-      const src = await PDFDocument.load(buf)
-      const pages = await out.copyPages(src, src.getPageIndices())
-      pages.forEach((p) => out.addPage(p))
+    let lastErr
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const browser = await getBrowser()
+        const [cover, body, back] = await Promise.all([
+          pdfFrom(browser, coverDoc),
+          pdfFrom(browser, bodyDoc, {
+            displayHeaderFooter: true,
+            headerTemplate: '<span></span>',
+            footerTemplate: footerTemplate(raw.ref, D.S.company?.name),
+          }),
+          pdfFrom(browser, backDoc),
+        ])
+        const out = await PDFDocument.create()
+        for (const buf of [cover, body, back]) {
+          const src = await PDFDocument.load(buf)
+          const pages = await out.copyPages(src, src.getPageIndices())
+          pages.forEach((pg) => out.addPage(pg))
+        }
+        out.setTitle(`${raw.title} — Itinerary`)
+        out.setAuthor(D.S.company?.name || 'Carvaan Holidays')
+        out.setSubject(raw.ref || 'Itinerary')
+        return Buffer.from(await out.save())
+      } catch (e) {
+        lastErr = e
+        await closeBrowser() // a crashed Chrome is replaced on the retry
+      }
     }
-    out.setTitle(`${raw.title} — Itinerary`)
-    out.setAuthor(D.S.company?.name || 'Carvaan Holidays')
-    out.setSubject(raw.ref || 'Itinerary')
-    return Buffer.from(await out.save())
+    throw lastErr
   } finally {
-    await browser.close()
+    release()
   }
+}
+
+/* ------------------------------------------------------------------ */
+/* disk cache: build each PDF once, serve it instantly afterwards       */
+/* ------------------------------------------------------------------ */
+const CACHE_DIR = path.resolve(process.cwd(), 'pdf-cache')
+// Editing this template (a deploy) changes the hash, so old cached PDFs are never reused.
+const TEMPLATE_HASH = crypto.createHash('sha1').update(fs.readFileSync(fileURLToPath(import.meta.url))).digest('hex').slice(0, 10)
+const inflight = new Map()
+
+export async function getItineraryPdfFile(it, settings, opts = {}) {
+  const raw = typeof it.toObject === 'function' ? it.toObject() : it
+  const id = String(raw._id || raw.ref).replace(/[^a-zA-Z0-9]/g, '')
+  const key = crypto.createHash('sha1')
+    .update(JSON.stringify([raw, settings, opts.payUrl || '', TEMPLATE_HASH]))
+    .digest('hex')
+    .slice(0, 20)
+  const file = path.join(CACHE_DIR, `${id}-${key}.pdf`)
+  if (fs.existsSync(file)) return { file, cached: true }
+
+  // concurrent requests for the same PDF share one render
+  if (!inflight.has(file)) {
+    inflight.set(
+      file,
+      (async () => {
+        const t0 = Date.now()
+        const buf = await renderItineraryPdf(raw, settings, opts)
+        fs.mkdirSync(CACHE_DIR, { recursive: true })
+        const tmp = `${file}.tmp`
+        fs.writeFileSync(tmp, buf)
+        fs.renameSync(tmp, file)
+        for (const f of fs.readdirSync(CACHE_DIR)) {
+          if (f.startsWith(`${id}-`) && path.join(CACHE_DIR, f) !== file) fs.rmSync(path.join(CACHE_DIR, f), { force: true })
+        }
+        console.log(`PDF built for ${raw.ref} in ${Date.now() - t0}ms (${(buf.length / 1e6).toFixed(1)} MB)`)
+      })().finally(() => inflight.delete(file))
+    )
+  }
+  await inflight.get(file)
+  return { file, cached: false }
 }
