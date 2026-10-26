@@ -6,7 +6,7 @@ import {
   adminDuplicateItinerary,
   adminItineraryPdf,
 } from '../api/client'
-import { openPdfBlob, shareUrl } from './itineraryUtils'
+import { openPdfBlob, shareUrl, payUrl } from './itineraryUtils'
 
 const STATUS = {
   draft: { label: 'Draft', cls: 'admin__pill--off' },
@@ -47,6 +47,11 @@ export default function AdminItinerariesList() {
   const onCopy = async (it) => {
     try { await navigator.clipboard.writeText(shareUrl(it.shareToken)); flash('Share link copied') }
     catch { window.prompt('Copy this link:', shareUrl(it.shareToken)) }
+  }
+  const onCopyPay = async (it) => {
+    const link = payUrl(it.shareToken)
+    try { await navigator.clipboard.writeText(link); flash('Pay link copied') }
+    catch { window.prompt('Copy this link:', link) }
   }
   const onDup = async (it) => {
     const copy = await adminDuplicateItinerary(it._id)
@@ -117,13 +122,17 @@ export default function AdminItinerariesList() {
                   </td>
                   <td>{it.customer?.name || '—'}<div className="admin__sub">{it.customer?.phone}</div></td>
                   <td>{it.travelDate || '—'}</td>
-                  <td>{it.totalPrice ? `₹${Number(it.totalPrice).toLocaleString('en-IN')}` : '—'}</td>
+                  <td>
+                    {it.totalPrice ? `₹${Number(it.totalPrice).toLocaleString('en-IN')}` : '—'}
+                    {it.paid > 0 && <div className="admin__sub" style={{ color: '#166534', fontWeight: 600 }}>Paid ₹{Number(it.paid).toLocaleString('en-IN')}</div>}
+                  </td>
                   <td><span className={`admin__pill ${(STATUS[it.status] || STATUS.draft).cls}`}>{(STATUS[it.status] || STATUS.draft).label}</span></td>
                   <td className="admin__row-actions">
                     <button className="admin__btn admin__btn--primary" onClick={() => onPdf(it)} disabled={busyId === it._id}>
                       {busyId === it._id ? 'Building…' : 'PDF'}
                     </button>
-                    <button className="admin__btn" onClick={() => onCopy(it)}>Copy link</button>
+                    <button className="admin__btn" onClick={() => onCopy(it)}>Copy PDF link</button>
+                    {it.totalPrice > 0 && <button className="admin__btn" onClick={() => onCopyPay(it)}>Copy pay link</button>}
                     <Link to={`/admin/itineraries/${it._id}/edit`} className="admin__btn">Edit</Link>
                     <button className="admin__btn" onClick={() => onDup(it)}>Duplicate</button>
                     <button className="admin__btn" onClick={() => onSaveAsTemplate(it)}>Save as template</button>

@@ -17,6 +17,12 @@ const paymentSchema = new mongoose.Schema(
     advancePercent: { type: Number, default: 0 },     // 0 = full payment
     currencyCode: { type: String, default: '356' },   // INR
 
+    // Itinerary payments (pay link from a customer itinerary / quote)
+    kind:          { type: String, enum: ['package', 'itinerary'], default: 'package', index: true },
+    itineraryId:   { type: mongoose.Schema.Types.ObjectId, ref: 'Itinerary', index: true },
+    itineraryRef:  { type: String, default: '' },
+    payType:       { type: String, enum: ['', 'advance', 'balance', 'full'], default: '' },
+
     // Customer
     name:       { type: String, default: '' },
     email:      { type: String, default: '' },

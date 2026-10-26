@@ -421,26 +421,33 @@ h4.mini{font-size:7.4pt;font-weight:700;letter-spacing:.26em;text-transform:uppe
 .box{padding:4.6mm 5.6mm;border-radius:3mm;background:var(--warm);border:.25mm solid var(--grey);break-inside:avoid;margin-bottom:5mm}
 .box p,.box li{font-size:8.5pt;line-height:1.75}
 .box ul{padding-left:4mm}
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;margin-bottom:6mm}
-.step{padding:5mm;border-radius:3.5mm;background:#fff;border:.25mm solid var(--grey);break-inside:avoid}
-.step i{display:grid;place-items:center;width:8mm;height:8mm;border-radius:50%;background:var(--deep);color:var(--accent);font-family:'Fraunces',serif;font-style:normal;font-size:10pt;margin-bottom:2.4mm}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:3mm;margin-bottom:4mm}
+.step{padding:3.4mm 4mm;border-radius:3mm;background:#fff;border:.25mm solid var(--grey);break-inside:avoid}
+.step i{display:grid;place-items:center;width:6.4mm;height:6.4mm;border-radius:50%;background:var(--deep);color:var(--accent);font-family:'Fraunces',serif;font-style:normal;font-size:9pt;margin-bottom:1.6mm}
 .step b{display:block;font-size:9pt;color:var(--deep);margin-bottom:1mm}
-.step span{font-size:8pt;color:var(--muted);line-height:1.6}
-.sumstrip{display:grid;gap:3mm;margin:0 0 6mm}
-.sumcell{padding:4mm 4.4mm;border-radius:3mm;background:#fff;border:.25mm solid var(--grey)}
+.step span{font-size:7.6pt;color:var(--muted);line-height:1.5}
+.sumstrip{display:grid;gap:3mm;margin:0 0 4mm}
+.sumcell{padding:3mm 4mm;border-radius:3mm;background:#fff;border:.25mm solid var(--grey)}
 .sumcell small{display:block;font-size:6pt;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
-.sumcell b{display:block;margin-top:1mm;font-family:'Fraunces',serif;font-weight:500;font-size:13pt;color:var(--deep)}
+.sumcell b{display:block;margin-top:1mm;font-family:'Fraunces',serif;font-weight:500;font-size:12pt;color:var(--deep)}
 .sumcell.hl2{background:linear-gradient(150deg,var(--deep),var(--deep2));border-color:transparent}
 .sumcell.hl2 small{color:#fff;opacity:.7}.sumcell.hl2 b{color:var(--accent)}
-.paygrid{display:grid;grid-template-columns:1.15fr 1fr;gap:5mm;margin-bottom:6mm}
-.pay{padding:6mm 6.4mm;border-radius:4mm;background:linear-gradient(150deg,var(--deep),var(--deep2));color:#fff;break-inside:avoid;display:grid;gap:4mm;align-content:start}
+.payonline{display:grid;grid-template-columns:1fr auto;gap:6mm;align-items:center;padding:4.6mm 6mm;margin-bottom:4mm;border-radius:4mm;background:var(--accent);color:var(--deep);break-inside:avoid;box-shadow:0 .8mm 3mm rgba(13,59,64,.15)}
+.payonline h4{font-size:7.4pt;font-weight:700;letter-spacing:.28em;text-transform:uppercase;opacity:.75;margin-bottom:1.6mm}
+.payonline b{display:block;font-family:'Fraunces',serif;font-weight:500;font-size:13pt;line-height:1.25;margin-bottom:2mm}
+.payonline p{font-size:8.2pt;line-height:1.65;max-width:100mm}
+.payonline__url{display:inline-block;margin-top:3mm;padding:1.4mm 3.4mm;border-radius:99mm;background:var(--deep);color:#fff;font-size:7.6pt;font-weight:600;letter-spacing:.04em;word-break:break-all}
+.payonline__qr{text-align:center;font-size:6.4pt;font-weight:700;letter-spacing:.24em;text-transform:uppercase}
+.payonline__qr img{display:block;width:27mm;height:27mm;border-radius:2.4mm;background:#fff;padding:2mm;margin-bottom:1.6mm}
+.paygrid{display:grid;grid-template-columns:1.2fr 1fr;gap:4mm;margin-bottom:4mm}
+.pay{padding:5mm 5.6mm;border-radius:3.5mm;background:linear-gradient(150deg,var(--deep),var(--deep2));color:#fff;break-inside:avoid;display:grid;gap:3mm;align-content:start}
 .pay h4{font-size:7.4pt;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--accent)}
-.pay .rows{display:grid;gap:2.4mm}
+.pay .rows{display:grid;grid-template-columns:1fr 1fr;gap:2.2mm 4mm}
 .pay .kv small{color:#fff;opacity:.65}
 .pay .kv b{color:#fff;font-weight:500;font-size:9pt;word-break:break-all}
 .pay p{font-size:8.4pt;line-height:1.7;opacity:.92}
 .pay__qr{display:flex;align-items:center;gap:4mm}
-.pay__qr img{width:30mm;height:30mm;border-radius:2.4mm;background:#fff;padding:2mm;display:block;flex:0 0 auto}
+.pay__qr img{width:26mm;height:26mm;border-radius:2.4mm;background:#fff;padding:2mm;display:block;flex:0 0 auto}
 .pay__qr span{font-size:7.6pt;line-height:1.6;opacity:.92}
 .pay--wa{background:var(--soft);color:var(--deep)}
 .pay--wa h4{color:var(--accent-dk)}
@@ -826,7 +833,8 @@ async function buildBooking(D) {
     ? `https://wa.me/${waNum}?text=${encodeURIComponent(`Hi, I would like to confirm itinerary ${it.ref} - ${it.title}.`)}`
     : ''
   const qr = (data) => QRCode.toDataURL(data, { margin: 0, width: 300, color: { dark: '#0D3B40', light: '#FFFFFF' } })
-  const [upiQr, waQr] = await Promise.all([
+  const [payQr, upiQr, waQr] = await Promise.all([
+    D.payUrl ? qr(D.payUrl) : '',
     has(bank.upiId)
       ? qr(`upi://pay?pa=${encodeURIComponent(bank.upiId)}&pn=${encodeURIComponent(bank.accountName || company.name || '')}&cu=INR`)
       : '',
@@ -851,6 +859,15 @@ async function buildBooking(D) {
     </div>
     ${cells.length ? `<div class="sumstrip" style="grid-template-columns:repeat(${cells.length},1fr)">${cells
       .map(([cls, k, v]) => `<div class="sumcell ${cls}"><small>${esc(k)}</small><b>${esc(v)}</b></div>`).join('')}</div>` : ''}
+    ${D.payUrl ? `<div class="payonline">
+      <div class="payonline__txt">
+        <h4>Pay securely online</h4>
+        <b>${total ? `Pay your advance of ${esc(money(advance, cur))} in under a minute` : 'Pay your advance in under a minute'}</b>
+        <p>Cards, UPI and net banking through our secure payment partner, CCAvenue. Your reference and amount are already filled in — and you can pay the balance from the same link later.</p>
+        <div class="payonline__url">${esc(D.payUrl.replace(/^https?:\/\//, ''))}</div>
+      </div>
+      <div class="payonline__qr"><img src="${payQr}"><span>Scan to pay</span></div>
+    </div>` : ''}
     <div class="paygrid">
       <div class="pay">
         <h4>${hasBank ? 'Pay by bank transfer or UPI' : 'Pay through your consultant'}</h4>
@@ -873,7 +890,7 @@ async function buildBooking(D) {
 /* document builders                                                   */
 /* ------------------------------------------------------------------ */
 const docShell = (D, css, body) =>
-  `<!doctype html><html><head><meta charset="utf-8"><style>${fontFaces()}${themeCss(D.theme)}${BASE_CSS}${css}${process.env.PDF_EXTRA_CSS || ''}</style></head><body>${body}</body></html>`
+  `<!doctype html><html><head><meta charset="utf-8"><style>${fontFaces()}${themeCss(D.theme)}${BASE_CSS}${css}</style></head><body>${body}</body></html>`
 
 function coverHtml(D) {
   const { it, S } = D
@@ -998,9 +1015,10 @@ async function pdfFrom(browser, html, opts = {}) {
   }
 }
 
-export async function renderItineraryPdf(it, settings = DEFAULT_SETTINGS) {
+export async function renderItineraryPdf(it, settings = DEFAULT_SETTINGS, opts = {}) {
   const raw = typeof it.toObject === 'function' ? it.toObject() : it
   const D = resolveData(raw, settings)
+  D.payUrl = opts.payUrl || ''
   D.imgs = await prepareImages(D)
   const browser = await puppeteer.launch({
     headless: true,

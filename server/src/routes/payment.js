@@ -3,6 +3,8 @@ import express from 'express'
 import crypto from 'crypto'
 import Package from '../models/Package.js'
 import Payment from '../models/Payment.js'
+import Itinerary from '../models/Itinerary.js'
+import { loadSettings } from '../services/itinerarySettings.js'
 import { dbReady, memFindPackage } from '../store.js'
 import { ccavenueConfig, encrypt, decrypt, buildRequest, parseResponse } from '../services/ccavenue.js'
 
@@ -134,7 +136,7 @@ router.post('/callback', express.urlencoded({ extended: true, limit: '1mb' }), a
     if (dbReady() && orderId) {
       const statusMap = { success: 'SUCCESS', aborted: 'CANCELLED', failure: 'FAILED', invalid: 'FAILED' }
       const os = String(parsed.order_status || '').toLowerCase()
-      await Payment.updateOne(
+      const updated = await Payment.findOneAndUpdate(
         { merchantTxnNo: orderId },
         {
           $set: {
@@ -147,8 +149,13 @@ router.post('/callback', express.urlencoded({ extended: true, limit: '1mb' }), a
             paymentDateTime: parsed.trans_date || '',
             callbackParams: parsed,
           },
-        }
+        },
+        { new: true }
       )
+      // A successful itinerary payment confirms the itinerary.
+      if (updated?.status === 'SUCCESS' && updated.itineraryId) {
+        await Itinerary.updateOne({ _id: updated.itineraryId }, { $set: { status: 'confirmed' } })
+      }
     }
   } catch (e) {
     console.error('CCAvenue callback DB update failed:', e.message)
@@ -176,8 +183,125 @@ router.get('/status/:orderId', async (req, res, next) => {
       respDescription: pmt.respDescription,
       name: pmt.name,
       advancePercent: pmt.advancePercent,
+      kind: pmt.kind,
+      payType: pmt.payType,
+      itineraryRef: pmt.itineraryRef,
+      payToken: pmt.itineraryId ? (await Itinerary.findById(pmt.itineraryId).select('shareToken').lean())?.shareToken || '' : '',
     })
   } catch (e) { next(e) }
+})
+
+/* ------------------------------------------------------------------ */
+/* Pay link for a customer itinerary: /pay/:token (token = share token) */
+/* ------------------------------------------------------------------ */
+
+// Work out what is payable. Amounts always come from the saved itinerary, never the browser.
+export async function itineraryPayState(it) {
+  const settings = await loadSettings()
+  const total = Number(it.totalPrice) || 0
+  const pct = Math.max(1, Math.min(100, Number(it.advancePercent || settings.advancePercent || 50)))
+  const agg = await Payment.aggregate([
+    { $match: { itineraryId: it._id, status: 'SUCCESS' } },
+    { $group: { _id: null, paid: { $sum: '$amount' } } },
+  ])
+  const paid = Math.round((agg[0]?.paid || 0) * 100) / 100
+  const advanceTarget = Math.round((total * pct) / 100)
+  const outstanding = Math.max(0, Math.round((total - paid) * 100) / 100)
+  return {
+    total,
+    pct,
+    paid,
+    outstanding,
+    advanceDue: Math.max(0, Math.min(outstanding, advanceTarget - paid)),
+    balanceDue: outstanding,
+    currency: it.currency || 'INR',
+  }
+}
+
+async function findByToken(token) {
+  if (!dbReady() || !/^[a-f0-9]{16,64}$/i.test(String(token || ''))) return null
+  return Itinerary.findOne({ shareToken: token, isTemplate: { $ne: true } })
+}
+
+// GET /api/payment/itinerary/:token
+router.get('/itinerary/:token', async (req, res, next) => {
+  try {
+    const it = await findByToken(req.params.token)
+    if (!it) return res.status(404).json({ error: 'This payment link is not valid.' })
+    const cfg = ccavenueConfig()
+    const st = await itineraryPayState(it)
+    res.json({
+      enabled: cfg.configured && st.currency === 'INR',
+      title: it.title,
+      ref: it.ref,
+      destination: it.destination,
+      coverImage: it.coverImage || '',
+      travelDate: it.travelDate || '',
+      travellers: [it.adults ? `${it.adults} Adult${it.adults > 1 ? 's' : ''}` : '', it.children ? `${it.children} Child${it.children > 1 ? 'ren' : ''}` : ''].filter(Boolean).join(' + '),
+      customer: { name: it.customer?.name || '', email: it.customer?.email || '', phone: it.customer?.phone || '' },
+      ...st,
+    })
+  } catch (e) { next(e) }
+})
+
+// POST /api/payment/itinerary/:token/initiate  { payType, name, email, phone }
+router.post('/itinerary/:token/initiate', async (req, res, next) => {
+  try {
+    const cfg = ccavenueConfig()
+    if (!cfg.configured) return res.status(503).json({ error: 'Online payment is not available right now. Please contact us.' })
+    const it = await findByToken(req.params.token)
+    if (!it) return res.status(404).json({ error: 'This payment link is not valid.' })
+    const st = await itineraryPayState(it)
+    if (st.currency !== 'INR') return res.status(400).json({ error: 'Online payment is only available in INR. Please contact us.' })
+    if (!st.total) return res.status(400).json({ error: 'This itinerary has no payable amount yet. Please contact us.' })
+
+    const { payType = 'advance', name = '', email = '', phone = '' } = req.body || {}
+    const n = String(name || it.customer?.name || '').trim()
+    const e = String(email || it.customer?.email || '').trim()
+    const p = String(phone || it.customer?.phone || '').trim()
+    if (!n || !e || !p) return res.status(400).json({ error: 'Name, email and phone are required.' })
+
+    const amountByType = { advance: st.advanceDue, balance: st.balanceDue, full: st.outstanding }
+    if (!(payType in amountByType)) return res.status(400).json({ error: 'Invalid payment option.' })
+    const amount = Math.round(amountByType[payType] * 100) / 100
+    if (!(amount > 0)) return res.status(400).json({ error: 'Nothing is due for this option.' })
+
+    const orderId = makeOrderId()
+    await Payment.create({
+      merchantTxnNo: orderId,
+      kind: 'itinerary',
+      itineraryId: it._id,
+      itineraryRef: it.ref,
+      payType,
+      packageTitle: it.title,
+      amount,
+      packagePrice: st.total,
+      advancePercent: st.pct,
+      currencyCode: 'INR',
+      name: n, email: e, phone: p,
+      travellers: [it.adults, it.children].filter(Boolean).join('+'),
+      travelDate: it.travelDate || '',
+      status: 'INITIATED',
+      env: cfg.env,
+    })
+
+    const encRequest = encrypt(buildRequest({
+      merchant_id: cfg.merchantId,
+      order_id: orderId,
+      amount: amount.toFixed(2),
+      currency: 'INR',
+      redirect_url: `${PUBLIC_BASE_URL}/api/payment/callback`,
+      cancel_url: `${PUBLIC_BASE_URL}/api/payment/callback`,
+      language: 'EN',
+      billing_name: n.slice(0, 60),
+      billing_email: e,
+      billing_tel: p.replace(/[^0-9]/g, '').slice(-10),
+      merchant_param1: it.ref,
+      merchant_param2: (it.title || '').slice(0, 60),
+    }))
+
+    res.json({ ok: true, orderId, postUrl: cfg.postUrl, encRequest, accessCode: cfg.accessCode })
+  } catch (err) { next(err) }
 })
 
 export default router

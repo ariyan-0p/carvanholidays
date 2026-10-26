@@ -9,6 +9,7 @@ import {
   adminItineraryPdf,
   adminItinerarySettings,
   adminUploadImages,
+  adminItineraryPayments,
 } from '../api/client'
 import DaysEditor from './DaysEditor'
 import RowsEditor from './RowsEditor'
@@ -18,6 +19,7 @@ import {
   itineraryFromPackage,
   itineraryFromTemplate,
   openPdfBlob,
+  payUrl,
   shareUrl,
 } from './itineraryUtils'
 
@@ -69,6 +71,7 @@ export default function AdminItineraryForm() {
   const [templates, setTemplates] = useState([])
   const [pkgSlug, setPkgSlug] = useState('')
   const [tplId, setTplId] = useState('')
+  const [payInfo, setPayInfo] = useState(null)
   const [secDefaults, setSecDefaults] = useState({ sections: {}, labels: {} })
 
   useEffect(() => {
@@ -109,6 +112,11 @@ export default function AdminItineraryForm() {
       })
       .catch(e => setErr(e?.response?.data?.error || e.message))
       .finally(() => setLoading(false))
+  }, [id, editing])
+
+  useEffect(() => {
+    if (!editing) return
+    adminItineraryPayments(id).then(setPayInfo).catch(() => setPayInfo(null))
   }, [id, editing])
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
@@ -462,6 +470,43 @@ export default function AdminItineraryForm() {
         <label>Terms &amp; conditions (override, one per line)<textarea rows="3" value={form.terms} onChange={e => set('terms', e.target.value)} /></label>
         <label>Notes<textarea rows="3" value={form.notes} onChange={e => set('notes', e.target.value)} /></label>
       </Panel>
+
+      {editing && meta.shareToken && !form.isTemplate && (
+        <section className="admin__form-block">
+          <div className="admin__form-block-head"><h3>Online payment link</h3></div>
+          <div className="admin__autofill-row">
+            <input readOnly value={payUrl(meta.shareToken)} onFocus={e => e.target.select()} />
+            <button type="button" className="admin__btn" onClick={async () => {
+              try { await navigator.clipboard.writeText(payUrl(meta.shareToken)); flash('Pay link copied') }
+              catch { window.prompt('Copy this link:', payUrl(meta.shareToken)) }
+            }}>Copy pay link</button>
+          </div>
+          <div className="admin__sub" style={{ margin: '6px 0 10px' }}>
+            Customers pay the advance or balance by card, UPI or net banking via CCAvenue. The amount is always taken from the saved total — save changes before sharing. The PDF’s payment page includes this link and a QR code.
+          </div>
+          {payInfo && (
+            <div className="admin__table-wrap">
+              <table className="admin__table">
+                <thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Method</th><th>Status</th><th>Txn</th></tr></thead>
+                <tbody>
+                  {payInfo.payments.length === 0 && <tr><td colSpan="6" className="admin__state">No online payments yet.</td></tr>}
+                  {payInfo.payments.map(p => (
+                    <tr key={p.merchantTxnNo}>
+                      <td>{new Date(p.createdAt).toLocaleString('en-IN')}</td>
+                      <td>{p.payType || '—'}</td>
+                      <td>₹{Number(p.amount).toLocaleString('en-IN')}</td>
+                      <td>{p.paymentMode || '—'}</td>
+                      <td><span className={`admin__pill ${p.status === 'SUCCESS' ? 'admin__pill--ok' : p.status === 'FAILED' || p.status === 'CANCELLED' ? 'admin__pill--off' : 'admin__pill--warn'}`}>{p.status}</span></td>
+                      <td><code>{p.txnID || p.merchantTxnNo}</code></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="admin__sub" style={{ marginTop: 8 }}>Paid online so far: <strong>₹{Number(payInfo.paid).toLocaleString('en-IN')}</strong></div>
+            </div>
+          )}
+        </section>
+      )}
 
       {editing && meta.shareToken && !form.isTemplate && (
         <section className="admin__form-block">

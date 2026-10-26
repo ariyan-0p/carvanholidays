@@ -14,6 +14,7 @@ export const openPdfBlob = (blob, name = 'itinerary.pdf') => {
 }
 
 export const shareUrl = (token) => `${window.location.origin}/api/itineraries/share/${token}/pdf`
+export const payUrl = (token) => `${window.location.origin}/pay/${token}`
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 export const formatDate = (d) => `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`

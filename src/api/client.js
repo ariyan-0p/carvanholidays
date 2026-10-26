@@ -231,6 +231,13 @@ export const fetchPaymentConfig = () =>
 export const initiatePayment = (payload) =>
   api.post('/payment/initiate', payload).then(r => r.data)
 
+export const fetchItineraryPay = (token) =>
+  api.get(`/payment/itinerary/${token}`).then(r => r.data)
+export const initiateItineraryPay = (token, payload) =>
+  api.post(`/payment/itinerary/${token}/initiate`, payload).then(r => r.data)
+export const adminItineraryPayments = (id) =>
+  api.get(`/admin/itineraries/${id}/payments`).then(r => r.data)
+
 export const fetchPaymentStatus = (merchantTxnNo) =>
   api.get(`/payment/status/${merchantTxnNo}`).then(r => r.data)
 

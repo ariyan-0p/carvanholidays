@@ -38,9 +38,11 @@ export default function PaymentResult() {
           <>
             <h1 className="payres__title">Payment <em>successful</em></h1>
             <p className="payres__sub">
-              Thank you{detail?.name ? `, ${detail.name.split(' ')[0]}` : ''}! Your advance
+              Thank you{detail?.name ? `, ${detail.name.split(' ')[0]}` : ''}! Your {detail?.payType === 'balance' ? 'balance payment' : detail?.payType === 'full' ? 'payment' : 'advance'}
               {detail?.amount ? <> of <strong>{inr(detail.amount)}</strong></> : null} is received.
-              Our team will confirm your full itinerary within 24 hours.
+              {detail?.kind === 'itinerary'
+                ? ' Our team will share your vouchers and trip details before you travel.'
+                : ' Our team will confirm your full itinerary within 24 hours.'}
             </p>
           </>
         ) : (
@@ -56,7 +58,8 @@ export default function PaymentResult() {
 
         {!loading && detail && (
           <div className="payres__meta">
-            {detail.packageTitle && <div><span>Package</span><strong>{detail.packageTitle}</strong></div>}
+            {detail.packageTitle && <div><span>{detail.kind === 'itinerary' ? 'Itinerary' : 'Package'}</span><strong>{detail.packageTitle}</strong></div>}
+            {detail.itineraryRef && <div><span>Itinerary ref</span><strong>{detail.itineraryRef}</strong></div>}
             {txn && <div><span>Reference</span><strong>{txn}</strong></div>}
             {detail.txnID && <div><span>Txn ID</span><strong>{detail.txnID}</strong></div>}
             {detail.paymentMode && <div><span>Method</span><strong>{detail.paymentMode}</strong></div>}
@@ -65,12 +68,16 @@ export default function PaymentResult() {
 
         <div className="payres__actions">
           {ok ? (
-            <Link to="/packages" className="book-box__btn">Browse more trips</Link>
+            detail?.payToken
+              ? <Link to={`/pay/${detail.payToken}`} className="book-box__btn">View payment summary</Link>
+              : <Link to="/packages" className="book-box__btn">Browse more trips</Link>
           ) : (
             <>
-              {detail?.packageSlug && (
+              {detail?.payToken ? (
+                <Link to={`/pay/${detail.payToken}`} className="book-box__btn">Try again</Link>
+              ) : detail?.packageSlug ? (
                 <Link to={`/book/${detail.packageSlug}`} className="book-box__btn">Try again</Link>
-              )}
+              ) : null}
               <a href="tel:+919131978160" className="book-box__btn book-box__btn--ghost">Call us</a>
             </>
           )}

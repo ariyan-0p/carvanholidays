@@ -3,6 +3,8 @@ import Itinerary from '../models/Itinerary.js'
 import { requireAdmin } from '../middleware/auth.js'
 import { renderItineraryPdf } from '../services/itineraryPdf.js'
 import { loadSettings, saveSettings } from '../services/itinerarySettings.js'
+import Payment from '../models/Payment.js'
+import { ccavenueConfig } from '../services/ccavenue.js'
 import { DEFAULT_SECTIONS, SECTION_LABELS } from '../config/itineraryDefaults.js'
 import { dbReady } from '../store.js'
 
@@ -12,9 +14,15 @@ const needDb = (_req, res, next) =>
 const safeName = (it) =>
   `${(it.title || 'itinerary').replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '')}-${it.ref}`.slice(0, 90)
 
+const PUBLIC_BASE_URL = (process.env.PUBLIC_BASE_URL || 'https://carvaanholidays.com').replace(/\/$/, '')
+
 const sendPdf = async (res, it) => {
   const settings = await loadSettings()
-  const buf = await renderItineraryPdf(it, settings)
+  // Online pay link only when the gateway is configured and the itinerary is payable.
+  const payUrl = ccavenueConfig().configured && !it.isTemplate && (it.currency || 'INR') === 'INR' && it.totalPrice
+    ? `${PUBLIC_BASE_URL}/pay/${it.shareToken}`
+    : ''
+  const buf = await renderItineraryPdf(it, settings, { payUrl })
   res.setHeader('Content-Type', 'application/pdf')
   res.setHeader('Content-Disposition', `inline; filename="${safeName(it)}.pdf"`)
   res.setHeader('Content-Length', buf.length)
@@ -51,12 +59,16 @@ adminItineraries.get('/', async (req, res, next) => {
       const re = new RegExp(escapeRe(q), 'i')
       filter.$or = [{ title: re }, { ref: re }, { 'customer.name': re }, { destination: re }, { templateName: re }]
     }
-    res.json(
-      await Itinerary.find(filter)
-        .select('ref shareToken status isTemplate templateName title destination country coverImage customer travelDate nights days totalPrice currency updatedAt createdAt')
-        .sort({ updatedAt: -1 })
-        .lean()
-    )
+    const list = await Itinerary.find(filter)
+      .select('ref shareToken status isTemplate templateName title destination country coverImage customer travelDate nights days totalPrice currency updatedAt createdAt')
+      .sort({ updatedAt: -1 })
+      .lean()
+    const paid = await Payment.aggregate([
+      { $match: { itineraryId: { $in: list.map((x) => x._id) }, status: 'SUCCESS' } },
+      { $group: { _id: '$itineraryId', paid: { $sum: '$amount' } } },
+    ])
+    const paidBy = new Map(paid.map((p) => [String(p._id), p.paid]))
+    res.json(list.map((x) => ({ ...x, paid: paidBy.get(String(x._id)) || 0 })))
   } catch (e) { next(e) }
 })
 
@@ -110,6 +122,18 @@ adminItineraries.delete('/:id', async (req, res, next) => {
   try {
     await Itinerary.findByIdAndDelete(req.params.id)
     res.json({ ok: true })
+  } catch (e) { next(e) }
+})
+
+// Payments made against an itinerary through the online pay link
+adminItineraries.get('/:id/payments', async (req, res, next) => {
+  try {
+    const list = await Payment.find({ itineraryId: req.params.id })
+      .select('merchantTxnNo payType amount status paymentMode txnID name createdAt paymentDateTime respDescription')
+      .sort({ createdAt: -1 })
+      .lean()
+    const paid = list.filter((p) => p.status === 'SUCCESS').reduce((n, p) => n + p.amount, 0)
+    res.json({ payments: list, paid })
   } catch (e) { next(e) }
 })
 

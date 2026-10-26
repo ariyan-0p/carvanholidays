@@ -96,6 +96,8 @@ const settings = process.argv[4] === 'nobank' ? DEFAULT_SETTINGS : {
 }
 const out = process.argv[2] || 'sample-itinerary.pdf'
 console.time('render')
-fs.writeFileSync(out, await renderItineraryPdf(sample, settings))
+// the live server passes the real pay link; here a sample one
+const payUrl = process.argv[5] === 'nopay' ? '' : 'https://carvaanholidays.com/pay/3f9c1a7e5b2d4f68a0c1b2d4'
+fs.writeFileSync(out, await renderItineraryPdf(sample, settings, { payUrl }))
 console.timeEnd('render')
 console.log('wrote', out)
