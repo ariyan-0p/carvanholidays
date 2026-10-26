@@ -38,8 +38,8 @@ export const SECTION_LABELS = {
   inclusions: 'Inclusions & exclusions',
   dates: 'Travel dates',
   reviews: 'Guest reviews',
-  policies: 'Payment & cancellation',
-  booking: 'How to book',
+  policies: 'Cancellation & terms',
+  booking: 'Payment & booking',
   carry: 'Things to carry',
   closing: 'Closing page',
 }
@@ -64,6 +64,7 @@ export const DEFAULT_SETTINGS = {
     'we plan every detail — stays, transfers, experiences — so you can simply show up and enjoy. Our trip captains and ' +
     'on-ground teams know each destination like the back of their hand, and we stay on call from the moment you book until ' +
     'the moment you are home. Safe, transparent and thoughtfully designed: that is the Carvaan promise.',
+  advancePercent: 50,
   paymentTerms: '50% of the total amount is payable at the time of booking. The balance is to be paid on or before 5 days of the travel date.',
   cancellationSlabs: [
     { window: '45 days or more before travel', charge: 'Full refund' },

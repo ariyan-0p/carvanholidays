@@ -30,6 +30,7 @@ const schema = new mongoose.Schema(
     },
 
     whyUs: String, // "Why travel with us" paragraph
+    advancePercent: Number, // % of the total payable to confirm
     paymentTerms: String,
     cancellationSlabs: [{ window: String, charge: String, _id: false }],
     terms: String,

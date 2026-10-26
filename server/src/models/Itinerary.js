@@ -100,6 +100,7 @@ const itinerarySchema = new mongoose.Schema(
     thingsToCarry: [carrySchema],
     keepInMind: [String],
 
+    advancePercent: Number, // overrides the company default
     paymentTerms: String,
     cancellationSlabs: [slabSchema],
     cancellationPolicy: String, // free text fallback

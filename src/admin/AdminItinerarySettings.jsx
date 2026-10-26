@@ -79,6 +79,11 @@ export default function AdminItinerarySettings() {
       <section className="admin__form-block">
         <div className="admin__form-block-head"><h3>Default copy</h3></div>
         <label>“Why travel with us” paragraph<textarea rows="5" value={s.whyUs || ''} onChange={e => set('whyUs', e.target.value)} /></label>
+        <div className="admin__form-grid">
+          <label>Advance to confirm a booking (%)
+            <input type="number" min="1" max="100" value={s.advancePercent ?? ''} onChange={e => set('advancePercent', e.target.value === '' ? '' : Number(e.target.value))} />
+          </label>
+        </div>
         <label>Payment policy<textarea rows="2" value={s.paymentTerms || ''} onChange={e => set('paymentTerms', e.target.value)} /></label>
         <label>Terms &amp; conditions (one per line)
           <textarea rows="4" value={s.terms || ''} onChange={e => set('terms', e.target.value)} />

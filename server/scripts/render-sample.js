@@ -89,7 +89,8 @@ const sample = {
   validUntil: '30 May 2026',
   bookBy: '15 May 2026',
 }
-const settings = {
+// pass "nobank" as 4th arg to see the PDF the way it looks before bank details are saved
+const settings = process.argv[4] === 'nobank' ? DEFAULT_SETTINGS : {
   ...DEFAULT_SETTINGS,
   bank: { ...DEFAULT_SETTINGS.bank, accountNumber: '0000 0000 0000', ifsc: 'XXXX0000000', bankName: 'Sample Bank', upiId: 'carvaan@upi' },
 }

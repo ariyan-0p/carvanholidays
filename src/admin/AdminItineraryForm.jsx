@@ -37,7 +37,7 @@ const blank = () => ({
   inclusions: [], exclusions: [],
   currency: 'INR', priceLines: [], totalPrice: '', perPerson: '', priceNote: '', addons: [],
   batches: [], reviews: [], thingsToCarry: [], keepInMind: [],
-  paymentTerms: '', cancellationSlabs: [], cancellationPolicy: '', terms: '', notes: '',
+  advancePercent: '', paymentTerms: '', cancellationSlabs: [], cancellationPolicy: '', terms: '', notes: '',
   validUntil: inDays(7), bookBy: '',
 })
 
@@ -162,6 +162,7 @@ export default function AdminItineraryForm() {
       rooms: num(form.rooms) ?? 1,
       totalPrice: num(form.totalPrice),
       perPerson: num(form.perPerson),
+      advancePercent: num(form.advancePercent),
       priceLines: form.priceLines.filter(l => l.label).map(l => ({ ...l, amount: num(l.amount) })),
       hotelOptions: form.hotelOptions
         .filter(h => h.name)
@@ -450,6 +451,7 @@ export default function AdminItineraryForm() {
         <div className="admin__form-grid">
           <label>Quotation valid until<input value={form.validUntil} onChange={e => set('validUntil', e.target.value)} /></label>
           <label>Book by (deadline)<input value={form.bookBy} onChange={e => set('bookBy', e.target.value)} placeholder="15 May 2026" /></label>
+          <label>Advance to confirm (%)<input type="number" min="1" max="100" value={form.advancePercent} onChange={e => set('advancePercent', e.target.value)} placeholder="company default" /></label>
         </div>
         <label>Payment terms (override)<textarea rows="2" value={form.paymentTerms} onChange={e => set('paymentTerms', e.target.value)} placeholder="Leave blank to use the company default" /></label>
         <RowsEditor

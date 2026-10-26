@@ -15,6 +15,7 @@ import { fileURLToPath } from 'url'
 import puppeteer from 'puppeteer'
 import QRCode from 'qrcode'
 import { PDFDocument } from 'pdf-lib'
+import sharp from 'sharp'
 import { DEFAULT_SECTIONS, DEFAULT_SETTINGS, SECTION_LABELS } from '../config/itineraryDefaults.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -51,21 +52,74 @@ function fontFaces() {
   return [400, 500, 600, 700].map(mont).join('') + fr('normal') + fr('italic')
 }
 
-// Turn a stored image path into something Chromium can load without a network hop.
-function resolveImage(src) {
-  if (!src) return ''
-  if (/^data:/.test(src)) return src
-  if (/^https?:\/\//i.test(src)) return src
+// ---- images -------------------------------------------------------
+// Photos are fetched here (not by Chrome), resized to the size they are actually
+// printed at and re-encoded as JPEG. That keeps the PDF small and quick to open,
+// and Chrome can embed a plain JPEG as-is instead of re-encoding WebP/PNG losslessly.
+const IMG_KINDS = {
+  cover: { w: 1100, h: 1556, q: 74 },
+  welcome: { w: 520, h: 650, q: 78 },
+  day: { w: 760, q: 76 },
+  hotel: { w: 820, q: 74 },
+}
+const REMOTE_CACHE = new Map() // `${kind}|${url}` -> data URI (small, process lifetime)
+
+async function loadImageBuffer(src) {
+  if (/^data:/.test(src)) return Buffer.from(src.split(',')[1] || '', 'base64')
+  if (/^https?:\/\//i.test(src)) {
+    const res = await fetch(src, {
+      signal: AbortSignal.timeout(15000),
+      headers: { 'user-agent': 'CarvaanPDF/1.0', accept: 'image/*' },
+    })
+    if (!res.ok) return null
+    return Buffer.from(await res.arrayBuffer())
+  }
   if (src.startsWith('/uploads/')) {
     const root = path.resolve(process.cwd(), 'uploads')
     const file = path.resolve(process.cwd(), src.replace(/^\//, ''))
-    if (file.startsWith(root) && fs.existsSync(file)) {
-      const ext = path.extname(file).slice(1).toLowerCase().replace('jpg', 'jpeg')
-      return `data:image/${ext || 'jpeg'};base64,${b64(file)}`
-    }
+    if (file.startsWith(root) && fs.existsSync(file)) return fs.readFileSync(file)
   }
-  return ''
+  return null
 }
+
+async function optimizeImage(src, kind) {
+  const key = `${kind}|${src}`
+  const remote = /^https?:\/\//i.test(src)
+  if (remote && REMOTE_CACHE.has(key)) return REMOTE_CACHE.get(key)
+  try {
+    const buf = await loadImageBuffer(src)
+    if (!buf) return ''
+    const { w, h, q } = IMG_KINDS[kind]
+    const out = await sharp(buf, { failOn: 'none' })
+      .rotate()
+      .resize({ width: w, height: h, fit: h ? 'cover' : 'inside', withoutEnlargement: true })
+      .flatten({ background: '#ffffff' })
+      .jpeg({ quality: q, mozjpeg: true })
+      .toBuffer()
+    const uri = `data:image/jpeg;base64,${out.toString('base64')}`
+    if (remote) {
+      if (REMOTE_CACHE.size > 60) REMOTE_CACHE.delete(REMOTE_CACHE.keys().next().value)
+      REMOTE_CACHE.set(key, uri)
+    }
+    return uri
+  } catch {
+    return '' // a broken photo must never break the whole PDF
+  }
+}
+
+async function prepareImages(D) {
+  const { it, sections } = D
+  const jobs = new Map()
+  const add = (src, kind) => { if (src && !jobs.has(`${kind}|${src}`)) jobs.set(`${kind}|${src}`, { src, kind }) }
+  add(it.coverImage, 'cover')
+  if (sections.welcome) add(it.consultant?.photo, 'welcome')
+  if (sections.days) (it.itinerary || []).forEach((d) => add(d.image, 'day'))
+  if (sections.hotels) D.hotels.forEach((h) => clean(h.images).slice(0, 5).forEach((u) => add(u, 'hotel')))
+  const out = new Map()
+  await Promise.all([...jobs.entries()].map(async ([key, { src, kind }]) => out.set(key, await optimizeImage(src, kind))))
+  return out
+}
+const img = (D, src, kind) => (src ? D.imgs?.get(`${kind}|${src}`) || '' : '')
 
 /* ------------------------------------------------------------------ */
 /* themes                                                              */
@@ -372,11 +426,27 @@ h4.mini{font-size:7.4pt;font-weight:700;letter-spacing:.26em;text-transform:uppe
 .step i{display:grid;place-items:center;width:8mm;height:8mm;border-radius:50%;background:var(--deep);color:var(--accent);font-family:'Fraunces',serif;font-style:normal;font-size:10pt;margin-bottom:2.4mm}
 .step b{display:block;font-size:9pt;color:var(--deep);margin-bottom:1mm}
 .step span{font-size:8pt;color:var(--muted);line-height:1.6}
-.pay{display:grid;grid-template-columns:1fr auto;gap:8mm;align-items:center;padding:6mm 7mm;border-radius:4mm;background:linear-gradient(150deg,var(--deep),var(--deep2));color:#fff;break-inside:avoid}
-.pay .kv small{color:#fff;opacity:.65}.pay .kv b{color:#fff;font-weight:500;font-size:9pt}
-.pay .rows{display:grid;gap:2.6mm}
-.pay img{width:32mm;height:32mm;border-radius:2.4mm;background:#fff;padding:2mm;display:block}
-.pay .qrcap{font-size:6.4pt;letter-spacing:.2em;text-transform:uppercase;text-align:center;margin-top:1.6mm;opacity:.85}
+.sumstrip{display:grid;gap:3mm;margin:0 0 6mm}
+.sumcell{padding:4mm 4.4mm;border-radius:3mm;background:#fff;border:.25mm solid var(--grey)}
+.sumcell small{display:block;font-size:6pt;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+.sumcell b{display:block;margin-top:1mm;font-family:'Fraunces',serif;font-weight:500;font-size:13pt;color:var(--deep)}
+.sumcell.hl2{background:linear-gradient(150deg,var(--deep),var(--deep2));border-color:transparent}
+.sumcell.hl2 small{color:#fff;opacity:.7}.sumcell.hl2 b{color:var(--accent)}
+.paygrid{display:grid;grid-template-columns:1.15fr 1fr;gap:5mm;margin-bottom:6mm}
+.pay{padding:6mm 6.4mm;border-radius:4mm;background:linear-gradient(150deg,var(--deep),var(--deep2));color:#fff;break-inside:avoid;display:grid;gap:4mm;align-content:start}
+.pay h4{font-size:7.4pt;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--accent)}
+.pay .rows{display:grid;gap:2.4mm}
+.pay .kv small{color:#fff;opacity:.65}
+.pay .kv b{color:#fff;font-weight:500;font-size:9pt;word-break:break-all}
+.pay p{font-size:8.4pt;line-height:1.7;opacity:.92}
+.pay__qr{display:flex;align-items:center;gap:4mm}
+.pay__qr img{width:30mm;height:30mm;border-radius:2.4mm;background:#fff;padding:2mm;display:block;flex:0 0 auto}
+.pay__qr span{font-size:7.6pt;line-height:1.6;opacity:.92}
+.pay--wa{background:var(--soft);color:var(--deep)}
+.pay--wa h4{color:var(--accent-dk)}
+.pay--wa .kv small{color:var(--muted);opacity:1}
+.pay--wa .kv b{color:var(--deep)}
+.pay--wa p,.pay--wa .pay__qr span{opacity:1;color:var(--ink)}
 .carry{display:grid;grid-template-columns:1fr 1fr;gap:4mm}
 .carry .box{margin:0}
 .carry h4{margin-bottom:2mm}
@@ -452,7 +522,7 @@ const SECTION_BUILDERS = {
     const { it } = D
     const w = it.welcome || {}
     if (!has(w.body)) return ''
-    const photo = resolveImage(it.consultant?.photo)
+    const photo = img(D, it.consultant?.photo, 'welcome')
     const sign = w.signoff || it.consultant?.name
     return `<section class="section">
       <div class="welcome ${photo ? '' : 'welcome--nophoto'}">
@@ -548,7 +618,7 @@ const SECTION_BUILDERS = {
     if (!days.length) return ''
     const dayHtml = (d, i) => {
       const n = d.day ?? i + 1
-      const photo = resolveImage(d.image)
+      const photo = img(D, d.image, 'day')
       const meals = (d.meals || []).filter((m) => MEALS.includes(m))
       const hasMealData = Array.isArray(d.meals)
       const acts = clean(d.activities)
@@ -585,7 +655,7 @@ const SECTION_BUILDERS = {
     return `<section class="section">
       <div class="keep sec-head"><div class="divider">${icon('flight', 14)}</div><div class="eyebrow">Accommodation</div><h2 class="sec">Where you’ll stay</h2><span class="sec-ic">${icon('stay', 64)}</span></div>
       <div class="hotels">${D.hotels.map((h, i) => {
-        const imgs = clean(h.images).map(resolveImage).filter(Boolean).slice(0, 5)
+        const imgs = clean(h.images).slice(0, 5).map((u) => img(D, u, 'hotel')).filter(Boolean)
         return `<div class="hotel">
           ${imgs.length ? `<div class="mosaic n${imgs.length}">${imgs.map((s) => `<img src="${s}">`).join('')}</div>` : ''}
           <div class="hotel__in">
@@ -706,11 +776,10 @@ const SECTION_BUILDERS = {
   },
 
   policies(D) {
-    const hasAny = D.paymentTerms || D.slabs.length || D.cancellationText || D.terms
+    const hasAny = D.slabs.length || D.cancellationText || D.terms || has(D.it.notes)
     if (!hasAny) return ''
     return `<section class="section">
-      ${head('Good to know', 'Payment & cancellation')}
-      ${D.paymentTerms ? `<div class="box"><h4 class="mini">Payment policy</h4><p>${nl2br(D.paymentTerms)}</p></div>` : ''}
+      ${head('Good to know', 'Cancellation & terms')}
       ${D.slabs.length ? `<div class="keep" style="margin-bottom:5mm"><h4 class="mini">Cancellation &amp; refund</h4><table class="tbl"><tr><th>When you cancel</th><th>What you get back</th></tr>
         ${D.slabs.map((s) => `<tr><td>${esc(s.window)}</td><td><b>${esc(s.charge)}</b></td></tr>`).join('')}</table></div>` : ''}
       ${D.cancellationText ? `<div class="box"><h4 class="mini">Cancellation policy</h4><p>${nl2br(D.cancellationText)}</p></div>` : ''}
@@ -734,34 +803,69 @@ const SECTION_BUILDERS = {
 }
 
 async function buildBooking(D) {
-  const { it, S } = D
+  const { it, S, cur } = D
   const bank = S.bank || {}
+  const company = S.company || {}
+  const total = Number(it.totalPrice) || 0
+  const pct = Number(it.advancePercent || S.advancePercent || 50)
+  const advance = total ? Math.round((total * pct) / 100) : 0
+  const balance = total ? total - advance : 0
   const rows = [
     ['Account name', bank.accountName],
     ['Account number', bank.accountNumber],
     ['IFSC', bank.ifsc],
     ['Bank', bank.bankName],
     ['Account type', bank.accountType],
-    ['UPI', bank.upiId],
+    ['UPI ID', bank.upiId],
   ].filter(([, v]) => has(v))
-  const hasBank = rows.length > 1 || has(bank.upiId) || has(bank.accountNumber)
-  let qr = ''
-  if (has(bank.upiId)) {
-    const link = `upi://pay?pa=${encodeURIComponent(bank.upiId)}&pn=${encodeURIComponent(bank.accountName || S.company?.name || '')}&cu=INR`
-    qr = await QRCode.toDataURL(link, { margin: 0, width: 360, color: { dark: '#0D3B40', light: '#FFFFFF' } })
+  const hasBank = has(bank.accountNumber) || has(bank.upiId)
+
+  const digits = String(company.whatsapp || company.phone || '').replace(/\D/g, '')
+  const waNum = digits.length === 10 ? `91${digits}` : digits
+  const waLink = waNum
+    ? `https://wa.me/${waNum}?text=${encodeURIComponent(`Hi, I would like to confirm itinerary ${it.ref} - ${it.title}.`)}`
+    : ''
+  const qr = (data) => QRCode.toDataURL(data, { margin: 0, width: 300, color: { dark: '#0D3B40', light: '#FFFFFF' } })
+  const [upiQr, waQr] = await Promise.all([
+    has(bank.upiId)
+      ? qr(`upi://pay?pa=${encodeURIComponent(bank.upiId)}&pn=${encodeURIComponent(bank.accountName || company.name || '')}&cu=INR`)
+      : '',
+    waLink ? qr(waLink) : '',
+  ])
+
+  const cells = []
+  if (total) {
+    cells.push(['hl2', 'Total package price', money(total, cur)])
+    cells.push(['', `Advance to confirm (${pct}%)`, money(advance, cur)])
+    cells.push(['', 'Balance due', money(balance, cur)])
   }
-  const contact = it.consultant?.phone || S.company?.phone
-  return `<section class="section">
-    ${head('Ready when you are', 'How to book')}
+  if (has(it.bookBy)) cells.push(['', 'Book by', it.bookBy])
+  const contact = it.consultant?.phone || company.phone
+
+  return `<section class="section break">
+    ${head('Ready when you are', 'Payment & booking')}
     <div class="steps">
-      <div class="step"><i>1</i><b>Confirm</b><span>Tell us you’d like to go ahead${D.it.bookBy ? ` by <b>${esc(D.it.bookBy)}</b>` : ''}.</span></div>
-      <div class="step"><i>2</i><b>Pay the advance</b><span>${esc(D.paymentTerms ? D.paymentTerms.split(/(?<=\.)\s/)[0] : 'Pay the booking amount to lock your dates.')}</span></div>
+      <div class="step"><i>1</i><b>Confirm</b><span>Tell us you’d like to go ahead${has(it.bookBy) ? ` — book by <b>${esc(it.bookBy)}</b>` : ''}</span></div>
+      <div class="step"><i>2</i><b>Pay the advance</b><span>${total ? `Pay ${esc(money(advance, cur))} (${pct}%) to lock your dates.` : 'Pay the booking amount to lock your dates.'}</span></div>
       <div class="step"><i>3</i><b>Get your vouchers</b><span>We share tickets, vouchers and trip-captain details before you travel.</span></div>
     </div>
-    ${hasBank ? `<div class="pay">
-      <div class="rows">${rows.map(([k, v]) => `<div class="kv"><small>${esc(k)}</small><b>${esc(v)}</b></div>`).join('')}</div>
-      ${qr ? `<div><img src="${qr}"><div class="qrcap">Scan to pay</div></div>` : ''}
-    </div>` : `<div class="box"><p>For payment details, please contact ${esc(it.consultant?.name || 'your consultant')}${contact ? ` on <b>${esc(contact)}</b>` : ''}.</p></div>`}
+    ${cells.length ? `<div class="sumstrip" style="grid-template-columns:repeat(${cells.length},1fr)">${cells
+      .map(([cls, k, v]) => `<div class="sumcell ${cls}"><small>${esc(k)}</small><b>${esc(v)}</b></div>`).join('')}</div>` : ''}
+    <div class="paygrid">
+      <div class="pay">
+        <h4>${hasBank ? 'Pay by bank transfer or UPI' : 'Pay through your consultant'}</h4>
+        ${hasBank
+          ? `<div class="rows">${rows.map(([k, v]) => `<div class="kv"><small>${esc(k)}</small><b>${esc(v)}</b></div>`).join('')}</div>
+             ${upiQr ? `<div class="pay__qr"><img src="${upiQr}"><span>Scan with any UPI app to pay.<br>Add <b>${esc(it.ref || '')}</b> in the payment remarks.</span></div>` : ''}`
+          : `<p>Your consultant${it.consultant?.name ? `, <b>${esc(it.consultant.name)}</b>,` : ''} will share the payment details and a secure payment link.${contact ? ` Call or message <b>${esc(contact)}</b>.` : ''}</p>`}
+      </div>
+      <div class="pay pay--wa">
+        <h4>Confirm on WhatsApp</h4>
+        <p>After you pay, send the screenshot with your reference <b>${esc(it.ref || '')}</b> and we will confirm your booking right away.</p>
+        ${waQr ? `<div class="pay__qr"><img src="${waQr}"><span>Scan to chat with us${company.phone ? `<br><b>${esc(company.phone)}</b>` : ''}</span></div>` : (company.phone ? `<p><b>${esc(company.phone)}</b></p>` : '')}
+      </div>
+    </div>
+    ${D.paymentTerms ? `<div class="box"><h4 class="mini">Payment policy</h4><p>${nl2br(D.paymentTerms)}</p></div>` : ''}
   </section>`
 }
 
@@ -774,11 +878,11 @@ const docShell = (D, css, body) =>
 function coverHtml(D) {
   const { it, S } = D
   const s = summarize(it)
-  const img = resolveImage(it.coverImage)
+  const coverSrc = img(D, it.coverImage, 'cover')
   const logo = dataUri(path.join(ASSETS, 'logo-white.png'), 'image/png')
   const meta = [s.nights || s.days ? `${s.nights}N / ${s.days}D` : '', it.country || ''].filter(Boolean).join(' · ')
   return docShell(D, COVER_CSS, `<section class="cover">
-      ${img ? `<img class="cover__img" src="${img}">` : ''}
+      ${coverSrc ? `<img class="cover__img" src="${coverSrc}">` : ''}
       <div class="cover__shade"></div><div class="cover__tint"></div><div class="cover__frame"></div>
       <svg class="cover__stamp" viewBox="0 0 120 120" fill="none">
         <defs><path id="pm" d="M60,60 m-44,0 a44,44 0 1,1 88,0 a44,44 0 1,1 -88,0"/></defs>
@@ -897,6 +1001,7 @@ async function pdfFrom(browser, html, opts = {}) {
 export async function renderItineraryPdf(it, settings = DEFAULT_SETTINGS) {
   const raw = typeof it.toObject === 'function' ? it.toObject() : it
   const D = resolveData(raw, settings)
+  D.imgs = await prepareImages(D)
   const browser = await puppeteer.launch({
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
