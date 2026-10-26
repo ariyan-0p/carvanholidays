@@ -48,7 +48,7 @@ export const DEFAULT_SETTINGS = {
   company: {
     name: 'Carvaan Holidays',
     tagline: 'Travel the way you imagine',
-    address: 'Shop no. 46, Shakti Nagar Market Complex, DRM Road, Bhopal – 462022',
+    address: 'Shop No. G-3, Plot No. 12, HDB Arcade, Dursanchar Nagar, Shahpura, Bhopal, Madhya Pradesh — 462026, India',
     phone: '+91 91319 78160',
     altPhone: '',
     email: 'info@carvaanholidays.com',
