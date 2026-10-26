@@ -91,12 +91,30 @@ async function optimizeImage(src, kind) {
     const buf = await loadImageBuffer(src)
     if (!buf) return ''
     const { w, h, q } = IMG_KINDS[kind]
-    const out = await sharp(buf, { failOn: 'none' })
+    let pipeline = sharp(buf, { failOn: 'none' })
       .rotate()
       .resize({ width: w, height: h, fit: h ? 'cover' : 'inside', withoutEnlargement: true })
       .flatten({ background: '#ffffff' })
-      .jpeg({ quality: q, mozjpeg: true })
-      .toBuffer()
+    if (kind === 'cover') {
+      // Darken top and bottom (for the logo and title) inside the JPEG itself, so the PDF
+      // contains one plain image instead of big see-through gradient layers.
+      const { data, info } = await pipeline.jpeg({ quality: 92 }).toBuffer({ resolveWithObject: true })
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${info.width}" height="${info.height}">
+        <defs>
+          <linearGradient id="v" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#000" stop-opacity=".55"/><stop offset=".26" stop-color="#000" stop-opacity="0"/>
+            <stop offset=".36" stop-color="#000" stop-opacity="0"/><stop offset=".7" stop-color="#000" stop-opacity=".72"/>
+            <stop offset="1" stop-color="#000" stop-opacity=".93"/>
+          </linearGradient>
+          <linearGradient id="h" x1="0" y1="0" x2="1" y2=".2">
+            <stop offset="0" stop-color="#000" stop-opacity=".35"/><stop offset=".6" stop-color="#000" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#v)"/><rect width="100%" height="100%" fill="url(#h)"/>
+      </svg>`
+      pipeline = sharp(data).composite([{ input: Buffer.from(svg), top: 0, left: 0 }])
+    }
+    const out = await pipeline.jpeg({ quality: q, mozjpeg: true }).toBuffer()
     const uri = `data:image/jpeg;base64,${out.toString('base64')}`
     if (remote) {
       if (REMOTE_CACHE.size > 60) REMOTE_CACHE.delete(REMOTE_CACHE.keys().next().value)
@@ -131,7 +149,7 @@ const THEMES = {
   midnight: { deep: '#14213D', deep2: '#23366B', accent: '#FCA311', accentDk: '#C77F00', soft: '#FFF0D2', warm: '#F4F6FA', aqua: '#E1E8F5', bgFrom: '#23366B', bgTo: '#0B1226' },
 }
 const themeCss = (t) =>
-  `:root{--deep:${t.deep};--deep2:${t.deep2};--accent:${t.accent};--accent-dk:${t.accentDk};--soft:${t.soft};--warm:${t.warm};--aqua:${t.aqua};` +
+  `:root{--w90:color-mix(in srgb,#fff 90%,${t.deep});--w85:color-mix(in srgb,#fff 85%,${t.deep});--w80:color-mix(in srgb,#fff 80%,${t.deep});--w70:color-mix(in srgb,#fff 70%,${t.deep});--w65:color-mix(in srgb,#fff 65%,${t.deep});--w55:color-mix(in srgb,#fff 55%,${t.deep});--w18:color-mix(in srgb,#fff 18%,${t.deep});--w07:color-mix(in srgb,#fff 7%,${t.deep});--deep:${t.deep};--deep2:${t.deep2};--accent:${t.accent};--accent-dk:${t.accentDk};--soft:${t.soft};--warm:${t.warm};--aqua:${t.aqua};` +
   `--grey:#E6ECEF;--silver:#BFC5C9;--ink:#333;--muted:#6B7D83;--bg-from:${t.bgFrom};--bg-to:${t.bgTo};}`
 
 /* ------------------------------------------------------------------ */
@@ -199,6 +217,34 @@ const BASE_CSS = `
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{font-family:'Montserrat',sans-serif;color:var(--ink);font-size:9.2pt;line-height:1.6;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .ic{flex:0 0 auto;display:inline-block;vertical-align:middle}
+`
+
+// Viewers such as Edge's PDF reader are slow with soft shadows, transparency groups and
+// see-through gradients. Everything below swaps them for solid colours that look the same.
+const FLAT_CSS = `
+*{box-shadow:none!important}
+.cover__shade,.cover__tint{display:none!important}
+.cover__stamp,.cover__tag,.cover__dest,.deco--tr,.deco--bl,.barcode{opacity:1!important}
+.cover__tag,.cover__dest{color:var(--w90)}
+.cover__stat small{opacity:1!important;color:var(--w70)}
+.sec-ic{opacity:1!important;color:color-mix(in srgb,var(--deep) 9%,var(--paper))}
+.tile::after,.price__main::after,.back::before{display:none!important}
+.tile span{opacity:1!important;color:var(--w85)}
+.overnight small{opacity:1!important;color:var(--w70)}
+.price__main small,.price__main em{opacity:1!important;color:var(--w80)}
+.price__side{background:color-mix(in srgb,#fff 6%,var(--deep2))!important;border-left-color:color-mix(in srgb,#fff 40%,var(--deep2))!important}
+.price__side .kv small,.pay .kv small,.sumcell.hl2 small{opacity:1!important;color:var(--w65)}
+.payonline h4{opacity:1!important;color:color-mix(in srgb,var(--deep) 75%,var(--accent))}
+.pay p,.pay__qr span{opacity:1!important;color:var(--w90)}
+.pay--wa p,.pay--wa .pay__qr span{color:var(--ink)!important}
+.pay--wa .kv small{color:var(--muted)!important}
+.pay h4{opacity:1!important}
+.back__sub{opacity:1!important;color:var(--w80)}
+.back__qr,.back__founder{opacity:1!important;color:var(--w90)}
+.back__founder small{opacity:1!important;color:var(--w65)}
+.back__fine{opacity:1!important;color:var(--w55)}
+.back__card{background:var(--w07)!important;border-color:var(--w18)!important}
+.meal{text-decoration-color:#DADFE1!important}
 `
 
 const COVER_CSS = `
@@ -891,7 +937,7 @@ async function buildBooking(D) {
 /* document builders                                                   */
 /* ------------------------------------------------------------------ */
 const docShell = (D, css, body) =>
-  `<!doctype html><html><head><meta charset="utf-8"><style>${fontFaces()}${themeCss(D.theme)}${BASE_CSS}${css}</style></head><body>${body}</body></html>`
+  `<!doctype html><html><head><meta charset="utf-8"><style>${fontFaces()}${themeCss(D.theme)}${BASE_CSS}${css}${FLAT_CSS}</style></head><body>${body}</body></html>`
 
 function coverHtml(D) {
   const { it, S } = D
@@ -931,13 +977,13 @@ function coverHtml(D) {
 
 const DECO = `
   <div class="paper"></div>
-  <svg class="deco deco--tr" viewBox="0 0 200 160" fill="none" stroke="var(--accent)" stroke-width="0.9">
+  <svg class="deco deco--tr" viewBox="0 0 200 160" fill="none" style="stroke:color-mix(in srgb,var(--accent) 32%,var(--paper))" stroke-width="0.9">
     <path d="M200 -8 C 140 -12,92 20,88 62 S 120 140,200 148"/><path d="M200 10 C 160 5,120 30,118 62 S 140 120,200 128"/>
     <path d="M200 26 C 170 24,140 42,138 64 S 156 108,200 112"/><path d="M200 42 C 182 41,160 52,158 66 S 172 94,200 96"/>
   </svg>
   <svg class="deco deco--bl" viewBox="0 0 240 60" fill="none">
-    <path d="M0 54 C 60 -4,150 -4,228 38" stroke="var(--deep)" stroke-width="1" stroke-dasharray="1.5 4" stroke-linecap="round"/>
-    <g transform="translate(232 40) rotate(38) scale(.75) translate(-12 -12)" fill="var(--accent-dk)"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5Z"/></g>
+    <path d="M0 54 C 60 -4,150 -4,228 38" style="stroke:color-mix(in srgb,var(--deep) 28%,var(--paper))" stroke-width="1" stroke-dasharray="1.5 4" stroke-linecap="round"/>
+    <g transform="translate(232 40) rotate(38) scale(.75) translate(-12 -12)" style="fill:color-mix(in srgb,var(--accent-dk) 65%,var(--paper))"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5Z"/></g>
   </svg>`
 
 async function bodyHtml(D) {
